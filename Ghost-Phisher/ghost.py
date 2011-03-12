@@ -828,7 +828,7 @@ class Ui_ghost_phisher(object):
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:7pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">input an ip adress you would like to bind access point to e.g 192.168.0.1</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox_18.setTitle(QtGui.QApplication.translate("ghost_phisher", "Crytography", None, QtGui.QApplication.UnicodeUTF8))
+        self.groupBox_18.setTitle(QtGui.QApplication.translate("ghost_phisher", "Cryptography", None, QtGui.QApplication.UnicodeUTF8))
         self.rouge_radio.setText(QtGui.QApplication.translate("ghost_phisher", "None", None, QtGui.QApplication.UnicodeUTF8))
         self.wpa_radio.setText(QtGui.QApplication.translate("ghost_phisher", "WPA", None, QtGui.QApplication.UnicodeUTF8))
         self.wep_radio.setText(QtGui.QApplication.translate("ghost_phisher", "WEP", None, QtGui.QApplication.UnicodeUTF8))
@@ -2486,7 +2486,7 @@ print("""
         ''' Close Network connections after
             user exits application
         '''
-        answer = QtGui.QMessageBox.question(self,"Ghost Phiser","Are you sure you want to quit?",QtGui.QMessageBox.Yes,QtGui.QMessageBox.No)
+        answer = QtGui.QMessageBox.question(self,"Ghost Phisher","Are you sure you want to quit?",QtGui.QMessageBox.Yes,QtGui.QMessageBox.No)
         if answer == QtGui.QMessageBox.Yes:
             if dns_contol == 0:
                 self.stop_dns()

@@ -785,7 +785,7 @@ class Ui_ghost_phisher(object):
 
 
     def retranslateUi(self, ghost_phisher):
-        ghost_phisher.setWindowTitle(QtGui.QApplication.translate("ghost_phisher", "Ghost Phiser", None, QtGui.QApplication.UnicodeUTF8))
+        ghost_phisher.setWindowTitle(QtGui.QApplication.translate("ghost_phisher", "Ghost Phisher", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox_15.setTitle(QtGui.QApplication.translate("ghost_phisher", "Access Point Details", None, QtGui.QApplication.UnicodeUTF8))
         self.access_point_label.setText(QtGui.QApplication.translate("ghost_phisher", "Acess Point Name:", None, QtGui.QApplication.UnicodeUTF8))
         self.channel_label.setText(QtGui.QApplication.translate("ghost_phisher", "Channel:", None, QtGui.QApplication.UnicodeUTF8))
@@ -1024,7 +1024,7 @@ class Ui_tip(object):
 
     def retranslateUi(self, tip):
         tip.setWindowTitle(QtGui.QApplication.translate("tip", "Dialog", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_2.setText(QtGui.QApplication.translate("tip", "Press the Alt Key from the keyboard to get font settings,if you are having", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_2.setText(QtGui.QApplication.translate("tip", "Press the F2 Key from the keyboard to get font settings,if you are having", None, QtGui.QApplication.UnicodeUTF8))
         self.label_3.setText(QtGui.QApplication.translate("tip", " problems with understanding how to use this application then visit ", None, QtGui.QApplication.UnicodeUTF8))
         self.label_4.setText(QtGui.QApplication.translate("tip", "<font color=blue>http://code.google.com/p/ghost-phisher/</font>", None, QtGui.QApplication.UnicodeUTF8))
         self.label_5.setText(QtGui.QApplication.translate("tip", "for a video tutorial on how to use the application.", None, QtGui.QApplication.UnicodeUTF8))
@@ -1401,8 +1401,8 @@ class Ghost_phisher(QtGui.QMainWindow,Ui_ghost_phisher):            # Main class
 
     def keyPressEvent(self,event):
         '''Runs the font dialog window, when user
-            presses Ctrl + F'''
-        if event.key() == QtCore.Qt.Key_Alt:
+            presses F2'''
+        if event.key() == QtCore.Qt.Key_F2:
             font_run = font_settings()
             font_run.exec_()
 

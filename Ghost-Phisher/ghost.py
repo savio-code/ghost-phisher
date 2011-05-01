@@ -2392,6 +2392,8 @@ print("""
 
                 thread.start_new_thread(self.HTTP_Server,(http_server_port,0))      # Starts the HTTP Server
 
+                commands.getstatusoutput('iptables -I INPUT -p tcp --dport %d -j ACCEPT'%(int(http_server_port))) # Allows full communication with network victims
+
                 self.http_start.setEnabled(False)
                 self.http_stop.setEnabled(True)
                 self.http_captured_credential.setText('captured credentials:')

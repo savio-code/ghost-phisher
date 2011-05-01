@@ -2389,29 +2389,31 @@ print("""
                 new_html_file = open('%s/HTTP-Webscript/index.html'%(cwd),'a+')     # Rewrite to incude our new action url
                 new_html_file.write(new_post_action)
                 new_html_file.close()
+            else:                                                                   #   This conditional statement will be changed in the future
+                self.status_textbrowser_http.append('<font color=red>Source page does not have any html post action method, Serving... normal page<font>')
 
-                thread.start_new_thread(self.HTTP_Server,(http_server_port,0))      # Starts the HTTP Server
+            thread.start_new_thread(self.HTTP_Server,(http_server_port,0))      # Starts the HTTP Server
 
-                commands.getstatusoutput('iptables -I INPUT -p tcp --dport %d -j ACCEPT'%(int(http_server_port))) # Allows full communication with network victims
+            commands.getstatusoutput('iptables -I INPUT -p tcp --dport %d -j ACCEPT'%(int(http_server_port))) # Allows full communication with network victims
 
-                self.http_start.setEnabled(False)
-                self.http_stop.setEnabled(True)
-                self.http_captured_credential.setText('captured credentials:')
-                self.http_port_label.setText('<font color=green>TCP Port:</font> %s'%(http_server_port))
-                self.http_ip_label.setText('<font color=green>Service running on:</font>  %s'%(actions_ip_address))
-                self.label_13.setText('<font color=green>Runtime:</font>  %s'%(time.ctime()))
+            self.http_start.setEnabled(False)
+            self.http_stop.setEnabled(True)
+            self.http_captured_credential.setText('captured credentials:')
+            self.http_port_label.setText('<font color=green>TCP Port:</font> %s'%(http_server_port))
+            self.http_ip_label.setText('<font color=green>Service running on:</font>  %s'%(actions_ip_address))
+            self.label_13.setText('<font color=green>Runtime:</font>  %s'%(time.ctime()))
 
-                if http_server_port == 80:
-                    http_address = 'http://%s/'%(actions_ip_address)
-                    self.status_textbrowser_http.append('<font color=green>HTTP Server running on: %s</font>'%(http_address))
-                else:
-                    http_address = 'http://%s:%s/'%(actions_ip_address,http_server_port)
-                    self.status_textbrowser_http.append('<font color=green>HTTP Server running on: %s</font>'%(http_address))
-
-                thread.start_new_thread(self.auto_check_thread,())                  # Runs the thread loop that checks for new inputs to database
-
+            if http_server_port == 80:
+                http_address = 'http://%s/'%(actions_ip_address)
+                self.status_textbrowser_http.append('<font color=green>HTTP Server running on: %s</font>'%(http_address))
             else:
-                self.status_textbrowser_http.append('<font color=red>Source page does not have any html post action method, if you are trying to host a normal page please use the Normal HTTP server tab<font>')
+                http_address = 'http://%s:%s/'%(actions_ip_address,http_server_port)
+                self.status_textbrowser_http.append('<font color=green>HTTP Server running on: %s</font>'%(http_address))
+
+            thread.start_new_thread(self.auto_check_thread,())                  # Runs the thread loop that checks for new inputs to database
+
+
+
 
 
 

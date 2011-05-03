@@ -1230,8 +1230,6 @@ class Ghost_phisher(QtGui.QMainWindow,Ui_ghost_phisher):            # Main class
                 password.setText(current_credential[2])
                 self.credential_table.setItem(iterate,2,password)
 
-            self.credential_table.resizeColumnsToContents()                 # Resize Table contents to fix borders
-
         except IndexError:
             pass
 
@@ -2184,7 +2182,6 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
         except IndexError:
             pass
         captured_credential += 1
-        self.credential_table.resizeColumnsToContents()
         self.http_captured_credential.setText('captured credentials:<font color=green>\t %s</font>'%(captured_credential))
 
 
@@ -2444,12 +2441,10 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
 
     def database_commit(self,website,username,password):
         ''' Commits captured credential to database'''
-        space = ' ' * 5         #Adding some white spaces
         database = sqlite3.connect(cw + '/Ghost-Phisher-Database/' + 'database.db')
         database_query = database.cursor()
         database_query.execute('create table if not exists credentials (website text, username text, password text)')
-        database_query.execute("insert into credentials values ('%s','%s','%s')"% \
-                                        (website + space,username + space,password + space))
+        database_query.execute("insert into credentials values ('%s','%s','%s')"% (website,username,password))
         database.commit()
         database.close()
 

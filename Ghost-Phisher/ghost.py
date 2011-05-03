@@ -2089,6 +2089,7 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
         self.http_start.setEnabled(True)
         self.http_stop.setEnabled(False)
         commands.getstatusoutput('killall mini-httpd')
+        commands.getstatusoutput('killall ettercap')
         self.status_textbrowser_http.append('<font color=red>HTTP Server Stopped at: %s</font>'%(time.ctime()))
         self.http_ip_label.setText('<font color=green>Service running on:</font>  Service not started')
         self.label_13.setText('<font color=green>Runtime:</font>  Service not started')
@@ -2519,6 +2520,7 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
             if dns_contol == 0:
                 self.stop_dns()
             commands.getstatusoutput('killall mini-httpd')
+            commands.getstatusoutput('killall ettercap')
             try:
                 commands.getstatusoutput('killall airbase-ng')
                 self.stop_dhcp()

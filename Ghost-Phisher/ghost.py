@@ -1229,9 +1229,8 @@ class Ghost_phisher(QtGui.QMainWindow,Ui_ghost_phisher):            # Main class
                 self.credential_table.setItem(iterate,1,username)
                 password.setText(current_credential[2])
                 self.credential_table.setItem(iterate,2,password)
-                                                                        #
+
             self.credential_table.resizeColumnsToContents()                 # Resize Table contents to fix borders
-            self.credential_table.resizeRowsToContents()                    #
 
         except IndexError:
             pass
@@ -2186,7 +2185,6 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
             pass
         captured_credential += 1
         self.credential_table.resizeColumnsToContents()
-        self.credential_table.resizeRowsToContents()
         self.http_captured_credential.setText('captured credentials:<font color=green>\t %s</font>'%(captured_credential))
 
 

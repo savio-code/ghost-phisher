@@ -2181,6 +2181,8 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
         except IndexError:
             pass
         captured_credential += 1
+        self.credential_table.resizeColumnsToContents()
+        self.credential_table.resizeRowsToContents()
         self.http_captured_credential.setText('captured credentials:<font color=green>\t %s</font>'%(captured_credential))
 
 

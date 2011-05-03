@@ -2120,8 +2120,9 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
         pipe = subprocess.Popen('ettercap -i %s -T -q'%(sniff_interface),shell=True,stdout= subprocess.PIPE)
         sniff_output = pipe.stdout
         while http_control != 1:
-            if 'HTTP' in str(sniff_output.readline()):
-                credential_process = sniff_output.readline().split()
+            capture = str(sniff_output.readline())
+            if 'HTTP' in capture:
+                credential_process = capture.split()
                 username = credential_process[5]
                 password = credential_process[7]
                 if str(self.lineEdit_2.text()) == '':

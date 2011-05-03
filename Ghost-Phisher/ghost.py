@@ -2123,6 +2123,7 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
         while http_control != 1:
             capture = str(sniff_output.readline())
             if 'HTTP' in capture:
+                print "Yes"
                 credential_process = capture.split()
                 username = credential_process[5]
                 password = credential_process[7]
@@ -2441,7 +2442,7 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
 
     def database_commit(self,website,username,password):
         ''' Commits captured credential to database'''
-        database = sqlite3.connect(cw + '/Ghost-Phisher-Database/' + 'database.db')
+        database = sqlite3.connect(cwd + '/Ghost-Phisher-Database/' + 'database.db')
         database_query = database.cursor()
         database_query.execute('create table if not exists credentials (website text, username text, password text)')
         database_query.execute("insert into credentials values ('%s','%s','%s')"% (website,username,password))

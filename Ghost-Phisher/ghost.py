@@ -1229,6 +1229,10 @@ class Ghost_phisher(QtGui.QMainWindow,Ui_ghost_phisher):            # Main class
                 self.credential_table.setItem(iterate,1,username)
                 password.setText(current_credential[2])
                 self.credential_table.setItem(iterate,2,password)
+                                                                        #
+        self.credential_table.resizeColumnsToContents()                 # Resize Table contents to fix borders
+        self.credential_table.resizeRowsToContents()                    #
+
         except IndexError:
             pass
 

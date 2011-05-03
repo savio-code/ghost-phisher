@@ -2131,8 +2131,9 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
                     website = credential_process[-1]
                 else:
                     website = str(self.lineEdit_2.text())
-                self.database_commit(website,username,password)
-                self.emit(QtCore.SIGNAL('new credential'))
+                if 'PASS:' != username:                     # Basic filter
+                    self.database_commit(website,username,password)
+                    self.emit(QtCore.SIGNAL('new credential'))
 
 
 

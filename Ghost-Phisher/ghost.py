@@ -2116,8 +2116,6 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
         else:
             sniff_interface = interface
 
-        if 'sniff_log' in os.listdir('/tmp/'):      # Remove previous sniff log file
-            os.remove('/tmp/sniff_log')
         pipe = subprocess.Popen('ettercap -i %s -T -q'%(sniff_interface),shell=True,stdout= subprocess.PIPE)
         sniff_output = pipe.stdout
         while http_control != 1:

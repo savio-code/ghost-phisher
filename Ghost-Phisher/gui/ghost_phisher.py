@@ -1073,7 +1073,7 @@ class Ghost_phisher(QtGui.QMainWindow, Ui_ghost_phisher):            # Main clas
         global dhcp_server_binary
         global dhcp_config_file
         global dhcp_pid_file
-        
+
         installation_status = commands.getstatusoutput('which dhcpd3')
         if installation_status[0] == 0:
             self.label.setText('<font color=green>DHCP3 Server is installed</font>')
@@ -1814,10 +1814,10 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
 
     def stop_dhcp(self):
         ''' Stop the DHCP Server'''
-        
+
         global dhcp_config_file
         global dhcp_pid_file
-        
+
         self.dhcp_start.setEnabled(True)
         self.dhcp_stop.setEnabled(False)
         #start-stop-daemon --stop --quiet --pidfile $DHCPDPID
@@ -1825,8 +1825,8 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
             dhcp_pid = open(dhcp_pid_file).read().strip()
             stop_dhcp_status = commands.getstatusoutput('kill -9 %s' % dhcp_pid)
             #stop_dhcp_status = commands.getstatusoutput('/etc/init.d/dhcp3-server stop')
-            
-        self.dhcp_status.append('<font color=red>%s at %s'%(stop_dhcp_status[1],time.ctime()))
+
+        self.dhcp_status.append('<font color=red>DHCP Server stopped at %s'%(time.ctime()))
 
 
     def launch_dhcp(self):
@@ -1838,7 +1838,7 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
         global dhcp_server_binary
         global dhcp_config_file
         global dhcp_pid_file
-        
+
         start_ip = str(self.start_ip.text())
         stop_ip = str(self.stop_ip.text())
         gateway_ip = str(self.gateway_ip.text())
@@ -1865,12 +1865,12 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
             create_settings('self.gateway_ip',gateway_ip)
             create_settings('self.subnet_ip',subnet_ip)
             create_settings('self.alternatedns_ip',alternatedns_ip)
-            
+
             #update:
             #   start dhcp server using a custom config file.
-            
-            
-            
+
+
+
 
             #if 'dhcpd.conf_original' in os.listdir('/etc/dhcp3/'):      # Remove dhcpd.conf file if ghost_phiser had earlierly created it to avoid using old settings
             #    if 'dhcpd.conf' in os.listdir('/etc/dhcp3'):
@@ -1914,10 +1914,10 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
 
             dhcp_settings_file = dhcp_settings_string % (fakedns_ip,alternatedns_ip,subnet,subnet_ip,\
                                                          start_ip,stop_ip,subnet_ip,broadcast,gateway_ip)
-            
+
             if os.path.exists(dhcp_config_file):
                 os.remove(dhcp_config_file)
-            
+
             if os.path.exists(dhcp_pid_file):
                 os.remove(dhcp_pid_file)
 
@@ -1927,7 +1927,7 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
             cmd = "%s -cf %s -pf %s" % (dhcp_server_binary, dhcp_config_file, dhcp_pid_file)
             print(cmd)
             dhcp_status = commands.getstatusoutput(cmd)
-            
+
             if dhcp_status[0] == 0:
                 self.dhcp_status.append('<font color=green>%s at %s </font>'%(dhcp_status[1],time.ctime()))  # DHCP ran successfully
                 self.dhcp_start.setEnabled(False)

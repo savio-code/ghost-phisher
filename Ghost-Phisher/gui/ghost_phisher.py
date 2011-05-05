@@ -35,13 +35,16 @@ dns_connections = 0                                             # Display number
 dns_ip_and_websites = {}                                        # Holds mappings of fake ip to dns
 
 # Global variables for Fake DHCP
-dhcp_installalation_status = ''                                 # Holds the DHCP installation status
+dhcp_installation_status = ''                                 # Holds the DHCP installation status
+dhcp_server_binary = ''
+dhcp_config_file = "/tmp/ghost_dhcpd.conf"
+dhcp_pid_file = "/tmp/ghost_dhcpd.pid"
 
 # Global variables for Fake HTTP
-http_installalation_status = ''                                 # Holds the HTTP installation status
+http_installation_status = ''                                 # Holds the HTTP installation status
 
 # Global variables for Sniffer process
-ettercap_installalation_status = ''                                 # Holds the ettercap installation status
+ettercap_installation_status = ''                                 # Holds the ettercap installation status
 
 # Global variables for Fake HTTP
 http_server_port = 80                                           # Default HTTP port
@@ -1066,26 +1069,37 @@ class Ghost_phisher(QtGui.QMainWindow, Ui_ghost_phisher):            # Main clas
         #
         # Check if DHCP3 Server service is installed on the computer
         #
-        global dhcp_installalation_status
-        installation_status = commands.getstatusoutput('which /etc/init.d/dhcp3-server')
+        global dhcp_installation_status
+        global dhcp_server_binary
+        global dhcp_config_file
+        global dhcp_pid_file
+        
+        installation_status = commands.getstatusoutput('which dhcpd3')
         if installation_status[0] == 0:
             self.label.setText('<font color=green>DHCP3 Server is installed</font>')
-            dhcp_installalation_status = 'installed'
+            dhcp_installation_status = 'installed'
+            dhcp_server_binary = installation_status[1]
         else:
-            self.label.setText('<font color=red>DHCP3 Server is not installed</font>')
-            self.dhcp_status.append('<font color=green>To Install DHCP3 Server run:</font>\t<font color=red>apt-get install dhcp3-server</font>')
-            dhcp_installalation_status = 'not installed'
+            installation_status = commands.getstatusoutput('which dhcpd')
+            if installation_status[0] == 0:
+                self.label.setText('<font color=green>ISC-DHCP Server is installed</font>')
+                dhcp_installation_status = 'installed'
+                dhcp_server_binary = installation_status[1]
+            else:
+                self.label.setText('<font color=red>DHCP3 Server is not installed</font>')
+                self.dhcp_status.append('<font color=green>To Install DHCP3 Server run:</font>\t<font color=red>apt-get install dhcp3-server</font>')
+                dhcp_installation_status = 'not installed'
         #
         # Check if mini-httpd Server service is installed on the computer
         #
-        global http_installalation_status
+        global http_installation_status
         global ettercap_installation_status
 
         installalation_status = commands.getstatusoutput('which mini-httpd')
         if installation_status[0] != 0:
             self.status_textbrowser_http.append('<font color=red>HTTP Server is not installed</font>')
             self.status_textbrowser_http.append('<font color=green>To Install HTTP Server run:</font>\t<font color=red>apt-get install mini-httpd</font>')
-            http_installalation_status = 'not installed'
+            http_installation_status = 'not installed'
             self.http_interface_combo.setEnabled(False)
             self.http_ip_combo.setEnabled(False)
             self.current_card_label_2.setText("<font color=green>Current Interface:</font>  Deactivated")
@@ -1099,7 +1113,7 @@ class Ghost_phisher(QtGui.QMainWindow, Ui_ghost_phisher):            # Main clas
         if installation_status[0] != 0:
             self.status_textbrowser_http.append('<font color=red>Packet Sniffer is not installed</font>')
             self.status_textbrowser_http.append('<font color=green>To Install Packet Sniffer run:</font>\t<font color=red>apt-get install ettercap-gtk</font>')
-            ettercap_installalation_status = 'not installed'
+            ettercap_installation_status = 'not installed'
             self.http_interface_combo.setEnabled(False)
             self.http_ip_combo.setEnabled(False)
             self.current_card_label_2.setText("<font color=green>Current Interface:</font>  Deactivated")
@@ -1208,7 +1222,7 @@ class Ghost_phisher(QtGui.QMainWindow, Ui_ghost_phisher):            # Main clas
 
 
         selected_http_interface = str(self.http_interface_combo.currentText())
-        if http_installalation_status != 'not installed':
+        if http_installation_status != 'not installed':
             self.current_card_label_2.setText("<font color=green>Current Interface:</font>  %s"%(selected_http_interface))
 
         # Add channel list to fake access point combo
@@ -1800,9 +1814,18 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
 
     def stop_dhcp(self):
         ''' Stop the DHCP Server'''
+        
+        global dhcp_config_file
+        global dhcp_pid_file
+        
         self.dhcp_start.setEnabled(True)
         self.dhcp_stop.setEnabled(False)
-        stop_dhcp_status = commands.getstatusoutput('/etc/init.d/dhcp3-server stop')
+        #start-stop-daemon --stop --quiet --pidfile $DHCPDPID
+        if os.path.exists(dhcp_pid_file):
+            dhcp_pid = open(dhcp_pid_file).read().strip()
+            stop_dhcp_status = commands.getstatusoutput('kill -9 %s' % dhcp_pid)
+            #stop_dhcp_status = commands.getstatusoutput('/etc/init.d/dhcp3-server stop')
+            
         self.dhcp_status.append('<font color=red>%s at %s'%(stop_dhcp_status[1],time.ctime()))
 
 
@@ -1811,7 +1834,11 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
             conditions are right
         '''
         global dhcp_subnet
-        global dhcp_installalation_status
+        global dhcp_installation_status
+        global dhcp_server_binary
+        global dhcp_config_file
+        global dhcp_pid_file
+        
         start_ip = str(self.start_ip.text())
         stop_ip = str(self.stop_ip.text())
         gateway_ip = str(self.gateway_ip.text())
@@ -1819,7 +1846,7 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
         subnet_ip = str(self.subnet_ip.text())
         alternatedns_ip = str(self.alternatedns_ip.text())
 
-        if dhcp_installalation_status == 'not installed':
+        if dhcp_installation_status == 'not installed':
             self.dhcp_status.append('<font color=green>DHCP3 Server is not installed run:</font>\t<font color=red>"apt-get install dhcp3-server" to install</font>')
         elif start_ip.count('.') != 3:                                   # Check if inputed data is valid
             QtGui.QMessageBox.warning(self,"Invalid IP Address","Please input a valid IP address on the (From:) section")
@@ -1838,14 +1865,20 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
             create_settings('self.gateway_ip',gateway_ip)
             create_settings('self.subnet_ip',subnet_ip)
             create_settings('self.alternatedns_ip',alternatedns_ip)
+            
+            #update:
+            #   start dhcp server using a custom config file.
+            
+            
+            
 
-            if 'dhcpd.conf_original' in os.listdir('/etc/dhcp3/'):      # Remove dhcpd.conf file if ghost_phiser had earlierly created it to avoid using old settings
-                if 'dhcpd.conf' in os.listdir('/etc/dhcp3'):
-                    os.remove('/etc/dhcp3/dhcpd.conf')
-            else:
-                os.rename('/etc/dhcp3/dhcpd.conf','/etc/dhcp3/dhcpd.conf_original')     # Backup your original dhcp settings if they exist
-
-
+            #if 'dhcpd.conf_original' in os.listdir('/etc/dhcp3/'):      # Remove dhcpd.conf file if ghost_phiser had earlierly created it to avoid using old settings
+            #    if 'dhcpd.conf' in os.listdir('/etc/dhcp3'):
+            #        os.remove('/etc/dhcp3/dhcpd.conf')
+            #else:
+            #    os.rename('/etc/dhcp3/dhcpd.conf','/etc/dhcp3/dhcpd.conf_original')     # Backup your original dhcp settings if they exist
+            #
+            #
             if subnet_ip == '255.0.0.0':                                # Class A subnet and broadcast address
                 process = start_ip[0:start_ip.index('.')]
                 broadcast = process + '.255.255.255'
@@ -1881,12 +1914,20 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
 
             dhcp_settings_file = dhcp_settings_string % (fakedns_ip,alternatedns_ip,subnet,subnet_ip,\
                                                          start_ip,stop_ip,subnet_ip,broadcast,gateway_ip)
+            
+            if os.path.exists(dhcp_config_file):
+                os.remove(dhcp_config_file)
+            
+            if os.path.exists(dhcp_pid_file):
+                os.remove(dhcp_pid_file)
 
-            dhcp_settings = open('/etc/dhcp3/dhcpd.conf','a+')
+            dhcp_settings = open(dhcp_config_file,'a+')
             dhcp_settings.write(dhcp_settings_file)
             dhcp_settings.close()
-
-            dhcp_status = commands.getstatusoutput('/etc/init.d/dhcp3-server start')
+            cmd = "%s -cf %s -pf %s" % (dhcp_server_binary, dhcp_config_file, dhcp_pid_file)
+            print(cmd)
+            dhcp_status = commands.getstatusoutput(cmd)
+            
             if dhcp_status[0] == 0:
                 self.dhcp_status.append('<font color=green>%s at %s </font>'%(dhcp_status[1],time.ctime()))  # DHCP ran successfully
                 self.dhcp_start.setEnabled(False)
@@ -2068,11 +2109,11 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
         ''' Evaluates user settings and launches
             webserver to host web-script
         '''
-        global http_installalation_status
+        global http_installation_status
 
         self.status_textbrowser_http.clear()
 
-        if http_installalation_status == 'not installed':
+        if http_installation_status == 'not installed':
             self.status_textbrowser_http.append('<font color=red>HTTP Server is not installed</font>')
             self.status_textbrowser_http.append('<font color=green>To Install HTTP Server run:</font>\t<font color=red>apt-get install mini-httpd</font>')
 

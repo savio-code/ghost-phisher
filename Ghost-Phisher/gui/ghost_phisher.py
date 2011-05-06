@@ -1925,7 +1925,6 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
             dhcp_settings.write(dhcp_settings_file)
             dhcp_settings.close()
             cmd = "%s -cf %s -pf %s" % (dhcp_server_binary, dhcp_config_file, dhcp_pid_file)
-            print(cmd)
             dhcp_status = commands.getstatusoutput(cmd)
 
             if dhcp_status[0] == 0:

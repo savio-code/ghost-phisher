@@ -17,14 +17,6 @@ if 'last-ghost-setting.dat' not in os.listdir(cwd):             # Create the set
 
 
 
-
-
-
-
-
-
-
-
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
     run = ghost_phisher.Ghost_phisher()

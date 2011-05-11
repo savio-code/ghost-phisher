@@ -1961,6 +1961,9 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
             if os.path.isdir(cwd + '/HTTP-Webscript/' + file_):
                 html_folder += file_
 
+        if bool(html_folder) == False:
+            html_folder = 'Null'
+
         http_terminal = subprocess.Popen('python %s %d %s %s'%\
                                 (cwd+'/core/http_core.py',http_server_port,
                                 html_folder,cwd),shell=True,stdout=subprocess.PIPE,

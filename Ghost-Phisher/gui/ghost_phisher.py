@@ -2403,9 +2403,9 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
                 self.stop_dns()
             if http_control == 0:
                 try:
-                    commands.getstatusoutput('kill -9 %s'%(http_terminal.pid))
                     commands.getstatusoutput('killall ettercap')
-                except IOError:pass
+                    commands.getstatusoutput('kill -9 %s'%(http_terminal.pid))
+                except:pass
             try:
                 commands.getstatusoutput('killall airbase-ng')
                 self.stop_dhcp()

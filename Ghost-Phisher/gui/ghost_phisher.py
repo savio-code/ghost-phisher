@@ -2145,6 +2145,7 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
 
         http_error = 0               # Informs conditional blocks of success of other blocks
 
+        actions_ip_address = str(self.http_ip_combo.currentText())
 
         if self.run_webpage_port_radio.isChecked() == True:     # Check if http port section has been changed
             try:

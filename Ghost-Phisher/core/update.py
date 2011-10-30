@@ -75,7 +75,7 @@ class update_class(QtGui.QDialog,update_ui.Ui_Dialog):
         svn_path = 'http://ghost-phisher.googlecode.com/svn/Ghost-Phisher'
 
         try:
-            online_response_check = urllib2.urlopen('http://fern-wifi-cracker.googlecode.com/files/update_control')
+            online_response_check = urllib2.urlopen('http://ghost-phisher.googlecode.com/svn/Ghost-Phisher/UPDATE')
             online_response = online_response_check.read()
 
             online_files = re.compile('total_files = \d+',re.IGNORECASE)
@@ -132,7 +132,7 @@ class update_class(QtGui.QDialog,update_ui.Ui_Dialog):
     def update_initializtion_check(self):
         while True:
             try:
-                online_response_thread = urllib2.urlopen('http://fern-wifi-cracker.googlecode.com/files/update_control')
+                online_response_thread = urllib2.urlopen('http://ghost-phisher.googlecode.com/svn/Ghost-Phisher/UPDATE')
                 online_response_string = ''
                 online_response = online_response_thread.read()
 

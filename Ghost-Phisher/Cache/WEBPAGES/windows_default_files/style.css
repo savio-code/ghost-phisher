@@ -1,0 +1,1953 @@
+.hpGrd_Grid {
+	POSITION: relative; FLOAT: left
+}
+.hpGrd_Column {
+	POSITION: relative; FLOAT: left
+}
+.hpGrd_Row {
+	POSITION: relative; FLOAT: left
+}
+.hpGrd_Cell {
+	POSITION: relative; FLOAT: left
+}
+.hpGrd_Column {
+	OVERFLOW: hidden
+}
+.hpGrd_Row {
+	MARGIN-TOP: 10px; WIDTH: 100%
+}
+.hpGrd_Cell {
+	MIN-HEIGHT: 1px; MARGIN-LEFT: 10px; _height: 1px
+}
+.hpGrd_CellNoMargin.hpGrd_Cell {
+	MARGIN-LEFT: 0px
+}
+.hpGrd_RowNoMargin.hpGrd_Row {
+	MARGIN-TOP: 0px
+}
+.hpGrd_Filler {
+	DISPLAY: none; HEIGHT: 0px
+}
+.hpGrd_Span1 {
+	WIDTH: 10px
+}
+.hpGrd_Span2 {
+	WIDTH: 20px
+}
+.hpGrd_Span3 {
+	WIDTH: 30px
+}
+.hpGrd_Span4 {
+	WIDTH: 40px
+}
+.hpGrd_Span5 {
+	WIDTH: 50px
+}
+.hpGrd_Span6 {
+	WIDTH: 60px
+}
+.hpGrd_Span7 {
+	WIDTH: 70px
+}
+.hpGrd_Span8 {
+	WIDTH: 80px
+}
+.hpGrd_Span9 {
+	WIDTH: 90px
+}
+.hpGrd_Span10 {
+	WIDTH: 100px
+}
+.hpGrd_Span11 {
+	WIDTH: 110px
+}
+.hpGrd_Span12 {
+	WIDTH: 120px
+}
+.hpGrd_Span13 {
+	WIDTH: 130px
+}
+.hpGrd_Span14 {
+	WIDTH: 140px
+}
+.hpGrd_Span15 {
+	WIDTH: 150px
+}
+.hpGrd_Span16 {
+	WIDTH: 160px
+}
+.hpGrd_Span17 {
+	WIDTH: 170px
+}
+.hpGrd_Span18 {
+	WIDTH: 180px
+}
+.hpGrd_Span19 {
+	WIDTH: 190px
+}
+.hpGrd_Span20 {
+	WIDTH: 200px
+}
+.hpGrd_Span21 {
+	WIDTH: 210px
+}
+.hpGrd_Span22 {
+	WIDTH: 220px
+}
+.hpGrd_Span23 {
+	WIDTH: 230px
+}
+.hpGrd_Span24 {
+	WIDTH: 240px
+}
+.hpGrd_Span25 {
+	WIDTH: 250px
+}
+.hpGrd_Span26 {
+	WIDTH: 260px
+}
+.hpGrd_Span27 {
+	WIDTH: 270px
+}
+.hpGrd_Span28 {
+	WIDTH: 280px
+}
+.hpGrd_Span29 {
+	WIDTH: 290px
+}
+.hpGrd_Span30 {
+	WIDTH: 300px
+}
+.hpGrd_Span31 {
+	WIDTH: 310px
+}
+.hpGrd_Span32 {
+	WIDTH: 320px
+}
+.hpGrd_Span33 {
+	WIDTH: 330px
+}
+.hpGrd_Span34 {
+	WIDTH: 340px
+}
+.hpGrd_Span35 {
+	WIDTH: 350px
+}
+.hpGrd_Span36 {
+	WIDTH: 360px
+}
+.hpGrd_Span37 {
+	WIDTH: 370px
+}
+.hpGrd_Span38 {
+	WIDTH: 380px
+}
+.hpGrd_Span39 {
+	WIDTH: 390px
+}
+.hpGrd_Span40 {
+	WIDTH: 400px
+}
+.hpGrd_Span41 {
+	WIDTH: 410px
+}
+.hpGrd_Span42 {
+	WIDTH: 420px
+}
+.hpGrd_Span43 {
+	WIDTH: 430px
+}
+.hpGrd_Span44 {
+	WIDTH: 440px
+}
+.hpGrd_Span45 {
+	WIDTH: 450px
+}
+.hpGrd_Span46 {
+	WIDTH: 460px
+}
+.hpGrd_Span47 {
+	WIDTH: 470px
+}
+.hpGrd_Span48 {
+	WIDTH: 480px
+}
+.hpGrd_Span49 {
+	WIDTH: 490px
+}
+.hpGrd_Span50 {
+	WIDTH: 500px
+}
+.hpGrd_Span51 {
+	WIDTH: 510px
+}
+.hpGrd_Span52 {
+	WIDTH: 520px
+}
+.hpGrd_Span53 {
+	WIDTH: 530px
+}
+.hpGrd_Span54 {
+	WIDTH: 540px
+}
+.hpGrd_Span55 {
+	WIDTH: 550px
+}
+.hpGrd_Span56 {
+	WIDTH: 560px
+}
+.hpGrd_Span57 {
+	WIDTH: 570px
+}
+.hpGrd_Span58 {
+	WIDTH: 580px
+}
+.hpGrd_Span59 {
+	WIDTH: 590px
+}
+.hpGrd_Span60 {
+	WIDTH: 600px
+}
+.hpGrd_Span61 {
+	WIDTH: 610px
+}
+.hpGrd_Span62 {
+	WIDTH: 620px
+}
+.hpGrd_Span63 {
+	WIDTH: 630px
+}
+.hpGrd_Span64 {
+	WIDTH: 640px
+}
+.hpGrd_Span65 {
+	WIDTH: 650px
+}
+.hpGrd_Span66 {
+	WIDTH: 660px
+}
+.hpGrd_Span67 {
+	WIDTH: 670px
+}
+.hpGrd_Span68 {
+	WIDTH: 680px
+}
+.hpGrd_Span69 {
+	WIDTH: 690px
+}
+.hpGrd_Span70 {
+	WIDTH: 700px
+}
+.hpGrd_Span71 {
+	WIDTH: 710px
+}
+.hpGrd_Span72 {
+	WIDTH: 720px
+}
+.hpGrd_Span73 {
+	WIDTH: 730px
+}
+.hpGrd_Span74 {
+	WIDTH: 740px
+}
+.hpGrd_Span75 {
+	WIDTH: 750px
+}
+.hpGrd_Span76 {
+	WIDTH: 760px
+}
+.hpGrd_Span77 {
+	WIDTH: 770px
+}
+.hpGrd_Span78 {
+	WIDTH: 780px
+}
+.hpGrd_Span79 {
+	WIDTH: 790px
+}
+.hpGrd_Span80 {
+	WIDTH: 800px
+}
+.hpGrd_Span81 {
+	WIDTH: 810px
+}
+.hpGrd_Span82 {
+	WIDTH: 820px
+}
+.hpGrd_Span83 {
+	WIDTH: 830px
+}
+.hpGrd_Span84 {
+	WIDTH: 840px
+}
+.hpGrd_Span85 {
+	WIDTH: 850px
+}
+.hpGrd_Span86 {
+	WIDTH: 860px
+}
+.hpGrd_Span87 {
+	WIDTH: 870px
+}
+.hpGrd_Span88 {
+	WIDTH: 880px
+}
+.hpGrd_Span89 {
+	WIDTH: 890px
+}
+.hpGrd_Span90 {
+	WIDTH: 900px
+}
+.hpGrd_Span91 {
+	WIDTH: 910px
+}
+.hpGrd_Span92 {
+	WIDTH: 920px
+}
+.hpFeat_FeatureItem .hpFeat_PrimaryCta .hpFeat_Arrow {
+	VISIBILITY: visible
+}
+.hpFeat_FeatureItem .hpFeat_SecondaryCta .hpFeat_Arrow {
+	VISIBILITY: visible
+}
+.hpFeat_FeatureItem .hpFeat_Title A:active {
+	TEXT-DECORATION: underline
+}
+.hpFeat_FeatureItem .hpFeat_Title A:hover {
+	TEXT-DECORATION: underline
+}
+.hpFeat_FeatureItem .hpFeat_Description A:active {
+	TEXT-DECORATION: underline
+}
+.hpFeat_FeatureItem .hpFeat_Description A:hover {
+	TEXT-DECORATION: underline
+}
+.hpFeat_FeatureItem UL.hpFeat_List A:active {
+	TEXT-DECORATION: underline
+}
+.hpFeat_FeatureItem UL.hpFeat_List A:hover {
+	TEXT-DECORATION: underline
+}
+.hpFeat_FeatureItem .hpFeat_Caption A:active {
+	TEXT-DECORATION: underline
+}
+.hpFeat_FeatureItem .hpFeat_Caption A:hover {
+	TEXT-DECORATION: underline
+}
+.hpFeat_FeatureItem .hpFeat_Title {
+	FONT-WEIGHT: bold
+}
+.hpFeat_FeatureItem .hpFeat_Description {
+	FONT-WEIGHT: normal
+}
+.hpFeat_FeatureItem UL.hpFeat_List {
+	FONT-WEIGHT: normal
+}
+.hpFeat_FeatureItem .hpFeat_Caption {
+	FONT-WEIGHT: normal
+}
+.hpFeat_FeatureItem .hpFeat_Incentive .hpFeat_IncentiveOld {
+	FONT-WEIGHT: normal
+}
+.hpFeat_FeatureItem .hpFeat_Incentive .hpFeat_IncentiveNew {
+	FONT-WEIGHT: normal
+}
+.hpFeat_FeatureItem .hpFeat_PrimaryCta {
+	FONT-WEIGHT: normal
+}
+.hpFeat_FeatureItem .hpFeat_SecondaryCta {
+	FONT-WEIGHT: normal
+}
+.hpFeat_FeatureItem .hpFeat_PrimaryCta .hpFeat_Arrow {
+	VISIBILITY: visible
+}
+.hpFeat_FeatureItem .hpFeat_SecondaryCta .hpFeat_Arrow {
+	VISIBILITY: visible
+}
+.hpFeat_FeatureItem .hpFeat_Title A:active {
+	TEXT-DECORATION: underline
+}
+.hpFeat_FeatureItem .hpFeat_Title A:hover {
+	TEXT-DECORATION: underline
+}
+.hpFeat_FeatureItem .hpFeat_Description A:active {
+	TEXT-DECORATION: underline
+}
+.hpFeat_FeatureItem .hpFeat_Description A:hover {
+	TEXT-DECORATION: underline
+}
+.hpFeat_FeatureItem UL.hpFeat_List A:active {
+	TEXT-DECORATION: underline
+}
+.hpFeat_FeatureItem UL.hpFeat_List A:hover {
+	TEXT-DECORATION: underline
+}
+.hpFeat_FeatureItem .hpFeat_Caption A:active {
+	TEXT-DECORATION: underline
+}
+.hpFeat_FeatureItem .hpFeat_Caption A:hover {
+	TEXT-DECORATION: underline
+}
+.hpFeat_FeatureItem .hpFeat_Title {
+	FONT-WEIGHT: bold
+}
+.hpFeat_FeatureItem .hpFeat_Description {
+	FONT-WEIGHT: normal
+}
+.hpFeat_FeatureItem UL.hpFeat_List {
+	FONT-WEIGHT: normal
+}
+.hpFeat_FeatureItem .hpFeat_Caption {
+	FONT-WEIGHT: normal
+}
+.hpFeat_FeatureItem .hpFeat_Incentive .hpFeat_IncentiveOld {
+	FONT-WEIGHT: normal
+}
+.hpFeat_FeatureItem .hpFeat_Incentive .hpFeat_IncentiveNew {
+	FONT-WEIGHT: normal
+}
+.hpFeat_FeatureItem .hpFeat_PrimaryCta {
+	FONT-WEIGHT: normal
+}
+.hpFeat_FeatureItem .hpFeat_SecondaryCta {
+	FONT-WEIGHT: normal
+}
+.hpFeat_FeatureItem {
+	PADDING-BOTTOM: 8px; PADDING-LEFT: 1px; MARGIN-LEFT: -1px; OVERFLOW: hidden; _position: relative; _padding-left: 0; _margin-left: 0
+}
+HTML .hpFeat_FeatureItem A {
+	COLOR: #0060a6
+}
+.hpFeat_FeatureItem A.hpFeat_Link:hover {
+	COLOR: #0060a6
+}
+.hpFeat_FeatureItem A.hpFeat_Link:active {
+	COLOR: #0060a6
+}
+.hpFeat_FeatureItem .hpFeat_ImageContainer {
+	PADDING-BOTTOM: 8px; PADDING-TOP: 1px
+}
+.hpFeat_Pos-left.hpFeat_FeatureItem .hpFeat_ImageContainer {
+	FLOAT: left; _position: relative; _display: inline
+}
+.hpFeat_FeatureItem .hpFeat_ItemContainer {
+	_zoom: 100%
+}
+.hpFeat_FeatureItem .hpFeat_ItemContainer .hpFeat_Item {
+	PADDING-BOTTOM: 6px; PADDING-TOP: 1px
+}
+.hpFeat_FeatureItem .hpFeat_Title {
+	LINE-HEIGHT: 1.25em; COLOR: #4f4f4f; FONT-SIZE: 75%
+}
+.hpFeat_FeatureItem .hpFeat_Description {
+	LINE-HEIGHT: 1.25em; COLOR: #4f4f4f; FONT-SIZE: 75%
+}
+.hpFeat_FeatureItem UL.hpFeat_List {
+	LINE-HEIGHT: 1.25em; LIST-STYLE-TYPE: disc; PADDING-LEFT: 20px; COLOR: #4f4f4f; FONT-SIZE: 70%
+}
+.hpFeat_FeatureItem UL.hpFeat_List LI {
+	MARGIN-LEFT: 7px
+}
+.hpFeat_FeatureItem .hpFeat_Caption {
+	TEXT-TRANSFORM: uppercase; FONT-SIZE: 65%; _color: #4f4f4f
+}
+.hpFeat_FeatureItem .hpFeat_Incentive .hpFeat_IncentiveOld {
+	COLOR: #333; FONT-SIZE: 75%; MARGIN-RIGHT: 15px; TEXT-DECORATION: line-through
+}
+.hpFeat_FeatureItem .hpFeat_Incentive .hpFeat_IncentiveNew {
+	LINE-HEIGHT: 1.25em; COLOR: #b3480e; FONT-SIZE: 115%
+}
+.hpFeat_FeatureItem .hpFeat_Item.hpFeat_PrimaryCta {
+	PADDING-BOTTOM: 0px; MARGIN: -3px 0px 0px -1px; PADDING-LEFT: 0px; PADDING-RIGHT: 0px; PADDING-TOP: 0px; _margin: 0
+}
+.hpFeat_FeatureItem .hpFeat_Item.hpFeat_SecondaryCta {
+	PADDING-BOTTOM: 0px; MARGIN: 0px 0px 0px -1px; PADDING-LEFT: 0px; PADDING-RIGHT: 0px; PADDING-TOP: 0px; _margin: 0
+}
+.hpFeat_FeatureItem .hpFeat_SecondaryCta LI {
+	PADDING-BOTTOM: 4px; PADDING-LEFT: 1px; PADDING-RIGHT: 0px; OVERFLOW: hidden; PADDING-TOP: 3px; _zoom: 1
+}
+.hpFeat_FeatureItem .hpFeat_PrimaryCta LI {
+	PADDING-BOTTOM: 4px; PADDING-LEFT: 1px; PADDING-RIGHT: 0px; OVERFLOW: hidden; PADDING-TOP: 3px; _zoom: 1
+}
+.hpFeat_FeatureItem .hpFeat_SecondaryCta .hpFeat_Arrow {
+	LINE-HEIGHT: 0; PADDING-LEFT: 5px; FONT-SIZE: 140%
+}
+.hpFeat_FeatureItem .hpFeat_PrimaryCta .hpFeat_Arrow {
+	POSITION: absolute; LINE-HEIGHT: 1.25em; PADDING-LEFT: 10px; DISPLAY: block; FONT-SIZE: 150%; RIGHT: 4px; TOP: -2px
+}
+.hpFeat_Wrap A.Arrow.hpFeat_Link:hover {
+	TEXT-DECORATION: none
+}
+.hpFeat_Wrap A.Arrow.hpFeat_Link:active {
+	TEXT-DECORATION: none
+}
+.hpFeat_Wrap A.Arrow.hpFeat_Link:active .hpFeat_Text {
+	TEXT-DECORATION: underline
+}
+.hpFeat_Wrap A.Arrow.hpFeat_Link:hover .hpFeat_Text {
+	TEXT-DECORATION: underline
+}
+.hpFeat_Wrap A.hpFeat_Link .hpFeat_Arrow {
+	LINE-HEIGHT: 100%; PADDING-LEFT: 5px; FONT-SIZE: 135%; TEXT-DECORATION: none
+}
+.hpFeat_FeatureItem .hpFeat_PrimaryCta {
+	FONT-SIZE: 70%
+}
+.hpFeat_FeatureItem .hpFeat_PrimaryCta A {
+	_zoom: 1
+}
+.hpFeat_Caption .hpFeat_Item {
+	FONT-SIZE: 75%
+}
+.hpFeat_FeatureItem .hpFeat_SecondaryCta {
+	FONT-SIZE: 75%
+}
+.hpFeat_Caption .hpFeat_Item {
+	LINE-HEIGHT: 1.25em; _zoom: 1; _line-height: 1.5em
+}
+.hpFeat_FeatureItem .hpFeat_SecondaryCta A {
+	LINE-HEIGHT: 1.25em; _zoom: 1; _line-height: 1.5em
+}
+.hpFeat_FeatureItem .hpFeat_PrimaryCta A {
+	BORDER-BOTTOM: #a1a1a1 1px solid; POSITION: relative; BORDER-LEFT: #a1a1a1 1px solid; PADDING-BOTTOM: 3px; BACKGROUND-COLOR: #fff; MIN-HEIGHT: 10px; PADDING-LEFT: 5px; PADDING-RIGHT: 40px; DISPLAY: block; FLOAT: left; COLOR: #0060a6; BORDER-TOP: #a1a1a1 1px solid; BORDER-RIGHT: #a1a1a1 1px solid; TEXT-DECORATION: none; PADDING-TOP: 2px
+}
+.hpFeat_FeatureItem .hpFeat_PrimaryCta A:link {
+	BORDER-BOTTOM: #a1a1a1 1px solid; POSITION: relative; BORDER-LEFT: #a1a1a1 1px solid; PADDING-BOTTOM: 3px; BACKGROUND-COLOR: #fff; MIN-HEIGHT: 10px; PADDING-LEFT: 5px; PADDING-RIGHT: 40px; DISPLAY: block; FLOAT: left; COLOR: #0060a6; BORDER-TOP: #a1a1a1 1px solid; BORDER-RIGHT: #a1a1a1 1px solid; TEXT-DECORATION: none; PADDING-TOP: 2px
+}
+.hpFeat_FeatureItem .hpFeat_PrimaryCta A:visited {
+	BORDER-BOTTOM: #a1a1a1 1px solid; POSITION: relative; BORDER-LEFT: #a1a1a1 1px solid; PADDING-BOTTOM: 3px; BACKGROUND-COLOR: #fff; MIN-HEIGHT: 10px; PADDING-LEFT: 5px; PADDING-RIGHT: 40px; DISPLAY: block; FLOAT: left; COLOR: #0060a6; BORDER-TOP: #a1a1a1 1px solid; BORDER-RIGHT: #a1a1a1 1px solid; TEXT-DECORATION: none; PADDING-TOP: 2px
+}
+.hpFeat_FeatureItem .hpFeat_PrimaryCta A:active {
+	BORDER-BOTTOM-COLOR: #a1a1a1; BACKGROUND-COLOR: #d2ebf9; BORDER-TOP-COLOR: #a1a1a1; COLOR: #0060a6; BORDER-RIGHT-COLOR: #a1a1a1; BORDER-LEFT-COLOR: #a1a1a1; TEXT-DECORATION: none
+}
+.hpFeat_FeatureItem .hpFeat_PrimaryCta A:hover {
+	BORDER-BOTTOM-COLOR: #a1a1a1; BACKGROUND-COLOR: #d2ebf9; BORDER-TOP-COLOR: #a1a1a1; COLOR: #0060a6; BORDER-RIGHT-COLOR: #a1a1a1; BORDER-LEFT-COLOR: #a1a1a1; TEXT-DECORATION: none
+}
+.hpFeat_FeatureItem .hpFeat_PrimaryCta A:active .hpFeat_Text {
+	TEXT-DECORATION: none
+}
+.hpFeat_FeatureItem .hpFeat_PrimaryCta A:hover .hpFeat_Text {
+	TEXT-DECORATION: none
+}
+.hpFeat_FeatureItem .hpFeat_SecondaryCta A {
+	POSITION: relative; PADDING-BOTTOM: 0px; PADDING-LEFT: 0px; PADDING-RIGHT: 0px; COLOR: #0060a6; TEXT-DECORATION: none; PADDING-TOP: 0px; _float: left
+}
+.hpFeat_FeatureItem .hpFeat_SecondaryCta A:link {
+	POSITION: relative; PADDING-BOTTOM: 0px; PADDING-LEFT: 0px; PADDING-RIGHT: 0px; COLOR: #0060a6; TEXT-DECORATION: none; PADDING-TOP: 0px; _float: left
+}
+.hpFeat_FeatureItem .hpFeat_SecondaryCta A:visited {
+	POSITION: relative; PADDING-BOTTOM: 0px; PADDING-LEFT: 0px; PADDING-RIGHT: 0px; COLOR: #0060a6; TEXT-DECORATION: none; PADDING-TOP: 0px; _float: left
+}
+.hpFeat_FeatureItem .hpFeat_SecondaryCta A:active {
+	COLOR: #0060a6
+}
+.hpFeat_FeatureItem .hpFeat_SecondaryCta A:hover {
+	COLOR: #0060a6
+}
+.hpFeat_FeatureItem .hpFeat_SecondaryCta A:active .hpFeat_Text {
+	TEXT-DECORATION: underline
+}
+.hpFeat_FeatureItem .hpFeat_SecondaryCta A:hover .hpFeat_Text {
+	TEXT-DECORATION: underline
+}
+.hpImage_Clip {
+	POSITION: relative; DISPLAY: block; OVERFLOW: hidden
+}
+.hpImage_Clip IMG {
+	POSITION: relative
+}
+.hpFeat_SecondaryCta A.hpImage_Link {
+	BORDER-BOTTOM: 0px; BORDER-LEFT: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-LEFT: 0px; PADDING-RIGHT: 0px; BACKGROUND: none transparent scroll repeat 0% 0%; BORDER-TOP: 0px; BORDER-RIGHT: 0px; PADDING-TOP: 0px
+}
+.hpFeat_PrimaryCta A.hpImage_Link {
+	BORDER-BOTTOM: 0px; BORDER-LEFT: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-LEFT: 0px; PADDING-RIGHT: 0px; BACKGROUND: none transparent scroll repeat 0% 0%; BORDER-TOP: 0px; BORDER-RIGHT: 0px; PADDING-TOP: 0px
+}
+.hpFeat_FeatureItem .hpFeat_PrimaryCta A.hpImage_Link {
+	BORDER-BOTTOM: 0px; BORDER-LEFT: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-LEFT: 0px; PADDING-RIGHT: 0px; BACKGROUND: none transparent scroll repeat 0% 0%; BORDER-TOP: 0px; BORDER-RIGHT: 0px; PADDING-TOP: 0px
+}
+.hpFeat_FeatureItem .hpFeat_SecondaryCta A.hpImage_Link {
+	BORDER-BOTTOM: 0px; BORDER-LEFT: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-LEFT: 0px; PADDING-RIGHT: 0px; BACKGROUND: none transparent scroll repeat 0% 0%; BORDER-TOP: 0px; BORDER-RIGHT: 0px; PADDING-TOP: 0px
+}
+.hpFeat_FeatureItem .hpImage_Link {
+	CURSOR: pointer
+}
+.hpFeat_FeatureItem .hpImage_Link .hpImage_Clip {
+	CURSOR: pointer
+}
+.hpFeat_FeatureItem .hpFeat_PrimaryCta A.hpImage_Link {
+	DISPLAY: inline-block; _display: inline; _zoom: 1
+}
+.hpFeat_FeatureItem .hpFeat_SecondaryCta A.hpImage_Link {
+	DISPLAY: inline-block; _display: inline; _zoom: 1
+}
+.hpFeat_FeatureItem .hpImage_Link {
+	DISPLAY: inline-block; _display: inline; _zoom: 1
+}
+.hpFeat_FeatureItem .hpImage_Img {
+	DISPLAY: inline-block; _display: inline; _zoom: 1
+}
+.hpFeat_FeatureItem .hpImage_Clip {
+	DISPLAY: inline-block; _display: inline; _zoom: 1
+}
+.hpFeat_FeatureItem .hpFeat_ItemContainer .hpImage_Link {
+	MARGIN-LEFT: 5px
+}
+.hpFeat_FeatureItem .hpFeat_ItemContainer .hpImage_Clip {
+	MARGIN-LEFT: 5px
+}
+.hpFeat_FeatureItem .hpFeat_ItemContainer .hpImage_Img {
+	MARGIN-LEFT: 5px
+}
+.hpFeat_FeatureItem .hpImage_Clip .hpImage_Img {
+	MARGIN: 0px
+}
+.hpFeat_FeatureItem .hpImage_Link .hpImage_Img {
+	MARGIN: 0px
+}
+.hpFeat_FeatureItem .hpImage_Link .hpImage_Clip {
+	MARGIN: 0px
+}
+.hpLst_style1.hpLst {
+	BACKGROUND-IMAGE: url(/download/shared/templates/components/hpList/images/List_Background_style1.png); BACKGROUND-COLOR: #dbe4f4
+}
+.hpLst_style1 .hpLst_title {
+	BORDER-BOTTOM: transparent 1px solid; COLOR: #4f4f4f
+}
+.hpLst_style1 .hpLst_description {
+	COLOR: #4f4f4f
+}
+.hpLst_style1 .hpLst_description A {
+	COLOR: #0060a6
+}
+.hpLst_style1 .hpLst_description A:link {
+	COLOR: #0060a6
+}
+.hpLst_style1 .hpLst_description A:visited {
+	COLOR: #0060a6
+}
+.hpLst_style1 .hpLst_description A.hpFeat_Link:hover {
+	COLOR: #0060a6
+}
+.hpLst_style1 .hpLst_description A.hpFeat_Link:active {
+	COLOR: #0060a6
+}
+.hpLst_style1 .hpLst_footer_cta A {
+	COLOR: #0060a6
+}
+.hpLst_style1 .hpLst_footer_cta A:link {
+	COLOR: #0060a6
+}
+.hpLst_style1 .hpLst_footer_cta A:visited {
+	COLOR: #0060a6
+}
+.hpLst_style1 .hpLst_footer_cta A.hpFeat_Link:hover {
+	COLOR: #0060a6
+}
+.hpLst_style1 .hpLst_footer_cta A.hpFeat_Link:active {
+	COLOR: #0060a6
+}
+.hpLst_style1 .hpLst_title A {
+	COLOR: #4f4f4f
+}
+.hpLst_style1 .hpLst_title A:link {
+	COLOR: #4f4f4f
+}
+.hpLst_style1 .hpLst_title A:visited {
+	COLOR: #4f4f4f
+}
+.hpLst_style1 .hpLst_title A.hpFeat_Link:hover {
+	COLOR: #4f4f4f
+}
+.hpLst_style1 .hpLst_title A.hpFeat_Link:active {
+	COLOR: #4f4f4f
+}
+.hpLst_style1.hpLst {
+	BORDER-BOTTOM: #d3d3d3 1px solid; BORDER-LEFT: #d3d3d3 1px solid; PADDING-BOTTOM: 0px; PADDING-LEFT: 14px; PADDING-RIGHT: 14px; BORDER-TOP: #d3d3d3 1px solid; BORDER-RIGHT: #d3d3d3 1px solid; PADDING-TOP: 16px
+}
+.hpLst_style1 {
+	BORDER-BOTTOM: #d3d3d3 1px solid; BORDER-LEFT: #d3d3d3 1px solid; PADDING-BOTTOM: 0px; PADDING-LEFT: 14px; PADDING-RIGHT: 14px; BORDER-TOP: #d3d3d3 1px solid; BORDER-RIGHT: #d3d3d3 1px solid; PADDING-TOP: 16px
+}
+HTML .hpLst_style1 .hpFeat_FeatureItem A {
+	COLOR: #0060a6
+}
+.hpLst_style1 .hpFeat_FeatureItem A.hpFeat_Link:hover {
+	COLOR: #0060a6
+}
+.hpLst_style1 .hpFeat_FeatureItem A.hpFeat_Link:active {
+	COLOR: #0060a6
+}
+.hpLst_style1 .hpFeat_FeatureItem .hpFeat_PrimaryCta A {
+	COLOR: #0060a6
+}
+.hpLst_style1 .hpFeat_FeatureItem .hpFeat_PrimaryCta A:link {
+	COLOR: #0060a6
+}
+.hpLst_style1 .hpFeat_FeatureItem .hpFeat_PrimaryCta A:visited {
+	COLOR: #0060a6
+}
+.hpLst_style1 .hpFeat_FeatureItem .hpFeat_SecondaryCta A {
+	COLOR: #0060a6
+}
+.hpLst_style1 .hpFeat_FeatureItem .hpFeat_SecondaryCta A:link {
+	COLOR: #0060a6
+}
+.hpLst_style1 .hpFeat_FeatureItem .hpFeat_SecondaryCta A:visited {
+	COLOR: #0060a6
+}
+.hpLst_style1 .hpFeat_FeatureItem .hpFeat_SecondaryCta A:active {
+	COLOR: #0060a6
+}
+.hpLst_style1 .hpFeat_FeatureItem .hpFeat_SecondaryCta A:hover {
+	COLOR: #0060a6
+}
+.hpLst_style2.hpLst {
+	BACKGROUND-COLOR: #1977b0
+}
+.hpLst_style2 .hpLst_title {
+	BORDER-BOTTOM: transparent 1px solid; COLOR: #fff
+}
+.hpLst_style2 .hpLst_description {
+	COLOR: #fff
+}
+.hpLst_style2 .hpLst_description A {
+	COLOR: #fff
+}
+.hpLst_style2 .hpLst_description A:link {
+	COLOR: #fff
+}
+.hpLst_style2 .hpLst_description A:visited {
+	COLOR: #fff
+}
+.hpLst_style2 .hpLst_description A.hpFeat_Link:hover {
+	COLOR: #fff
+}
+.hpLst_style2 .hpLst_description A.hpFeat_Link:active {
+	COLOR: #fff
+}
+.hpLst_style2 .hpLst_footer_cta A {
+	COLOR: #fff
+}
+.hpLst_style2 .hpLst_footer_cta A:link {
+	COLOR: #fff
+}
+.hpLst_style2 .hpLst_footer_cta A:visited {
+	COLOR: #fff
+}
+.hpLst_style2 .hpLst_footer_cta A.hpFeat_Link:hover {
+	COLOR: #fff
+}
+.hpLst_style2 .hpLst_footer_cta A.hpFeat_Link:active {
+	COLOR: #fff
+}
+.hpLst_style2 .hpLst_title A {
+	COLOR: #fff
+}
+.hpLst_style2 .hpLst_title A:link {
+	COLOR: #fff
+}
+.hpLst_style2 .hpLst_title A:visited {
+	COLOR: #fff
+}
+.hpLst_style2 .hpLst_title A.hpFeat_Link:hover {
+	COLOR: #fff
+}
+.hpLst_style2 .hpLst_title A.hpFeat_Link:active {
+	COLOR: #fff
+}
+.hpLst_style2.hpLst {
+	BORDER-BOTTOM: #d3d3d3 1px solid; BORDER-LEFT: #d3d3d3 1px solid; PADDING-BOTTOM: 0px; PADDING-LEFT: 14px; PADDING-RIGHT: 14px; BORDER-TOP: #d3d3d3 1px solid; BORDER-RIGHT: #d3d3d3 1px solid; PADDING-TOP: 16px
+}
+.hpLst_style2 {
+	BORDER-BOTTOM: #d3d3d3 1px solid; BORDER-LEFT: #d3d3d3 1px solid; PADDING-BOTTOM: 0px; PADDING-LEFT: 14px; PADDING-RIGHT: 14px; BORDER-TOP: #d3d3d3 1px solid; BORDER-RIGHT: #d3d3d3 1px solid; PADDING-TOP: 16px
+}
+HTML .hpLst_style2 .hpFeat_FeatureItem A {
+	COLOR: #fff
+}
+.hpLst_style2 .hpFeat_FeatureItem A.hpFeat_Link:hover {
+	COLOR: #fff
+}
+.hpLst_style2 .hpFeat_FeatureItem A.hpFeat_Link:active {
+	COLOR: #fff
+}
+.hpLst_style2 .hpFeat_FeatureItem .hpFeat_PrimaryCta A {
+	COLOR: #fff
+}
+.hpLst_style2 .hpFeat_FeatureItem .hpFeat_PrimaryCta A:link {
+	COLOR: #fff
+}
+.hpLst_style2 .hpFeat_FeatureItem .hpFeat_PrimaryCta A:visited {
+	COLOR: #fff
+}
+.hpLst_style2 .hpFeat_FeatureItem .hpFeat_SecondaryCta A {
+	COLOR: #fff
+}
+.hpLst_style2 .hpFeat_FeatureItem .hpFeat_SecondaryCta A:link {
+	COLOR: #fff
+}
+.hpLst_style2 .hpFeat_FeatureItem .hpFeat_SecondaryCta A:visited {
+	COLOR: #fff
+}
+.hpLst_style2 .hpFeat_FeatureItem .hpFeat_SecondaryCta A:active {
+	COLOR: #fff
+}
+.hpLst_style2 .hpFeat_FeatureItem .hpFeat_SecondaryCta A:hover {
+	COLOR: #fff
+}
+.hpLst_style2work.hpLst {
+	
+}
+.hpLst_style2work .hpLst_title {
+	BORDER-BOTTOM: transparent 1px solid
+}
+.hpLst_style2work .hpLst_description {
+	
+}
+.hpLst_style2work .hpLst_description A {
+	COLOR: #0060a6
+}
+.hpLst_style2work .hpLst_description A:link {
+	COLOR: #0060a6
+}
+.hpLst_style2work .hpLst_description A:visited {
+	COLOR: #0060a6
+}
+.hpLst_style2work .hpLst_description A.hpFeat_Link:hover {
+	COLOR: #0060a6
+}
+.hpLst_style2work .hpLst_description A.hpFeat_Link:active {
+	COLOR: #0060a6
+}
+.hpLst_style2work .hpLst_footer_cta A {
+	COLOR: #0060a6
+}
+.hpLst_style2work .hpLst_footer_cta A:link {
+	COLOR: #0060a6
+}
+.hpLst_style2work .hpLst_footer_cta A:visited {
+	COLOR: #0060a6
+}
+.hpLst_style2work .hpLst_footer_cta A.hpFeat_Link:hover {
+	COLOR: #0060a6
+}
+.hpLst_style2work .hpLst_footer_cta A.hpFeat_Link:active {
+	COLOR: #0060a6
+}
+.hpLst_style2work.hpLst {
+	BORDER-BOTTOM: #999 1px solid; BORDER-LEFT: #999 1px solid; PADDING-BOTTOM: 0px; PADDING-LEFT: 14px; PADDING-RIGHT: 14px; BORDER-TOP: #999 1px solid; BORDER-RIGHT: #999 1px solid; PADDING-TOP: 16px
+}
+.hpLst_style2work {
+	BORDER-BOTTOM: #999 1px solid; BORDER-LEFT: #999 1px solid; PADDING-BOTTOM: 0px; PADDING-LEFT: 14px; PADDING-RIGHT: 14px; BORDER-TOP: #999 1px solid; BORDER-RIGHT: #999 1px solid; PADDING-TOP: 16px
+}
+HTML .hpLst_style2work .hpFeat_FeatureItem A {
+	COLOR: #4f4f4f
+}
+.hpLst_style2work .hpFeat_FeatureItem A.hpFeat_Link:hover {
+	COLOR: #4f4f4f
+}
+.hpLst_style2work .hpFeat_FeatureItem A.hpFeat_Link:active {
+	COLOR: #4f4f4f
+}
+.hpLst_style2work .hpFeat_FeatureItem .hpFeat_PrimaryCta A {
+	COLOR: #0060a6
+}
+.hpLst_style2work .hpFeat_FeatureItem .hpFeat_PrimaryCta A:link {
+	COLOR: #0060a6
+}
+.hpLst_style2work .hpFeat_FeatureItem .hpFeat_PrimaryCta A:visited {
+	COLOR: #0060a6
+}
+.hpLst_style2work .hpFeat_FeatureItem .hpFeat_SecondaryCta A {
+	COLOR: #4f4f4f
+}
+.hpLst_style2work .hpFeat_FeatureItem .hpFeat_SecondaryCta A:link {
+	COLOR: #4f4f4f
+}
+.hpLst_style2work .hpFeat_FeatureItem .hpFeat_SecondaryCta A:visited {
+	COLOR: #4f4f4f
+}
+.hpLst_style2work .hpFeat_FeatureItem .hpFeat_SecondaryCta A:active {
+	COLOR: #4f4f4f
+}
+.hpLst_style2work .hpFeat_FeatureItem .hpFeat_SecondaryCta A:hover {
+	COLOR: #4f4f4f
+}
+.hpLst_style3work.hpLst {
+	BACKGROUND-IMAGE: url(/download/shared/templates/components/hpList/images/List_Background_style3work.png); BACKGROUND-COLOR: #ffedd2
+}
+.hpLst_style3work .hpLst_title {
+	BORDER-BOTTOM: transparent 1px solid; COLOR: #4f4f4f
+}
+.hpLst_style3work .hpLst_description {
+	COLOR: #4f4f4f
+}
+.hpLst_style3work .hpLst_description A {
+	COLOR: #0060a6
+}
+.hpLst_style3work .hpLst_description A:link {
+	COLOR: #0060a6
+}
+.hpLst_style3work .hpLst_description A:visited {
+	COLOR: #0060a6
+}
+.hpLst_style3work .hpLst_description A.hpFeat_Link:hover {
+	COLOR: #0060a6
+}
+.hpLst_style3work .hpLst_description A.hpFeat_Link:active {
+	COLOR: #0060a6
+}
+.hpLst_style3work .hpLst_footer_cta A {
+	COLOR: #0060a6
+}
+.hpLst_style3work .hpLst_footer_cta A:link {
+	COLOR: #0060a6
+}
+.hpLst_style3work .hpLst_footer_cta A:visited {
+	COLOR: #0060a6
+}
+.hpLst_style3work .hpLst_footer_cta A.hpFeat_Link:hover {
+	COLOR: #0060a6
+}
+.hpLst_style3work .hpLst_footer_cta A.hpFeat_Link:active {
+	COLOR: #0060a6
+}
+.hpLst_style3work .hpLst_title A {
+	COLOR: #4f4f4f
+}
+.hpLst_style3work .hpLst_title A:link {
+	COLOR: #4f4f4f
+}
+.hpLst_style3work .hpLst_title A:visited {
+	COLOR: #4f4f4f
+}
+.hpLst_style3work .hpLst_title A.hpFeat_Link:hover {
+	COLOR: #4f4f4f
+}
+.hpLst_style3work .hpLst_title A.hpFeat_Link:active {
+	COLOR: #4f4f4f
+}
+.hpLst_style3work.hpLst {
+	BORDER-BOTTOM: #d3d3d3 1px solid; BORDER-LEFT: #d3d3d3 1px solid; PADDING-BOTTOM: 0px; PADDING-LEFT: 14px; PADDING-RIGHT: 14px; BORDER-TOP: #d3d3d3 1px solid; BORDER-RIGHT: #d3d3d3 1px solid; PADDING-TOP: 16px
+}
+.hpLst_style3work {
+	BORDER-BOTTOM: #d3d3d3 1px solid; BORDER-LEFT: #d3d3d3 1px solid; PADDING-BOTTOM: 0px; PADDING-LEFT: 14px; PADDING-RIGHT: 14px; BORDER-TOP: #d3d3d3 1px solid; BORDER-RIGHT: #d3d3d3 1px solid; PADDING-TOP: 16px
+}
+HTML .hpLst_style3work .hpFeat_FeatureItem A {
+	COLOR: #0060a6
+}
+.hpLst_style3work .hpFeat_FeatureItem A.hpFeat_Link:hover {
+	COLOR: #0060a6
+}
+.hpLst_style3work .hpFeat_FeatureItem A.hpFeat_Link:active {
+	COLOR: #0060a6
+}
+.hpLst_style3work .hpFeat_FeatureItem .hpFeat_PrimaryCta A {
+	COLOR: #0060a6
+}
+.hpLst_style3work .hpFeat_FeatureItem .hpFeat_PrimaryCta A:link {
+	COLOR: #0060a6
+}
+.hpLst_style3work .hpFeat_FeatureItem .hpFeat_PrimaryCta A:visited {
+	COLOR: #0060a6
+}
+.hpLst_style3work .hpFeat_FeatureItem .hpFeat_SecondaryCta A {
+	COLOR: #0060a6
+}
+.hpLst_style3work .hpFeat_FeatureItem .hpFeat_SecondaryCta A:link {
+	COLOR: #0060a6
+}
+.hpLst_style3work .hpFeat_FeatureItem .hpFeat_SecondaryCta A:visited {
+	COLOR: #0060a6
+}
+.hpLst_style3work .hpFeat_FeatureItem .hpFeat_SecondaryCta A:active {
+	COLOR: #0060a6
+}
+.hpLst_style3work .hpFeat_FeatureItem .hpFeat_SecondaryCta A:hover {
+	COLOR: #0060a6
+}
+.hpLst_fullycustomizedlistsample.hpLst {
+	BACKGROUND-IMAGE: url(/download/shared/templates/components/hpList/images/List_Background_style1.png); BACKGROUND-COLOR: #a15a25
+}
+.hpLst_fullycustomizedlistsample .hpLst_title {
+	BORDER-BOTTOM: transparent 1px solid; COLOR: #1c111b
+}
+.hpLst_fullycustomizedlistsample .hpLst_description {
+	COLOR: #f69
+}
+.hpLst_fullycustomizedlistsample .hpLst_description A {
+	COLOR: #fff
+}
+.hpLst_fullycustomizedlistsample .hpLst_description A:link {
+	COLOR: #fff
+}
+.hpLst_fullycustomizedlistsample .hpLst_description A:visited {
+	COLOR: #fff
+}
+.hpLst_fullycustomizedlistsample .hpLst_description A.hpFeat_Link:hover {
+	COLOR: #1c111b
+}
+.hpLst_fullycustomizedlistsample .hpLst_description A.hpFeat_Link:active {
+	COLOR: #1c111b
+}
+.hpLst_fullycustomizedlistsample .hpLst_footer_cta A {
+	COLOR: #fff
+}
+.hpLst_fullycustomizedlistsample .hpLst_footer_cta A:link {
+	COLOR: #fff
+}
+.hpLst_fullycustomizedlistsample .hpLst_footer_cta A:visited {
+	COLOR: #fff
+}
+.hpLst_fullycustomizedlistsample .hpLst_footer_cta A.hpFeat_Link:hover {
+	COLOR: #1c111b
+}
+.hpLst_fullycustomizedlistsample .hpLst_footer_cta A.hpFeat_Link:active {
+	COLOR: #1c111b
+}
+.hpLst_fullycustomizedlistsample .hpLst_title A {
+	COLOR: #fe3022
+}
+.hpLst_fullycustomizedlistsample .hpLst_title A:link {
+	COLOR: #fe3022
+}
+.hpLst_fullycustomizedlistsample .hpLst_title A:visited {
+	COLOR: #fe3022
+}
+.hpLst_fullycustomizedlistsample .hpLst_title A.hpFeat_Link:hover {
+	COLOR: #4f4f4f; TEXT-DECORATION: none
+}
+.hpLst_fullycustomizedlistsample .hpLst_title A.hpFeat_Link:active {
+	COLOR: #4f4f4f; TEXT-DECORATION: none
+}
+.hpLst_fullycustomizedlistsample .hpLst_title {
+	FONT-WEIGHT: bold
+}
+.hpLst_fullycustomizedlistsample .hpLst_description {
+	FONT-WEIGHT: bold
+}
+.hpLst_fullycustomizedlistsample .hpLst_description A:active {
+	TEXT-DECORATION: none
+}
+.hpLst_fullycustomizedlistsample .hpLst_description A:hover {
+	TEXT-DECORATION: none
+}
+.hpLst_fullycustomizedlistsample .hpLst_footer_cta {
+	FONT-WEIGHT: bold
+}
+.hpLst_fullycustomizedlistsample .hpLst_footer_cta A:active .hpFeat_Text {
+	TEXT-DECORATION: none
+}
+.hpLst_fullycustomizedlistsample .hpLst_footer_cta A:hover .hpFeat_Text {
+	TEXT-DECORATION: none
+}
+.hpLst_fullycustomizedlistsample.hpLst {
+	BORDER-BOTTOM: #0f0 1px solid; BORDER-LEFT: #0f0 1px solid; PADDING-BOTTOM: 0px; PADDING-LEFT: 14px; PADDING-RIGHT: 14px; BORDER-TOP: red 1px solid; BORDER-RIGHT: #00f 1px solid; PADDING-TOP: 16px
+}
+.hpLst_fullycustomizedlistsample {
+	BORDER-BOTTOM: #0f0 1px solid; BORDER-LEFT: #0f0 1px solid; PADDING-BOTTOM: 0px; PADDING-LEFT: 14px; PADDING-RIGHT: 14px; BORDER-TOP: red 1px solid; BORDER-RIGHT: #00f 1px solid; PADDING-TOP: 16px
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem {
+	COLOR: #d6d287
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_Description {
+	COLOR: #d6d287
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_Title {
+	COLOR: #d6d287
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem UL.hpFeat_List {
+	COLOR: #d6d287
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_Incentive .hpFeat_IncentiveOld {
+	COLOR: #d6d287
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_SecondaryCta LI {
+	COLOR: #d6d287
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_PrimaryCta LI {
+	COLOR: #d6d287
+}
+HTML .hpLst_fullycustomizedlistsample .hpFeat_FeatureItem A {
+	COLOR: #ff8b2e
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem A.hpFeat_Link:hover {
+	COLOR: #ffadad
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem A.hpFeat_Link:active {
+	COLOR: #ffadad
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_Incentive .hpFeat_IncentiveOld {
+	COLOR: #d0d4d9
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_Incentive .hpFeat_IncentiveNew {
+	COLOR: #b1a6b4
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_PrimaryCta A {
+	BORDER-BOTTOM-COLOR: #f4e9b4; BACKGROUND-COLOR: #516e7b; BORDER-TOP-COLOR: #f4e9b4; COLOR: #37b9c6; BORDER-RIGHT-COLOR: #f4e9b4; BORDER-LEFT-COLOR: #f4e9b4
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_PrimaryCta A:link {
+	BORDER-BOTTOM-COLOR: #f4e9b4; BACKGROUND-COLOR: #516e7b; BORDER-TOP-COLOR: #f4e9b4; COLOR: #37b9c6; BORDER-RIGHT-COLOR: #f4e9b4; BORDER-LEFT-COLOR: #f4e9b4
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_PrimaryCta A:visited {
+	BORDER-BOTTOM-COLOR: #f4e9b4; BACKGROUND-COLOR: #516e7b; BORDER-TOP-COLOR: #f4e9b4; COLOR: #37b9c6; BORDER-RIGHT-COLOR: #f4e9b4; BORDER-LEFT-COLOR: #f4e9b4
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_PrimaryCta A:active {
+	BORDER-BOTTOM-COLOR: #daaa42; BACKGROUND-COLOR: #37b9c6; BORDER-TOP-COLOR: #daaa42; COLOR: #516e7b; BORDER-RIGHT-COLOR: #daaa42; BORDER-LEFT-COLOR: #daaa42
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_PrimaryCta A:hover {
+	BORDER-BOTTOM-COLOR: #daaa42; BACKGROUND-COLOR: #37b9c6; BORDER-TOP-COLOR: #daaa42; COLOR: #516e7b; BORDER-RIGHT-COLOR: #daaa42; BORDER-LEFT-COLOR: #daaa42
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_SecondaryCta A {
+	COLOR: #ffadad
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_SecondaryCta A:link {
+	COLOR: #ffadad
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_SecondaryCta A:visited {
+	COLOR: #ffadad
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_SecondaryCta A:active {
+	COLOR: #d6d287
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_SecondaryCta A:hover {
+	COLOR: #d6d287
+}
+.hpLst_fullycustomizedlistsample {
+	FONT-FAMILY: times new roman
+}
+.hpLst_fullycustomizedlistsample .hpLst_title {
+	FONT-FAMILY: arial
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem {
+	FONT-FAMILY: script
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_PrimaryCta .hpFeat_Arrow {
+	VISIBILITY: hidden
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_SecondaryCta .hpFeat_Arrow {
+	VISIBILITY: visible
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_Title A:active {
+	TEXT-DECORATION: none
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_Title A:hover {
+	TEXT-DECORATION: none
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_Description A:active {
+	TEXT-DECORATION: none
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_Description A:hover {
+	TEXT-DECORATION: none
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem UL.hpFeat_List A:active {
+	TEXT-DECORATION: none
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem UL.hpFeat_List A:hover {
+	TEXT-DECORATION: none
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_Caption A:active {
+	TEXT-DECORATION: none
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_Caption A:hover {
+	TEXT-DECORATION: none
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_PrimaryCta A:active .hpFeat_Text {
+	TEXT-DECORATION: underline
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_PrimaryCta A:hover .hpFeat_Text {
+	TEXT-DECORATION: underline
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_SecondaryCta A:active .hpFeat_Text {
+	TEXT-DECORATION: none
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_SecondaryCta A:hover .hpFeat_Text {
+	TEXT-DECORATION: none
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_Title {
+	FONT-WEIGHT: normal
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_Description {
+	FONT-WEIGHT: bold
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem UL.hpFeat_List {
+	FONT-WEIGHT: bold
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_Caption {
+	FONT-WEIGHT: bold
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_Incentive .hpFeat_IncentiveOld {
+	FONT-WEIGHT: bold
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_Incentive .hpFeat_IncentiveNew {
+	FONT-WEIGHT: bold
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_PrimaryCta {
+	FONT-WEIGHT: bold
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_SecondaryCta {
+	FONT-WEIGHT: bold
+}
+.hpLst_style4.hpLst {
+	BACKGROUND-COLOR: #dbe4f4
+}
+.hpLst_style4 .hpLst_title {
+	BORDER-BOTTOM: transparent 1px solid; COLOR: #4f4f4f
+}
+.hpLst_style4 .hpLst_description {
+	COLOR: #4f4f4f
+}
+.hpLst_style4 .hpLst_description A {
+	COLOR: #0060a6
+}
+.hpLst_style4 .hpLst_description A:link {
+	COLOR: #0060a6
+}
+.hpLst_style4 .hpLst_description A:visited {
+	COLOR: #0060a6
+}
+.hpLst_style4 .hpLst_description A.hpFeat_Link:hover {
+	COLOR: #0060a6
+}
+.hpLst_style4 .hpLst_description A.hpFeat_Link:active {
+	COLOR: #0060a6
+}
+.hpLst_style4 .hpLst_footer_cta A {
+	COLOR: #0060a6
+}
+.hpLst_style4 .hpLst_footer_cta A:link {
+	COLOR: #0060a6
+}
+.hpLst_style4 .hpLst_footer_cta A:visited {
+	COLOR: #0060a6
+}
+.hpLst_style4 .hpLst_footer_cta A.hpFeat_Link:hover {
+	COLOR: #0060a6
+}
+.hpLst_style4 .hpLst_footer_cta A.hpFeat_Link:active {
+	COLOR: #0060a6
+}
+.hpLst_style4 .hpLst_title A {
+	COLOR: #4f4f4f
+}
+.hpLst_style4 .hpLst_title A:link {
+	COLOR: #4f4f4f
+}
+.hpLst_style4 .hpLst_title A:visited {
+	COLOR: #4f4f4f
+}
+.hpLst_style4 .hpLst_title A.hpFeat_Link:hover {
+	COLOR: #4f4f4f
+}
+.hpLst_style4 .hpLst_title A.hpFeat_Link:active {
+	COLOR: #4f4f4f
+}
+.hpLst_style4.hpLst {
+	BORDER-BOTTOM: #d3d3d3 1px solid; BORDER-LEFT: #d3d3d3 1px solid; PADDING-BOTTOM: 0px; PADDING-LEFT: 14px; PADDING-RIGHT: 14px; BORDER-TOP: #d3d3d3 1px solid; BORDER-RIGHT: #d3d3d3 1px solid; PADDING-TOP: 16px
+}
+.hpLst_style4 {
+	BORDER-BOTTOM: #d3d3d3 1px solid; BORDER-LEFT: #d3d3d3 1px solid; PADDING-BOTTOM: 0px; PADDING-LEFT: 14px; PADDING-RIGHT: 14px; BORDER-TOP: #d3d3d3 1px solid; BORDER-RIGHT: #d3d3d3 1px solid; PADDING-TOP: 16px
+}
+.hpLst_style4 .hpFeat_FeatureItem .hpFeat_PrimaryCta A {
+	COLOR: #0060a6
+}
+.hpLst_style4 .hpFeat_FeatureItem .hpFeat_PrimaryCta A:link {
+	COLOR: #0060a6
+}
+.hpLst_style4 .hpFeat_FeatureItem .hpFeat_PrimaryCta A:visited {
+	COLOR: #0060a6
+}
+.hpLst_style4 .hpFeat_FeatureItem .hpFeat_SecondaryCta A {
+	COLOR: #0060a6
+}
+.hpLst_style4 .hpFeat_FeatureItem .hpFeat_SecondaryCta A:link {
+	COLOR: #0060a6
+}
+.hpLst_style4 .hpFeat_FeatureItem .hpFeat_SecondaryCta A:visited {
+	COLOR: #0060a6
+}
+.hpLst_style1.hpLst {
+	BACKGROUND-IMAGE: url(/download/shared/templates/components/hpList/images/List_Background_style1.png); BACKGROUND-COLOR: #dbe4f4
+}
+.hpLst_style1 .hpLst_title {
+	BORDER-BOTTOM: transparent 1px solid; COLOR: #4f4f4f
+}
+.hpLst_style1 .hpLst_description {
+	COLOR: #4f4f4f
+}
+.hpLst_style1 .hpLst_description A {
+	COLOR: #0060a6
+}
+.hpLst_style1 .hpLst_description A:link {
+	COLOR: #0060a6
+}
+.hpLst_style1 .hpLst_description A:visited {
+	COLOR: #0060a6
+}
+.hpLst_style1 .hpLst_description A.hpFeat_Link:hover {
+	COLOR: #0060a6
+}
+.hpLst_style1 .hpLst_description A.hpFeat_Link:active {
+	COLOR: #0060a6
+}
+.hpLst_style1 .hpLst_footer_cta A {
+	COLOR: #0060a6
+}
+.hpLst_style1 .hpLst_footer_cta A:link {
+	COLOR: #0060a6
+}
+.hpLst_style1 .hpLst_footer_cta A:visited {
+	COLOR: #0060a6
+}
+.hpLst_style1 .hpLst_footer_cta A.hpFeat_Link:hover {
+	COLOR: #0060a6
+}
+.hpLst_style1 .hpLst_footer_cta A.hpFeat_Link:active {
+	COLOR: #0060a6
+}
+.hpLst_style1 .hpLst_title A {
+	COLOR: #4f4f4f
+}
+.hpLst_style1 .hpLst_title A:link {
+	COLOR: #4f4f4f
+}
+.hpLst_style1 .hpLst_title A:visited {
+	COLOR: #4f4f4f
+}
+.hpLst_style1 .hpLst_title A.hpFeat_Link:hover {
+	COLOR: #4f4f4f
+}
+.hpLst_style1 .hpLst_title A.hpFeat_Link:active {
+	COLOR: #4f4f4f
+}
+.hpLst_style1.hpLst {
+	BORDER-BOTTOM: #d3d3d3 1px solid; BORDER-LEFT: #d3d3d3 1px solid; PADDING-BOTTOM: 0px; PADDING-LEFT: 14px; PADDING-RIGHT: 14px; BORDER-TOP: #d3d3d3 1px solid; BORDER-RIGHT: #d3d3d3 1px solid; PADDING-TOP: 16px
+}
+.hpLst_style1 {
+	BORDER-BOTTOM: #d3d3d3 1px solid; BORDER-LEFT: #d3d3d3 1px solid; PADDING-BOTTOM: 0px; PADDING-LEFT: 14px; PADDING-RIGHT: 14px; BORDER-TOP: #d3d3d3 1px solid; BORDER-RIGHT: #d3d3d3 1px solid; PADDING-TOP: 16px
+}
+HTML .hpLst_style1 .hpFeat_FeatureItem A {
+	COLOR: #0060a6
+}
+.hpLst_style1 .hpFeat_FeatureItem A.hpFeat_Link:hover {
+	COLOR: #0060a6
+}
+.hpLst_style1 .hpFeat_FeatureItem A.hpFeat_Link:active {
+	COLOR: #0060a6
+}
+.hpLst_style1 .hpFeat_FeatureItem .hpFeat_PrimaryCta A {
+	COLOR: #0060a6
+}
+.hpLst_style1 .hpFeat_FeatureItem .hpFeat_PrimaryCta A:link {
+	COLOR: #0060a6
+}
+.hpLst_style1 .hpFeat_FeatureItem .hpFeat_PrimaryCta A:visited {
+	COLOR: #0060a6
+}
+.hpLst_style1 .hpFeat_FeatureItem .hpFeat_SecondaryCta A {
+	COLOR: #0060a6
+}
+.hpLst_style1 .hpFeat_FeatureItem .hpFeat_SecondaryCta A:link {
+	COLOR: #0060a6
+}
+.hpLst_style1 .hpFeat_FeatureItem .hpFeat_SecondaryCta A:visited {
+	COLOR: #0060a6
+}
+.hpLst_style1 .hpFeat_FeatureItem .hpFeat_SecondaryCta A:active {
+	COLOR: #0060a6
+}
+.hpLst_style1 .hpFeat_FeatureItem .hpFeat_SecondaryCta A:hover {
+	COLOR: #0060a6
+}
+.hpLst_style2.hpLst {
+	BACKGROUND-COLOR: #1977b0
+}
+.hpLst_style2 .hpLst_title {
+	BORDER-BOTTOM: transparent 1px solid; COLOR: #fff
+}
+.hpLst_style2 .hpLst_description {
+	COLOR: #fff
+}
+.hpLst_style2 .hpLst_description A {
+	COLOR: #fff
+}
+.hpLst_style2 .hpLst_description A:link {
+	COLOR: #fff
+}
+.hpLst_style2 .hpLst_description A:visited {
+	COLOR: #fff
+}
+.hpLst_style2 .hpLst_description A.hpFeat_Link:hover {
+	COLOR: #fff
+}
+.hpLst_style2 .hpLst_description A.hpFeat_Link:active {
+	COLOR: #fff
+}
+.hpLst_style2 .hpLst_footer_cta A {
+	COLOR: #fff
+}
+.hpLst_style2 .hpLst_footer_cta A:link {
+	COLOR: #fff
+}
+.hpLst_style2 .hpLst_footer_cta A:visited {
+	COLOR: #fff
+}
+.hpLst_style2 .hpLst_footer_cta A.hpFeat_Link:hover {
+	COLOR: #fff
+}
+.hpLst_style2 .hpLst_footer_cta A.hpFeat_Link:active {
+	COLOR: #fff
+}
+.hpLst_style2 .hpLst_title A {
+	COLOR: #fff
+}
+.hpLst_style2 .hpLst_title A:link {
+	COLOR: #fff
+}
+.hpLst_style2 .hpLst_title A:visited {
+	COLOR: #fff
+}
+.hpLst_style2 .hpLst_title A.hpFeat_Link:hover {
+	COLOR: #fff
+}
+.hpLst_style2 .hpLst_title A.hpFeat_Link:active {
+	COLOR: #fff
+}
+.hpLst_style2.hpLst {
+	BORDER-BOTTOM: #d3d3d3 1px solid; BORDER-LEFT: #d3d3d3 1px solid; PADDING-BOTTOM: 0px; PADDING-LEFT: 14px; PADDING-RIGHT: 14px; BORDER-TOP: #d3d3d3 1px solid; BORDER-RIGHT: #d3d3d3 1px solid; PADDING-TOP: 16px
+}
+.hpLst_style2 {
+	BORDER-BOTTOM: #d3d3d3 1px solid; BORDER-LEFT: #d3d3d3 1px solid; PADDING-BOTTOM: 0px; PADDING-LEFT: 14px; PADDING-RIGHT: 14px; BORDER-TOP: #d3d3d3 1px solid; BORDER-RIGHT: #d3d3d3 1px solid; PADDING-TOP: 16px
+}
+HTML .hpLst_style2 .hpFeat_FeatureItem A {
+	COLOR: #fff
+}
+.hpLst_style2 .hpFeat_FeatureItem A.hpFeat_Link:hover {
+	COLOR: #fff
+}
+.hpLst_style2 .hpFeat_FeatureItem A.hpFeat_Link:active {
+	COLOR: #fff
+}
+.hpLst_style2 .hpFeat_FeatureItem .hpFeat_PrimaryCta A {
+	COLOR: #fff
+}
+.hpLst_style2 .hpFeat_FeatureItem .hpFeat_PrimaryCta A:link {
+	COLOR: #fff
+}
+.hpLst_style2 .hpFeat_FeatureItem .hpFeat_PrimaryCta A:visited {
+	COLOR: #fff
+}
+.hpLst_style2 .hpFeat_FeatureItem .hpFeat_SecondaryCta A {
+	COLOR: #fff
+}
+.hpLst_style2 .hpFeat_FeatureItem .hpFeat_SecondaryCta A:link {
+	COLOR: #fff
+}
+.hpLst_style2 .hpFeat_FeatureItem .hpFeat_SecondaryCta A:visited {
+	COLOR: #fff
+}
+.hpLst_style2 .hpFeat_FeatureItem .hpFeat_SecondaryCta A:active {
+	COLOR: #fff
+}
+.hpLst_style2 .hpFeat_FeatureItem .hpFeat_SecondaryCta A:hover {
+	COLOR: #fff
+}
+.hpLst_style2work.hpLst {
+	
+}
+.hpLst_style2work .hpLst_title {
+	BORDER-BOTTOM: transparent 1px solid
+}
+.hpLst_style2work .hpLst_description {
+	
+}
+.hpLst_style2work .hpLst_description A {
+	COLOR: #0060a6
+}
+.hpLst_style2work .hpLst_description A:link {
+	COLOR: #0060a6
+}
+.hpLst_style2work .hpLst_description A:visited {
+	COLOR: #0060a6
+}
+.hpLst_style2work .hpLst_description A.hpFeat_Link:hover {
+	COLOR: #0060a6
+}
+.hpLst_style2work .hpLst_description A.hpFeat_Link:active {
+	COLOR: #0060a6
+}
+.hpLst_style2work .hpLst_footer_cta A {
+	COLOR: #0060a6
+}
+.hpLst_style2work .hpLst_footer_cta A:link {
+	COLOR: #0060a6
+}
+.hpLst_style2work .hpLst_footer_cta A:visited {
+	COLOR: #0060a6
+}
+.hpLst_style2work .hpLst_footer_cta A.hpFeat_Link:hover {
+	COLOR: #0060a6
+}
+.hpLst_style2work .hpLst_footer_cta A.hpFeat_Link:active {
+	COLOR: #0060a6
+}
+.hpLst_style2work.hpLst {
+	BORDER-BOTTOM: #999 1px solid; BORDER-LEFT: #999 1px solid; PADDING-BOTTOM: 0px; PADDING-LEFT: 14px; PADDING-RIGHT: 14px; BORDER-TOP: #999 1px solid; BORDER-RIGHT: #999 1px solid; PADDING-TOP: 16px
+}
+.hpLst_style2work {
+	BORDER-BOTTOM: #999 1px solid; BORDER-LEFT: #999 1px solid; PADDING-BOTTOM: 0px; PADDING-LEFT: 14px; PADDING-RIGHT: 14px; BORDER-TOP: #999 1px solid; BORDER-RIGHT: #999 1px solid; PADDING-TOP: 16px
+}
+HTML .hpLst_style2work .hpFeat_FeatureItem A {
+	COLOR: #4f4f4f
+}
+.hpLst_style2work .hpFeat_FeatureItem A.hpFeat_Link:hover {
+	COLOR: #4f4f4f
+}
+.hpLst_style2work .hpFeat_FeatureItem A.hpFeat_Link:active {
+	COLOR: #4f4f4f
+}
+.hpLst_style2work .hpFeat_FeatureItem .hpFeat_PrimaryCta A {
+	COLOR: #0060a6
+}
+.hpLst_style2work .hpFeat_FeatureItem .hpFeat_PrimaryCta A:link {
+	COLOR: #0060a6
+}
+.hpLst_style2work .hpFeat_FeatureItem .hpFeat_PrimaryCta A:visited {
+	COLOR: #0060a6
+}
+.hpLst_style2work .hpFeat_FeatureItem .hpFeat_SecondaryCta A {
+	COLOR: #4f4f4f
+}
+.hpLst_style2work .hpFeat_FeatureItem .hpFeat_SecondaryCta A:link {
+	COLOR: #4f4f4f
+}
+.hpLst_style2work .hpFeat_FeatureItem .hpFeat_SecondaryCta A:visited {
+	COLOR: #4f4f4f
+}
+.hpLst_style2work .hpFeat_FeatureItem .hpFeat_SecondaryCta A:active {
+	COLOR: #4f4f4f
+}
+.hpLst_style2work .hpFeat_FeatureItem .hpFeat_SecondaryCta A:hover {
+	COLOR: #4f4f4f
+}
+.hpLst_style3work.hpLst {
+	BACKGROUND-IMAGE: url(/download/shared/templates/components/hpList/images/List_Background_style3work.png); BACKGROUND-COLOR: #ffedd2
+}
+.hpLst_style3work .hpLst_title {
+	BORDER-BOTTOM: transparent 1px solid; COLOR: #4f4f4f
+}
+.hpLst_style3work .hpLst_description {
+	COLOR: #4f4f4f
+}
+.hpLst_style3work .hpLst_description A {
+	COLOR: #0060a6
+}
+.hpLst_style3work .hpLst_description A:link {
+	COLOR: #0060a6
+}
+.hpLst_style3work .hpLst_description A:visited {
+	COLOR: #0060a6
+}
+.hpLst_style3work .hpLst_description A.hpFeat_Link:hover {
+	COLOR: #0060a6
+}
+.hpLst_style3work .hpLst_description A.hpFeat_Link:active {
+	COLOR: #0060a6
+}
+.hpLst_style3work .hpLst_footer_cta A {
+	COLOR: #0060a6
+}
+.hpLst_style3work .hpLst_footer_cta A:link {
+	COLOR: #0060a6
+}
+.hpLst_style3work .hpLst_footer_cta A:visited {
+	COLOR: #0060a6
+}
+.hpLst_style3work .hpLst_footer_cta A.hpFeat_Link:hover {
+	COLOR: #0060a6
+}
+.hpLst_style3work .hpLst_footer_cta A.hpFeat_Link:active {
+	COLOR: #0060a6
+}
+.hpLst_style3work .hpLst_title A {
+	COLOR: #4f4f4f
+}
+.hpLst_style3work .hpLst_title A:link {
+	COLOR: #4f4f4f
+}
+.hpLst_style3work .hpLst_title A:visited {
+	COLOR: #4f4f4f
+}
+.hpLst_style3work .hpLst_title A.hpFeat_Link:hover {
+	COLOR: #4f4f4f
+}
+.hpLst_style3work .hpLst_title A.hpFeat_Link:active {
+	COLOR: #4f4f4f
+}
+.hpLst_style3work.hpLst {
+	BORDER-BOTTOM: #d3d3d3 1px solid; BORDER-LEFT: #d3d3d3 1px solid; PADDING-BOTTOM: 0px; PADDING-LEFT: 14px; PADDING-RIGHT: 14px; BORDER-TOP: #d3d3d3 1px solid; BORDER-RIGHT: #d3d3d3 1px solid; PADDING-TOP: 16px
+}
+.hpLst_style3work {
+	BORDER-BOTTOM: #d3d3d3 1px solid; BORDER-LEFT: #d3d3d3 1px solid; PADDING-BOTTOM: 0px; PADDING-LEFT: 14px; PADDING-RIGHT: 14px; BORDER-TOP: #d3d3d3 1px solid; BORDER-RIGHT: #d3d3d3 1px solid; PADDING-TOP: 16px
+}
+HTML .hpLst_style3work .hpFeat_FeatureItem A {
+	COLOR: #0060a6
+}
+.hpLst_style3work .hpFeat_FeatureItem A.hpFeat_Link:hover {
+	COLOR: #0060a6
+}
+.hpLst_style3work .hpFeat_FeatureItem A.hpFeat_Link:active {
+	COLOR: #0060a6
+}
+.hpLst_style3work .hpFeat_FeatureItem .hpFeat_PrimaryCta A {
+	COLOR: #0060a6
+}
+.hpLst_style3work .hpFeat_FeatureItem .hpFeat_PrimaryCta A:link {
+	COLOR: #0060a6
+}
+.hpLst_style3work .hpFeat_FeatureItem .hpFeat_PrimaryCta A:visited {
+	COLOR: #0060a6
+}
+.hpLst_style3work .hpFeat_FeatureItem .hpFeat_SecondaryCta A {
+	COLOR: #0060a6
+}
+.hpLst_style3work .hpFeat_FeatureItem .hpFeat_SecondaryCta A:link {
+	COLOR: #0060a6
+}
+.hpLst_style3work .hpFeat_FeatureItem .hpFeat_SecondaryCta A:visited {
+	COLOR: #0060a6
+}
+.hpLst_style3work .hpFeat_FeatureItem .hpFeat_SecondaryCta A:active {
+	COLOR: #0060a6
+}
+.hpLst_style3work .hpFeat_FeatureItem .hpFeat_SecondaryCta A:hover {
+	COLOR: #0060a6
+}
+.hpLst_fullycustomizedlistsample.hpLst {
+	BACKGROUND-IMAGE: url(/download/shared/templates/components/hpList/images/List_Background_style1.png); BACKGROUND-COLOR: #a15a25
+}
+.hpLst_fullycustomizedlistsample .hpLst_title {
+	BORDER-BOTTOM: transparent 1px solid; COLOR: #1c111b
+}
+.hpLst_fullycustomizedlistsample .hpLst_description {
+	COLOR: #f69
+}
+.hpLst_fullycustomizedlistsample .hpLst_description A {
+	COLOR: #fff
+}
+.hpLst_fullycustomizedlistsample .hpLst_description A:link {
+	COLOR: #fff
+}
+.hpLst_fullycustomizedlistsample .hpLst_description A:visited {
+	COLOR: #fff
+}
+.hpLst_fullycustomizedlistsample .hpLst_description A.hpFeat_Link:hover {
+	COLOR: #1c111b
+}
+.hpLst_fullycustomizedlistsample .hpLst_description A.hpFeat_Link:active {
+	COLOR: #1c111b
+}
+.hpLst_fullycustomizedlistsample .hpLst_footer_cta A {
+	COLOR: #fff
+}
+.hpLst_fullycustomizedlistsample .hpLst_footer_cta A:link {
+	COLOR: #fff
+}
+.hpLst_fullycustomizedlistsample .hpLst_footer_cta A:visited {
+	COLOR: #fff
+}
+.hpLst_fullycustomizedlistsample .hpLst_footer_cta A.hpFeat_Link:hover {
+	COLOR: #1c111b
+}
+.hpLst_fullycustomizedlistsample .hpLst_footer_cta A.hpFeat_Link:active {
+	COLOR: #1c111b
+}
+.hpLst_fullycustomizedlistsample .hpLst_title A {
+	COLOR: #fe3022
+}
+.hpLst_fullycustomizedlistsample .hpLst_title A:link {
+	COLOR: #fe3022
+}
+.hpLst_fullycustomizedlistsample .hpLst_title A:visited {
+	COLOR: #fe3022
+}
+.hpLst_fullycustomizedlistsample .hpLst_title A.hpFeat_Link:hover {
+	COLOR: #4f4f4f; TEXT-DECORATION: none
+}
+.hpLst_fullycustomizedlistsample .hpLst_title A.hpFeat_Link:active {
+	COLOR: #4f4f4f; TEXT-DECORATION: none
+}
+.hpLst_fullycustomizedlistsample .hpLst_title {
+	FONT-WEIGHT: bold
+}
+.hpLst_fullycustomizedlistsample .hpLst_description {
+	FONT-WEIGHT: bold
+}
+.hpLst_fullycustomizedlistsample .hpLst_description A:active {
+	TEXT-DECORATION: none
+}
+.hpLst_fullycustomizedlistsample .hpLst_description A:hover {
+	TEXT-DECORATION: none
+}
+.hpLst_fullycustomizedlistsample .hpLst_footer_cta {
+	FONT-WEIGHT: bold
+}
+.hpLst_fullycustomizedlistsample .hpLst_footer_cta A:active .hpFeat_Text {
+	TEXT-DECORATION: none
+}
+.hpLst_fullycustomizedlistsample .hpLst_footer_cta A:hover .hpFeat_Text {
+	TEXT-DECORATION: none
+}
+.hpLst_fullycustomizedlistsample.hpLst {
+	BORDER-BOTTOM: #0f0 1px solid; BORDER-LEFT: #0f0 1px solid; PADDING-BOTTOM: 0px; PADDING-LEFT: 14px; PADDING-RIGHT: 14px; BORDER-TOP: red 1px solid; BORDER-RIGHT: #00f 1px solid; PADDING-TOP: 16px
+}
+.hpLst_fullycustomizedlistsample {
+	BORDER-BOTTOM: #0f0 1px solid; BORDER-LEFT: #0f0 1px solid; PADDING-BOTTOM: 0px; PADDING-LEFT: 14px; PADDING-RIGHT: 14px; BORDER-TOP: red 1px solid; BORDER-RIGHT: #00f 1px solid; PADDING-TOP: 16px
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem {
+	COLOR: #d6d287
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_Description {
+	COLOR: #d6d287
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_Title {
+	COLOR: #d6d287
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem UL.hpFeat_List {
+	COLOR: #d6d287
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_Incentive .hpFeat_IncentiveOld {
+	COLOR: #d6d287
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_SecondaryCta LI {
+	COLOR: #d6d287
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_PrimaryCta LI {
+	COLOR: #d6d287
+}
+HTML .hpLst_fullycustomizedlistsample .hpFeat_FeatureItem A {
+	COLOR: #ff8b2e
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem A.hpFeat_Link:hover {
+	COLOR: #ffadad
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem A.hpFeat_Link:active {
+	COLOR: #ffadad
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_Incentive .hpFeat_IncentiveOld {
+	COLOR: #d0d4d9
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_Incentive .hpFeat_IncentiveNew {
+	COLOR: #b1a6b4
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_PrimaryCta A {
+	BORDER-BOTTOM-COLOR: #f4e9b4; BACKGROUND-COLOR: #516e7b; BORDER-TOP-COLOR: #f4e9b4; COLOR: #37b9c6; BORDER-RIGHT-COLOR: #f4e9b4; BORDER-LEFT-COLOR: #f4e9b4
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_PrimaryCta A:link {
+	BORDER-BOTTOM-COLOR: #f4e9b4; BACKGROUND-COLOR: #516e7b; BORDER-TOP-COLOR: #f4e9b4; COLOR: #37b9c6; BORDER-RIGHT-COLOR: #f4e9b4; BORDER-LEFT-COLOR: #f4e9b4
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_PrimaryCta A:visited {
+	BORDER-BOTTOM-COLOR: #f4e9b4; BACKGROUND-COLOR: #516e7b; BORDER-TOP-COLOR: #f4e9b4; COLOR: #37b9c6; BORDER-RIGHT-COLOR: #f4e9b4; BORDER-LEFT-COLOR: #f4e9b4
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_PrimaryCta A:active {
+	BORDER-BOTTOM-COLOR: #daaa42; BACKGROUND-COLOR: #37b9c6; BORDER-TOP-COLOR: #daaa42; COLOR: #516e7b; BORDER-RIGHT-COLOR: #daaa42; BORDER-LEFT-COLOR: #daaa42
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_PrimaryCta A:hover {
+	BORDER-BOTTOM-COLOR: #daaa42; BACKGROUND-COLOR: #37b9c6; BORDER-TOP-COLOR: #daaa42; COLOR: #516e7b; BORDER-RIGHT-COLOR: #daaa42; BORDER-LEFT-COLOR: #daaa42
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_SecondaryCta A {
+	COLOR: #ffadad
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_SecondaryCta A:link {
+	COLOR: #ffadad
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_SecondaryCta A:visited {
+	COLOR: #ffadad
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_SecondaryCta A:active {
+	COLOR: #d6d287
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_SecondaryCta A:hover {
+	COLOR: #d6d287
+}
+.hpLst_fullycustomizedlistsample {
+	FONT-FAMILY: times new roman
+}
+.hpLst_fullycustomizedlistsample .hpLst_title {
+	FONT-FAMILY: arial
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem {
+	FONT-FAMILY: script
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_PrimaryCta .hpFeat_Arrow {
+	VISIBILITY: hidden
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_SecondaryCta .hpFeat_Arrow {
+	VISIBILITY: visible
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_Title A:active {
+	TEXT-DECORATION: none
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_Title A:hover {
+	TEXT-DECORATION: none
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_Description A:active {
+	TEXT-DECORATION: none
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_Description A:hover {
+	TEXT-DECORATION: none
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem UL.hpFeat_List A:active {
+	TEXT-DECORATION: none
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem UL.hpFeat_List A:hover {
+	TEXT-DECORATION: none
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_Caption A:active {
+	TEXT-DECORATION: none
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_Caption A:hover {
+	TEXT-DECORATION: none
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_PrimaryCta A:active .hpFeat_Text {
+	TEXT-DECORATION: underline
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_PrimaryCta A:hover .hpFeat_Text {
+	TEXT-DECORATION: underline
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_SecondaryCta A:active .hpFeat_Text {
+	TEXT-DECORATION: none
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_SecondaryCta A:hover .hpFeat_Text {
+	TEXT-DECORATION: none
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_Title {
+	FONT-WEIGHT: normal
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_Description {
+	FONT-WEIGHT: bold
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem UL.hpFeat_List {
+	FONT-WEIGHT: bold
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_Caption {
+	FONT-WEIGHT: bold
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_Incentive .hpFeat_IncentiveOld {
+	FONT-WEIGHT: bold
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_Incentive .hpFeat_IncentiveNew {
+	FONT-WEIGHT: bold
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_PrimaryCta {
+	FONT-WEIGHT: bold
+}
+.hpLst_fullycustomizedlistsample .hpFeat_FeatureItem .hpFeat_SecondaryCta {
+	FONT-WEIGHT: bold
+}
+.hpLst_style4.hpLst {
+	BACKGROUND-COLOR: #dbe4f4
+}
+.hpLst_style4 .hpLst_title {
+	BORDER-BOTTOM: transparent 1px solid; COLOR: #4f4f4f
+}
+.hpLst_style4 .hpLst_description {
+	COLOR: #4f4f4f
+}
+.hpLst_style4 .hpLst_description A {
+	COLOR: #0060a6
+}
+.hpLst_style4 .hpLst_description A:link {
+	COLOR: #0060a6
+}
+.hpLst_style4 .hpLst_description A:visited {
+	COLOR: #0060a6
+}
+.hpLst_style4 .hpLst_description A.hpFeat_Link:hover {
+	COLOR: #0060a6
+}
+.hpLst_style4 .hpLst_description A.hpFeat_Link:active {
+	COLOR: #0060a6
+}
+.hpLst_style4 .hpLst_footer_cta A {
+	COLOR: #0060a6
+}
+.hpLst_style4 .hpLst_footer_cta A:link {
+	COLOR: #0060a6
+}
+.hpLst_style4 .hpLst_footer_cta A:visited {
+	COLOR: #0060a6
+}
+.hpLst_style4 .hpLst_footer_cta A.hpFeat_Link:hover {
+	COLOR: #0060a6
+}
+.hpLst_style4 .hpLst_footer_cta A.hpFeat_Link:active {
+	COLOR: #0060a6
+}
+.hpLst_style4 .hpLst_title A {
+	COLOR: #4f4f4f
+}
+.hpLst_style4 .hpLst_title A:link {
+	COLOR: #4f4f4f
+}
+.hpLst_style4 .hpLst_title A:visited {
+	COLOR: #4f4f4f
+}
+.hpLst_style4 .hpLst_title A.hpFeat_Link:hover {
+	COLOR: #4f4f4f
+}
+.hpLst_style4 .hpLst_title A.hpFeat_Link:active {
+	COLOR: #4f4f4f
+}
+.hpLst_style4.hpLst {
+	BORDER-BOTTOM: #d3d3d3 1px solid; BORDER-LEFT: #d3d3d3 1px solid; PADDING-BOTTOM: 0px; PADDING-LEFT: 14px; PADDING-RIGHT: 14px; BORDER-TOP: #d3d3d3 1px solid; BORDER-RIGHT: #d3d3d3 1px solid; PADDING-TOP: 16px
+}
+.hpLst_style4 {
+	BORDER-BOTTOM: #d3d3d3 1px solid; BORDER-LEFT: #d3d3d3 1px solid; PADDING-BOTTOM: 0px; PADDING-LEFT: 14px; PADDING-RIGHT: 14px; BORDER-TOP: #d3d3d3 1px solid; BORDER-RIGHT: #d3d3d3 1px solid; PADDING-TOP: 16px
+}
+.hpLst_style4 .hpFeat_FeatureItem .hpFeat_PrimaryCta A {
+	COLOR: #0060a6
+}
+.hpLst_style4 .hpFeat_FeatureItem .hpFeat_PrimaryCta A:link {
+	COLOR: #0060a6
+}
+.hpLst_style4 .hpFeat_FeatureItem .hpFeat_PrimaryCta A:visited {
+	COLOR: #0060a6
+}
+.hpLst_style4 .hpFeat_FeatureItem .hpFeat_SecondaryCta A {
+	COLOR: #0060a6
+}
+.hpLst_style4 .hpFeat_FeatureItem .hpFeat_SecondaryCta A:link {
+	COLOR: #0060a6
+}
+.hpLst_style4 .hpFeat_FeatureItem .hpFeat_SecondaryCta A:visited {
+	COLOR: #0060a6
+}
+.hpLst {
+	MARGIN: 0px; BACKGROUND-REPEAT: repeat-x; BACKGROUND-POSITION: left bottom
+}
+.hpLst_box {
+	PADDING-BOTTOM: 0px; MARGIN: 0px -1px; PADDING-LEFT: 1px; PADDING-RIGHT: 1px; OVERFLOW: hidden; PADDING-TOP: 0px; _margin: 0; _padding: 0; _width: 100%
+}
+.hpLst_title {
+	LINE-HEIGHT: 115.38%; MARGIN-BOTTOM: 14px; FONT-SIZE: 162.5%; FONT-WEIGHT: normal
+}
+.hpLst_description {
+	LINE-HEIGHT: 115.38%; MARGIN-BOTTOM: 10px; FONT-SIZE: 75%
+}
+.hpLst_footer_cta {
+	TEXT-ALIGN: right; PADDING-BOTTOM: 0px; LINE-HEIGHT: 115.38%; MARGIN: 20px 0px 15px; PADDING-LEFT: 0px; PADDING-RIGHT: 0px; FONT-SIZE: 75%; TEXT-DECORATION: none; PADDING-TOP: 0px
+}
+.hpLst_footer_cta A:active {
+	TEXT-DECORATION: none
+}
+.hpLst_footer_cta A:hover {
+	TEXT-DECORATION: none
+}
+.hpLst_footer_cta A:active .hpFeat_Text {
+	TEXT-DECORATION: underline
+}
+.hpLst_footer_cta A:hover .hpFeat_Text {
+	TEXT-DECORATION: underline
+}
+.hpLst_footer_cta A .hpFeat_Arrow {
+	LINE-HEIGHT: 0.9em; PADDING-LEFT: 10px; FONT-SIZE: 140%
+}

@@ -1,24 +1,23 @@
 #######################################################
 #           GHOST PHISHER TIPS                        #
 #######################################################
+import os
+
+import settings
 
 from PyQt4 import QtCore, QtGui
 
+cwd = os.getcwd()
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
     _fromUtf8 = lambda s: s
 
-import os
-cwd = os.getcwd()
-
-from settings import create_settings
-
 class Ui_tip(object):
     def setupUi(self, tip):
         tip.setObjectName(_fromUtf8("tip"))
-        tip.resize(472, 134)
+        tip.resize(541, 134)
         self.horizontalLayout = QtGui.QHBoxLayout(tip)
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
         self.horizontalLayout_2 = QtGui.QHBoxLayout()
@@ -35,6 +34,9 @@ class Ui_tip(object):
         self.label_2 = QtGui.QLabel(tip)
         self.label_2.setObjectName(_fromUtf8("label_2"))
         self.verticalLayout.addWidget(self.label_2)
+        self.label_6 = QtGui.QLabel(tip)
+        self.label_6.setObjectName(_fromUtf8("label_6"))
+        self.verticalLayout.addWidget(self.label_6)
         self.label_3 = QtGui.QLabel(tip)
         self.label_3.setObjectName(_fromUtf8("label_3"))
         self.verticalLayout.addWidget(self.label_3)
@@ -55,14 +57,16 @@ class Ui_tip(object):
         self.verticalLayout_2.addWidget(self.checkBox)
         self.horizontalLayout_2.addLayout(self.verticalLayout_2)
         self.horizontalLayout.addLayout(self.horizontalLayout_2)
+
         self.retranslateUi(tip)
         QtCore.QMetaObject.connectSlotsByName(tip)
 
     def retranslateUi(self, tip):
-        tip.setWindowTitle(QtGui.QApplication.translate("tip", "Dialog", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_2.setText(QtGui.QApplication.translate("tip", "Press the F2 Key from the keyboard to get font settings,if you are having", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_3.setText(QtGui.QApplication.translate("tip", " problems with understanding how to use this application then visit ", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_4.setText(QtGui.QApplication.translate("tip", "<font color=blue>http://code.google.com/p/ghost-phisher/</font>", None, QtGui.QApplication.UnicodeUTF8))
+        tip.setWindowTitle(QtGui.QApplication.translate("tip", "Ghost Phisher Tips", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_2.setText(QtGui.QApplication.translate("tip", "Press the F2 Key from the keyboard to get font settings,You can hide or display", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_6.setText(QtGui.QApplication.translate("tip", "the program settings using F3 button (This helps in adjusting the height of the program)", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_3.setText(QtGui.QApplication.translate("tip", "if you have problems with understanding how to use this application then visit ", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_4.setText(QtGui.QApplication.translate("tip", "http://code.google.com/p/ghost-phisher/ ", None, QtGui.QApplication.UnicodeUTF8))
         self.label_5.setText(QtGui.QApplication.translate("tip", "for a video tutorial on how to use the application.", None, QtGui.QApplication.UnicodeUTF8))
         self.checkBox.setText(QtGui.QApplication.translate("tip", "Dont show this message again", None, QtGui.QApplication.UnicodeUTF8))
         self.setWindowTitle('Ghost Phisher Tips')
@@ -76,8 +80,8 @@ class tip_settings(QtGui.QDialog,Ui_tip):
         self.connect(self.checkBox,QtCore.SIGNAL("clicked()"),self.set_tip)
 
     def set_tip(self):
-        if self.checkBox.isChecked() == True:
-            create_settings('tip-settings',0)
+        if self.checkBox.isChecked():
+            settings_file.create_settings('tip-settings',0)
         else:
-            create_settings('tip-settings',1)
+            settings_file.create_settings('tip-settings',1)
 

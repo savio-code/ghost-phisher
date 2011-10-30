@@ -1,44 +1,57 @@
 import os
-
-cwd = os.getcwd()
-
-def create_settings(object_name,value):                                  #Function for writing last program settings to the settings file
-    ''' This function reads the settings file for already
-        existing variables, and if they are any conflicting
-        variable, it removes it and replaces it
-        with the new
-    '''
-    string = ''
-    if value != '':
-        last_settings = open(cwd + '/last-ghost-setting.dat','r')
-        file_read = last_settings.read()
-        last_settings.close()
-        os.remove(cwd + '/last-ghost-setting.dat')
-        all_files = file_read.splitlines()
-        for iterate in all_files:
-            if object_name in iterate:
-                string += iterate
-                old_settings_number = all_files.index(string)
-                all_files.pop(old_settings_number)
-        all_files.append('%s = %s'%(object_name,value))
-        file_input_settings = open(cwd + '/last-ghost-setting.dat','a+')
-        for settings in all_files:
-            file_input_settings.write('%s\n'%(settings))
-        file_input_settings.close()
+import shelve
 
 
+class Ghost_settings(object):
+    def __init__(self):
+        self.cwd = os.getcwd()
+        self._create_settings_directory()
+        self.settings_file = self.cwd + os.sep + "Settings" + os.sep + "ghost_settings"
+        self.settings_object = shelve.open(self.settings_file)
 
 
-def read_last_settings(object_name):                                    # Reads object name from settings file and return its value
-    ''' This function reads the settings for
-        variable assignments and then
-        returns the corresponding value
-    '''
-    target_variable = ''
-    settings_file = open(cwd + '/last-ghost-setting.dat','r')
-    settings_file_process = settings_file.read()
-    settings_file_process2 = settings_file_process.splitlines()
-    for iterate in settings_file_process2:
-        if object_name in iterate:
-            target_variable += iterate
-    return str(target_variable.split()[2])
+    def _create_settings_directory(self):
+        if not os.path.exists(self.cwd + os.sep + "Settings"):
+            os.mkdir(self.cwd + os.sep + "Settings")
+
+
+    def create_settings(self,object_name,value):
+        ''' This function reads the settings file for already
+            existing variables, and if they are any conflicting
+            variable, it removes it and replaces it
+            with the new
+        '''
+        self.settings_object[object_name] = value
+
+
+    def setting_exists(self,object_name):
+        '''This function checks to see if queried
+            settings exists in shelve object
+        '''
+        try:
+            self.settings_object[object_name]
+            return(True)
+        except(KeyError):
+            return(False)
+
+
+    def read_last_settings(self,object_name):
+        ''' This function reads the settings for
+            variable assignments and then
+            returns the corresponding value
+        '''
+        settings_string = str(self.settings_object[object_name])
+        return(settings_string)
+
+
+
+    def close_setting_file(self):
+        '''Function closes write/Read operations
+            to settings file
+        '''
+        self.settings_object.close()
+
+
+
+
+

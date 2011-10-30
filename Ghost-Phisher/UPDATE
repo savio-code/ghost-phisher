@@ -1,0 +1,6 @@
+# This file is used to notify the application of new downloadable updates available on SVN #
+# The download count for this file climbs simultaneously as different instances of the application #
+# Check periodically for changes #
+
+version = 1.3
+total_files = 51

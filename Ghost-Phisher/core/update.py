@@ -130,6 +130,7 @@ class update_class(QtGui.QDialog,update_ui.Ui_Dialog):
     # Update checker Thread
     #
     def update_initializtion_check(self):
+        print("called")
         while True:
             try:
                 online_response_thread = urllib2.urlopen('http://ghost-phisher.googlecode.com/svn/Ghost-Phisher/UPDATE')
@@ -146,6 +147,7 @@ class update_class(QtGui.QDialog,update_ui.Ui_Dialog):
 
                 if float(self.current_version) != update_version_number:
                     self.emit(QtCore.SIGNAL("new update available"))
+                    print("here")
                     self.new_version = update_version_number
                     break
 

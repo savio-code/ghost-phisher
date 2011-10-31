@@ -29,10 +29,6 @@ class Ui_Dialog(object):
         self.label_2 = QtGui.QLabel(Dialog)
         self.label_2.setObjectName(_fromUtf8("label_2"))
         self.horizontalLayout.addWidget(self.label_2)
-        self.progress_label = QtGui.QLabel(Dialog)
-        self.progress_label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
-        self.progress_label.setObjectName(_fromUtf8("progress_label"))
-        self.horizontalLayout.addWidget(self.progress_label)
         self.verticalLayout.addLayout(self.horizontalLayout)
         self.upgrade_button = QtGui.QPushButton(Dialog)
         self.upgrade_button.setObjectName(_fromUtf8("upgrade_button"))
@@ -46,6 +42,5 @@ class Ui_Dialog(object):
         Dialog.setWindowTitle(QtGui.QApplication.translate("Dialog", "New Update is Available", None, QtGui.QApplication.UnicodeUTF8))
         self.update_display_label.setText(QtGui.QApplication.translate("Dialog", "Version 1.53 Available", None, QtGui.QApplication.UnicodeUTF8))
         self.label_2.setText(QtGui.QApplication.translate("Dialog", "To upgrade to the new version, please press the upgrade button ", None, QtGui.QApplication.UnicodeUTF8))
-        self.progress_label.setText(QtGui.QApplication.translate("Dialog", "90% Complete", None, QtGui.QApplication.UnicodeUTF8))
         self.upgrade_button.setText(QtGui.QApplication.translate("Dialog", "Upgrade", None, QtGui.QApplication.UnicodeUTF8))
 

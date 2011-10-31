@@ -14,10 +14,9 @@ class update_class(QtGui.QDialog,update_ui.Ui_Dialog):
         QtGui.QDialog.__init__(self)
         self.setupUi(self)
         self.retranslateUi(self)
-        self.current_version = 1.2
+        self.current_version = 1.3
         self.new_version = float()
         self.svn_failure_message = str()
-        self.progress_label.setText("")
         self.label_2.setAlignment(QtCore.Qt.AlignCenter)
 
         self.connect(self.upgrade_button,QtCore.SIGNAL("clicked()"),self.update_installer)
@@ -135,7 +134,6 @@ class update_class(QtGui.QDialog,update_ui.Ui_Dialog):
     # Update checker Thread
     #
     def update_initializtion_check(self):
-        print("called")
         while True:
             try:
                 online_response_thread = urllib2.urlopen('http://ghost-phisher.googlecode.com/svn/Ghost-Phisher/UPDATE')
@@ -144,7 +142,6 @@ class update_class(QtGui.QDialog,update_ui.Ui_Dialog):
                 online_version = re.compile('version\s+=\s+(\d*?\.\d*)',re.IGNORECASE)
 
                 update_version_number = float(online_version.findall(online_response)[0])
-                print(update_version_number)
 
                 if float(self.current_version) != update_version_number:
                     self.new_version = update_version_number

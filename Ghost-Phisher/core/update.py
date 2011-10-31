@@ -1,8 +1,10 @@
+import re
 import os
 import time
 import shutil
 import thread
 import urllib2
+import subprocess
 
 from gui import update_ui
 from PyQt4 import QtGui,QtCore
@@ -14,6 +16,9 @@ class update_class(QtGui.QDialog,update_ui.Ui_Dialog):
         self.retranslateUi(self)
         self.current_version = 1.2
         self.new_version = float()
+        self.svn_failure_message = str()
+        self.progress_label.setText("")
+        self.label_2.setAlignment(QtCore.Qt.AlignCenter)
 
         self.connect(self.upgrade_button,QtCore.SIGNAL("clicked()"),self.update_installer)
         self.connect(self,QtCore.SIGNAL("download failed"),self.update_timeout_message)
@@ -23,7 +28,7 @@ class update_class(QtGui.QDialog,update_ui.Ui_Dialog):
 
 
     def display_update_version(self):
-        self.update_display_label.setText("Version %s Available"%(self.new_version))
+        self.update_display_label.setText("<font color=blue>Version %s Available</font>"%(self.new_version))
 
 
     def percentage(self,current,total):
@@ -34,30 +39,30 @@ class update_class(QtGui.QDialog,update_ui.Ui_Dialog):
 
 
     def restart_application(self):
-        self.progress_label.setText('<font color=red>Please Restart Application</font>')
+        self.label_2.setText('<font color=red>Please Restart Application</font>')
 
 
     def finished_download(self):
-        self.progress_label.setText('<font color=green>Finished Downloading</font>')
+        self.label_2.setText('<font color=green>Finished Downloading</font>')
 
 
     def downloading(self):
-        self.progress_label.setText('<font color=green>%s Complete</font>'%(self.percentage(self.files_downloaded,self.file_total)))
+        self.label_2.setText('<font color=green>%s Complete</font>'%(self.percentage(self.files_downloaded,self.file_total)))
 
 
     def update_timeout_message(self):
-        self.progress_label.setText("<font color=red>Network timeout</font>")
+        self.label_2.setText("<font color=red>Network timeout</font>")
 
 
     def update_error(self):
-        svn_failure_message = str()
         svn_failure = self.svn_access.stderr
         self.svn_failure_message = svn_failure.read()
         if self.svn_failure_message:
-            self.progress_label.setText("<font color=red>Update Failed:" + self.svn_failure_message + "</font>")
+            self.label_2.setText("<font color=red>Update Failed:" + self.svn_failure_message + "</font>")
 
 
     def update_installer(self):
+        self.label_2.setText('<font color=green>Downloading...</font>')
         thread.start_new_thread(self.update_launcher,())
 
 
@@ -134,21 +139,16 @@ class update_class(QtGui.QDialog,update_ui.Ui_Dialog):
         while True:
             try:
                 online_response_thread = urllib2.urlopen('http://ghost-phisher.googlecode.com/svn/Ghost-Phisher/UPDATE')
-                online_response_string = ''
                 online_response = online_response_thread.read()
 
-                online_version = re.compile('version = \d+\.?\d+',re.IGNORECASE)
+                online_version = re.compile('version\s+=\s+(\d*?\.\d*)',re.IGNORECASE)
 
-                for version_iterate in online_response.splitlines():
-                    if re.match(online_version,version_iterate):
-                        online_response_string += version_iterate
-
-                update_version_number = float(online_response_string.split()[2])
+                update_version_number = float(online_version.findall(online_response)[0])
+                print(update_version_number)
 
                 if float(self.current_version) != update_version_number:
-                    self.emit(QtCore.SIGNAL("new update available"))
-                    print("here")
                     self.new_version = update_version_number
+                    self.emit(QtCore.SIGNAL("new update available"))
                     break
 
                 if float(self.current_version) == update_version_number:

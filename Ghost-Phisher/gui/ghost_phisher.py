@@ -371,6 +371,7 @@ class Ghost_phisher(QtGui.QMainWindow,Ui_ghost_phisher):            # Main class
 
 
     def update_window(self):
+        print("Why")
         self.update_function.display_update_version()
         self.update_function.exec_()
 

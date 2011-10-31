@@ -845,14 +845,16 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
                             striped_webstring = process[0:process.index('.')]
                             if striped_webstring in DNS_query[0]:
                                 corresponding_ip = dns_ip_and_websites[website]
-                                DNS_socket.sendto(self.dns_response(DNS_query[0],corresponding_ip),DNS_query[1])
-                                self.announce_client(DNS_query[1][0],website)
-                                self.emit(QtCore.SIGNAL("new client connection"))
+                                if DNS_query[1][0] not in ghost_trap_http.cookies:
+                                    DNS_socket.sendto(self.dns_response(DNS_query[0],corresponding_ip),DNS_query[1])
+                                    self.announce_client(DNS_query[1][0],website)
+                                    self.emit(QtCore.SIGNAL("new client connection"))
                     else:
                         DNS_query = DNS_socket.recvfrom(1024)
-                        DNS_socket.sendto(self.dns_response(DNS_query[0],dns_fake_ip),DNS_query[1])
-                        self.announce_client(DNS_query[1][0],'1')
-                        self.emit(QtCore.SIGNAL("new client connection"))
+                        if DNS_query[1][0] not in ghost_trap_http.cookies:
+                            DNS_socket.sendto(self.dns_response(DNS_query[0],dns_fake_ip),DNS_query[1])
+                            self.announce_client(DNS_query[1][0],'1')
+                            self.emit(QtCore.SIGNAL("new client connection"))
                 else:
                     break
         except socket.error,e:

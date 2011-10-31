@@ -115,10 +115,6 @@ class Ghost_Trap_http(QtCore.QThread):
                 operating_system = request['HTTP_USER_AGENT']
                 source_page = self.get_vulnerability_page(operating_system)
                 return(source_page)
-            else:
-                return("Page is under construction")
-                # WHAT HERE
-
 
 
         @ghost_trap.error(505)
@@ -127,9 +123,7 @@ class Ghost_Trap_http(QtCore.QThread):
                 operating_system = request['HTTP_USER_AGENT']
                 source_page = self.get_vulnerability_page(operating_system)
                 return(source_page)
-            else:
-                return("Page is under construction")
-                # WHAT HERE
+
 
 
         @ghost_trap.route('/')
@@ -153,9 +147,6 @@ class Ghost_Trap_http(QtCore.QThread):
                     else:
                         source_page = self.get_vulnerability_page("linux")
                         return(source_page)
-                else:
-                    return("Page is under construction")                        # GOT STUFFS TO DO HERE -- NOT COMPLETED
-                    # WHAT HERE
 
             else:
                 if self.control_settings['answer all']:                         # if True (Answer all operating systems)

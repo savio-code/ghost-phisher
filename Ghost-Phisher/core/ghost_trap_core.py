@@ -39,17 +39,16 @@ class Ghost_Trap_http(QtCore.QThread):
 
     def file_size_calculator(self,executable):
         '''Calculates the file size of payloads'''
-        size = str()
-        file_object = open(executable,"rb")     # Read binary
-        bytes_length = len(file_object.read())
-        file_object.close()
+        bytes_length = int(os.path.getsize(executable))
         if bytes_length < 1024:
-            size += str(bytes_length) + 'Bytes'
+            size = str(bytes_length) + 'Bytes'
+            return(size)
         if bytes_length > 1024000:
-            size += str(bytes_length/1024000) + 'MB'
+            size = str(bytes_length/1024000) + 'MB'
+            return(size)
         if bytes_length > 1024:
-            size += str(bytes_length/1024) + 'KB'
-        return(size)
+            size = str(bytes_length/1024) + 'KB'
+            return(size)
 
 
     def get_executable_path(self,path_string):

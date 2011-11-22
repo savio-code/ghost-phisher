@@ -14,7 +14,7 @@ class update_class(QtGui.QDialog,update_ui.Ui_Dialog):
         QtGui.QDialog.__init__(self)
         self.setupUi(self)
         self.retranslateUi(self)
-        self.current_version = 1.3
+        self.current_version = 1.31
         self.new_version = float()
         self.svn_failure_message = str()
         self.label_2.setAlignment(QtCore.Qt.AlignCenter)

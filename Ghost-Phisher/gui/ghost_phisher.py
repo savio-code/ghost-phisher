@@ -617,6 +617,9 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
         self.http_interface_combo.clear()
         self.http_interface_combo.addItems(interface_cards_httpa)
 
+        self.spawn_http_interface_combo.clear()
+        self.spawn_http_interface_combo.addItems(interface_cards_httpa)
+
 
 
 

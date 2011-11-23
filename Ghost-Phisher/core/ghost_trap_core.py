@@ -143,10 +143,11 @@ class Ghost_Trap_http(QtCore.QThread):
                         return(source_page)
 
                     elif self.control_settings['answer windows']:                   # if True (Anwser only windows systems)
-                        source_page = self.get_vulnerability_page("window")
+                        source_page = self.get_vulnerability_page("\\")
+                        return(source_page)
 
                     else:
-                        source_page = self.get_vulnerability_page("linux")
+                        source_page = self.get_vulnerability_page("/")
                         return(source_page)
 
             else:
@@ -156,10 +157,10 @@ class Ghost_Trap_http(QtCore.QThread):
                     return(source_page)
 
                 elif self.control_settings['answer windows']:                   # if True (Anwser only windows systems)
-                    source_page = self.get_vulnerability_page("windows")
+                    source_page = self.get_vulnerability_page("\\")
 
                 else:
-                    source_page = self.get_vulnerability_page("linux")
+                    source_page = self.get_vulnerability_page("/")
                     return(source_page)
 
 

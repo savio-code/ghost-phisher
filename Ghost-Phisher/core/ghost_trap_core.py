@@ -62,19 +62,26 @@ class Ghost_Trap_http(QtCore.QThread):
     def get_vulnerability_page(self,os_type):
         '''Return HTML page according to OS type'''
 
-        if(os_type == "\\"):        # Windows Path
+        if(re.search("window",os_type,re.IGNORECASE)):        # Windows Path
             page = self.read_source_file(self.control_settings['windows_webpage'])
             source_page = re.sub('ghost_date',self.format_time(),page)      # Cant't use %s because of html % conflicts, cant use {}.format() either for backward compatibility sakes
             source_page_2 = re.sub('ghost_file_size',self.windows_payload_size,source_page)
             source_page_3 = re.sub('ghost_payload_executable',self.get_executable_path(\
             self.control_settings['windows_payload']),source_page_2)
             return(source_page_3)
-        else:
+        elif(re.search("linux",os_type,re.IGNORECASE)):
             page = self.read_source_file(self.control_settings['linux_webpage'])
             source_page = re.sub('ghost_date',self.format_time(),page)
             source_page_2 = re.sub('ghost_file_size',self.linux_payload_size,source_page)
             source_page_3 = re.sub('ghost_payload_executable',self.get_executable_path(\
             self.control_settings['linux_payload']),source_page_2)
+            return(source_page_3)
+        else:
+            page = self.read_source_file(self.control_settings['windows_webpage'])
+            source_page = re.sub('ghost_date',self.format_time(),page)
+            source_page_2 = re.sub('ghost_file_size',self.windows_payload_size,source_page)
+            source_page_3 = re.sub('ghost_payload_executable',self.get_executable_path(\
+            self.control_settings['windows_payload']),source_page_2)
             return(source_page_3)
 
 
@@ -112,7 +119,7 @@ class Ghost_Trap_http(QtCore.QThread):
         @ghost_trap.error(404)
         def error404(error):
             if request['REMOTE_ADDR'] not in self.cookies:
-                operating_system = request['PATH_INFO']
+                operating_system = request['HTTP_USER_AGENT']
                 source_page = self.get_vulnerability_page(operating_system)
                 return(source_page)
 
@@ -120,7 +127,7 @@ class Ghost_Trap_http(QtCore.QThread):
         @ghost_trap.error(505)
         def error505(error):
             if request['REMOTE_ADDR'] not in self.cookies:
-                operating_system = request['PATH_INFO']
+                operating_system = request['HTTP_USER_AGENT']
                 source_page = self.get_vulnerability_page(operating_system)
                 return(source_page)
 
@@ -137,30 +144,30 @@ class Ghost_Trap_http(QtCore.QThread):
             if self.control_settings['cookies']:                                # Cookie processing is enabled
                 if request['REMOTE_ADDR'] not in self.cookies:
                     if self.control_settings['answer all']:                         # if True (Answer all operating systems)
-                        operating_system = request['PATH_INFO']
+                        operating_system = request['HTTP_USER_AGENT']
 
                         source_page = self.get_vulnerability_page(operating_system)
                         return(source_page)
 
                     elif self.control_settings['answer windows']:                   # if True (Anwser only windows systems)
-                        source_page = self.get_vulnerability_page("\\")
+                        source_page = self.get_vulnerability_page("window")
                         return(source_page)
 
                     else:
-                        source_page = self.get_vulnerability_page("/")
+                        source_page = self.get_vulnerability_page("linux")
                         return(source_page)
 
             else:
                 if self.control_settings['answer all']:                         # if True (Answer all operating systems)
-                    operating_system = request['PATH_INFO']
+                    operating_system = request['HTTP_USER_AGENT']
                     source_page = self.get_vulnerability_page(operating_system)
                     return(source_page)
 
                 elif self.control_settings['answer windows']:                   # if True (Anwser only windows systems)
-                    source_page = self.get_vulnerability_page("\\")
+                    source_page = self.get_vulnerability_page("window")
 
                 else:
-                    source_page = self.get_vulnerability_page("/")
+                    source_page = self.get_vulnerability_page("linux")
                     return(source_page)
 
 

@@ -1732,12 +1732,13 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
 
     # Stop GHOST TRAP SERVER
 
-    def ghost_trap_stop(self):
+    def ghost_trap_stop(self,show_time = True):
         os.environ["ghost_trap_http_server"] = "stop"
         ghost_trap_http.cookies = []
         self.ghost_spawn_stop.setEnabled(False)
         self.ghost_spawn_start.setEnabled(True)
-        self.display_error_message("Stopped at %s"%(time.ctime()))
+        if(show_time == True):
+            self.display_error_message("Stopped at %s"%(time.ctime()))
         self.nitialize_label.setEnabled(False)
         self.initlaize_led.setPixmap(QtGui.QPixmap(self.red_led))
         self.setting_payload_label.setEnabled(False)
@@ -1753,23 +1754,28 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
 
 
     def launch_ghost_trap(self):
-        self.clear_all_displays()
-        os.environ["ghost_trap_http_server"] = "start"                                  # Activates Ghost Trap Http Server API
+        try:
+            self.clear_all_displays()
+            os.environ["ghost_trap_http_server"] = "start"                                  # Activates Ghost Trap Http Server API
 
-        if self.ghost_vul_combo.isChecked():
-            ghost_trap_http.control_settings['windows_webpage'] = str(os.getcwd()) + '/Cache/WEBPAGES/windows_default.htm'   # Ghosts Default vulnerability Page
-            ghost_trap_http.control_settings['linux_webpage'] = str(os.getcwd()) + '/Cache/WEBPAGES/linux_default.htm'   # Ghosts Default vulnerability Page
-            self.display_initialization(True)
-            self.Stage_2_process()
-        else:
-            if not self.custom_page_label_2.text():
-                self.clear_all_displays()
-                QtGui.QMessageBox.warning(self,"Invalid Custom Page Path","Please Browse and select a custom webpage to use")
-            else:
-                ghost_trap_http.control_settings['windows_webpage']  = str(self.custom_page_label_2.text())   # Use Custom Vulnerability page
-                ghost_trap_http.control_settings['linux_webpage']  = str(self.custom_page_label_2.text())
+            if self.ghost_vul_combo.isChecked():
+                ghost_trap_http.control_settings['windows_webpage'] = str(os.getcwd()) + '/Cache/WEBPAGES/windows_default.htm'   # Ghosts Default vulnerability Page
+                ghost_trap_http.control_settings['linux_webpage'] = str(os.getcwd()) + '/Cache/WEBPAGES/linux_default.htm'   # Ghosts Default vulnerability Page
                 self.display_initialization(True)
                 self.Stage_2_process()
+            else:
+                if not self.custom_page_label_2.text():
+                    self.clear_all_displays()
+                    QtGui.QMessageBox.warning(self,"Invalid Custom Page Path","Please Browse and select a custom webpage to use")
+                else:
+                    ghost_trap_http.control_settings['windows_webpage']  = str(self.custom_page_label_2.text())   # Use Custom Vulnerability page
+                    ghost_trap_http.control_settings['linux_webpage']  = str(self.custom_page_label_2.text())
+                    self.display_initialization(True)
+                    self.Stage_2_process()
+
+        except Exception,exception_string:
+            self.display_information('red',"Failed to Start: " + str(exception_string))
+            self.ghost_trap_stop(False)
 
 
     def Stage_2_process(self):

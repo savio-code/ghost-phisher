@@ -71,17 +71,20 @@ class Ui_tip(object):
         self.checkBox.setText(QtGui.QApplication.translate("tip", "Dont show this message again", None, QtGui.QApplication.UnicodeUTF8))
         self.setWindowTitle('Ghost Phisher Tips')
 
+
 class tip_settings(QtGui.QDialog,Ui_tip):
     def __init__(self):
         QtGui.QDialog.__init__(self)
         self.setupUi(self)
         self.retranslateUi(self)
 
+        self.settings_object = settings.Ghost_settings()
+
         self.connect(self.checkBox,QtCore.SIGNAL("clicked()"),self.set_tip)
 
     def set_tip(self):
         if self.checkBox.isChecked():
-            settings_file.create_settings('tip-settings',0)
+            self.settings_object.create_settings('tip-settings',0)
         else:
-            settings_file.create_settings('tip-settings',1)
+            self.settings_object.create_settings('tip-settings',1)
 

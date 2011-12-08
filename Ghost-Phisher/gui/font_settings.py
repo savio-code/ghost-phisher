@@ -13,6 +13,8 @@ except AttributeError:
 import os
 cwd = os.getcwd()
 
+settings_object = Ghost_settings()
+
 from settings import *
 
 class Ui_font_settings(object):
@@ -86,7 +88,7 @@ class font_settings(QtGui.QDialog,Ui_font_settings):
         QtGui.QDialog.__init__(self)
         self.setupUi(self)
         self.retranslateUi(self)
-        self.label.setText('Current font:<font color=green><b>\t %s</b></font>'%(read_last_settings('font-settings')))
+        self.label.setText('Current font:<font color=green><b>\t %s</b></font>'%(settings_object.read_last_settings('font-settings')))
         font_numbers = []
         for iterate in range(1,21):
             font_numbers.append(str(iterate))
@@ -98,7 +100,8 @@ class font_settings(QtGui.QDialog,Ui_font_settings):
     def set_font(self):
         ''' Writes font settings to last_setting'''
         prefered_font = str(self.font_combo.currentText())
-        create_settings('font-settings',prefered_font)
+        settings_object.create_settings('font-settings',prefered_font)
+        settings_object.close_setting_file()
         self.close()
 
         QtGui.QMessageBox.information(self,"Font Changes","Please restart application to apply changes")

@@ -13,9 +13,9 @@ except AttributeError:
 import os
 cwd = os.getcwd()
 
-settings_object = Ghost_settings()
-
 from settings import *
+
+settings_object = Ghost_settings()
 
 class Ui_font_settings(object):
     def setupUi(self, font_settings):

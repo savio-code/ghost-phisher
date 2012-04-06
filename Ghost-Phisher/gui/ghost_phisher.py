@@ -1060,6 +1060,7 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
             dhcp_settings.write(dhcp_settings_file)
             dhcp_settings.close()
 
+            os.system("chmod a+x %s"%(dhcp_config_file))
             os.chmod(dhcp_config_file,0777) # Dump permission to file,so we do not get permission denies
 
             cmd = "%s -cf %s -pf %s" % (dhcp_server_binary, dhcp_config_file, dhcp_pid_file)

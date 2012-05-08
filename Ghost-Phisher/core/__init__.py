@@ -1,1 +1,1 @@
-__all__ = ['bottle','http_core','variables','ghost_trap_core','metasploit_payload','update']
+__all__ = ['bottle','http_core','variables','ghost_trap_core','metasploit_payload','ghost_dhcp','update']

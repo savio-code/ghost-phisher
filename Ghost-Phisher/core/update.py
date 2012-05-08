@@ -6,6 +6,7 @@ import thread
 import urllib2
 import subprocess
 
+from gui import settings
 from gui import update_ui
 from PyQt4 import QtGui,QtCore
 
@@ -15,7 +16,7 @@ class update_class(QtGui.QDialog,update_ui.Ui_Dialog):
         self.setupUi(self)
         self.retranslateUi(self)
 
-        self.current_version = 1.38
+        self.current_version = 1.39
 
         self.new_version = float()
         self.svn_failure_message = str()
@@ -122,6 +123,11 @@ class update_class(QtGui.QDialog,update_ui.Ui_Dialog):
                             shutil.copytree(update_directory + update_file,os.getcwd() + os.sep + update_file)
 
                     time.sleep(5)
+
+                    whats_new = settings.Ghost_settings()
+                    whats_new.create_settings("disable whats new window","True")
+                    whats_new.close_setting_file()
+
                     self.emit(QtCore.SIGNAL("restart application"))
                     break
                 if len(self.svn_failure_message) > 2:

@@ -84,7 +84,7 @@ class tip_settings(QtGui.QDialog,Ui_tip):
 
     def set_tip(self):
         if self.checkBox.isChecked():
-            self.settings_object.create_settings('tip-settings',0)
+            self.settings_object.create_settings('tip-settings',"0")
         else:
-            self.settings_object.create_settings('tip-settings',1)
+            self.settings_object.create_settings('tip-settings',"1")
 

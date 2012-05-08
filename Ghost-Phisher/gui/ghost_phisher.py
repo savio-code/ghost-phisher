@@ -16,10 +16,12 @@ from settings import *
 from ghost_ui import *
 from core.http_core import *
 from core import variables
+from core import ghost_dhcp
 from core import ghost_trap_core
 from core import metasploit_payload
 from core.update import update_class
 from tip_settings import tip_settings
+from whats_new import whats_new_window
 from font_settings import font_settings
 
 
@@ -65,6 +67,14 @@ captured_credential = 0                                         # Holds the numb
 
 ghost_settings = Ghost_settings()                               # Ghost settings file object
 
+# Ghost DHCP object
+displayed_hostname = set()                                         # displays only newly leased clients
+dhcp_sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+dhcp_sock.setsockopt(socket.SOL_SOCKET,socket.SO_BROADCAST,1)       # Enable UDP Socket Broadcast
+dhcp_sock.bind(("0.0.0.0",67))
+
+ghost_dhcp_server = ghost_dhcp.Ghost_DHCP_Server("0.0.0.0")
+
 # Ghost Trap HTTP Object
 ghost_trap_http = ghost_trap_core.Ghost_Trap_http()             # Ghost Trap HTTP Class
 
@@ -85,6 +95,9 @@ class Ghost_phisher(QtGui.QMainWindow,Ui_ghost_phisher):            # Main class
         self.access_start.setEnabled(False)
         self.domain_add_button.setEnabled(False)
         self.groupBox_16.setEnabled(False)
+
+        self.lease_count = 0            # Used with the Ghost DHCP Server to display lease
+        self.dhcp_control = True
 
         self.check_root_priviledges()   # Check root priviledges
 
@@ -112,10 +125,21 @@ class Ghost_phisher(QtGui.QMainWindow,Ui_ghost_phisher):            # Main class
         self.green_led = "%s/gui/images/green_led.png"%(cwd)
 
         # Thread execute Tip settings dialog after 5 seconds
+        thread.start_new_thread(self.run_whats_new_thread,())
         thread.start_new_thread(self.run_tips_thread,())
 
         # Get data from database from initialization
         global previous_database_data
+
+        # Display of hide banner
+        if ghost_settings.setting_exists("show banner"):
+            if(ghost_settings.read_last_settings("show banner") == "True"):
+                self.graphicsView.setVisible(True)
+            else:
+                self.graphicsView.setVisible(False)
+        else:
+            ghost_settings.create_settings("show banner","True")
+
 
 
         # Metasploit Class object
@@ -144,31 +168,6 @@ class Ghost_phisher(QtGui.QMainWindow,Ui_ghost_phisher):            # Main class
                 self.credential_table.setItem(iterate,2,password)
 
         except IndexError:pass
-
-        #
-        # Check if DHCP3 Server service is installed on the computer
-        #
-        global dhcp_installation_status
-        global dhcp_server_binary
-        global dhcp_config_file
-        global dhcp_pid_file
-
-        installation_status = commands.getstatusoutput('which dhcpd3')
-        if installation_status[0] == 0:
-            self.label.setText('<font color=green>DHCP3 Server is installed</font>')
-            dhcp_installation_status = 'installed'
-            dhcp_server_binary = installation_status[1]
-        else:
-            installation_status = commands.getstatusoutput('which dhcpd')
-            if installation_status[0] == 0:
-                self.label.setText('<font color=green>ISC-DHCP Server is installed</font>')
-                dhcp_installation_status = 'installed'
-                dhcp_server_binary = installation_status[1]
-            else:
-                self.label.setText('<font color=red>DHCP3 Server is not installed</font>')
-                self.dhcp_status.append('<font color=green>To Install DHCP3 Server run:</font>\t<font color=red>apt-get install dhcp3-server</font>')
-                dhcp_installation_status = 'not installed'
-
 
         installation_status_access = commands.getstatusoutput('which airbase-ng')
         if installation_status_access[0] != 0:
@@ -331,6 +330,7 @@ class Ghost_phisher(QtGui.QMainWindow,Ui_ghost_phisher):            # Main class
         self.connect(self,QtCore.SIGNAL("dns stopped"),self.stop_dns)
         self.connect(self,QtCore.SIGNAL("new client connection"),self.update_dns_connections)
         self.connect(self,QtCore.SIGNAL("run tips"),self.run_tips)
+        self.connect(self,QtCore.SIGNAL("run whats new"),self.run_what_new)
         self.connect(self,QtCore.SIGNAL("access point output"),self.update_access_output)
         self.connect(self,QtCore.SIGNAL("access point error"),self.update_access_error)
         self.connect(self,QtCore.SIGNAL("access point started"),self.access_point_started)
@@ -383,24 +383,13 @@ class Ghost_phisher(QtGui.QMainWindow,Ui_ghost_phisher):            # Main class
             font_run.exec_()
 
         if event.key() == QtCore.Qt.Key_F3:     # Resize Ghost windows (netbook users)
-            if self.groupBox_16.isVisible() or self.groupBox_2.isVisible() or self.groupBox_5.isVisible() or self.groupBox_8.isVisible() or \
-            self.metasploit_settings_box.isVisible() or self.custom_payload_box.isVisible() or self.spawn_http_setting_box.isVisible():
-                self.groupBox_16.setVisible(False)
-                self.groupBox_2.setVisible(False)
-                self.groupBox_5.setVisible(False)
-                self.groupBox_8.setVisible(False)
-                self.metasploit_settings_box.setVisible(False)
-                self.custom_payload_box.setVisible(False)
-                self.spawn_http_setting_box.setVisible(False)
+            if self.graphicsView.isVisible():
+                ghost_settings.create_settings("show banner","False")
+                self.graphicsView.setVisible(False)
                 self.setFixedHeight(600)
             else:
-                self.groupBox_16.setVisible(True)
-                self.groupBox_2.setVisible(True)
-                self.groupBox_5.setVisible(True)
-                self.groupBox_8.setVisible(True)
-                self.metasploit_settings_box.setVisible(True)
-                self.custom_payload_box.setVisible(True)
-                self.spawn_http_setting_box.setVisible(False)
+                ghost_settings.create_settings("show banner","True")
+                self.graphicsView.setVisible(True)
                 self.setFixedHeight(685)
 
 
@@ -410,9 +399,13 @@ class Ghost_phisher(QtGui.QMainWindow,Ui_ghost_phisher):            # Main class
             signal to evaluate execution
             of tips dialog after 2 seconds
         '''
-        import time
         time.sleep(2)
         self.emit(QtCore.SIGNAL("run tips"))
+
+
+    def run_whats_new_thread(self):
+        time.sleep(2)
+        self.emit(QtCore.SIGNAL("run whats new"))
 
 
     def run_tips(self):
@@ -426,6 +419,14 @@ class Ghost_phisher(QtGui.QMainWindow,Ui_ghost_phisher):            # Main class
                 run_tips.exec_()
         else:
             run_tips.exec_()
+
+    def run_what_new(self):
+        run_what_new = whats_new_window()
+        if setting_file.setting_exists("disable whats new window"):
+            if ghost_settings.read_last_settings("disable whats new window") == "True":
+                run_what_new.exec_()
+        else:
+            run_what_new.exec_()
 
 
 
@@ -941,34 +942,41 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
 
     def stop_dhcp(self):
         ''' Stop the DHCP Server'''
+        self.lease_count = 0
+        self.dhcp_control = False
 
-        global dhcp_config_file
-        global dhcp_pid_file
+        # dhcp_sock.close()
+        ghost_dhcp_server.hostname_leased = {}
+
 
         self.dhcp_start.setEnabled(True)
         self.dhcp_stop.setEnabled(False)
 
-        if os.path.exists("/var/lib/dhcp3/dhcpd.leases"):
-            os.remove("/var/lib/dhcp3/dhcpd.leases")
+        self.dhcp_status.append(str())
+        self.dhcp_status.append('<font color=red>Ghost DHCP Server stopped at %s'%(time.ctime()))
 
-        #start-stop-daemon --stop --quiet --pidfile $DHCPDPID
-        if os.path.exists(dhcp_pid_file):
-            dhcp_pid = open(dhcp_pid_file).read().strip()
-            stop_dhcp_status = commands.getstatusoutput('kill -9 %s' % dhcp_pid)
-            #stop_dhcp_status = commands.getstatusoutput('/etc/init.d/dhcp3-server stop')
 
-        self.dhcp_status.append('<font color=red>DHCP Server stopped at %s'%(time.ctime()))
+    def create_route(self):
+        interface_path = "/sys/class/net"
+        linux_route = "route add 255.255.255.255 netmask 0.0.0.0 dev %s"
+        for interface in os.listdir(interface_path):
+            commands.getoutput(linux_route % (interface))
 
 
     def launch_dhcp(self):
         ''' Launch DHCP spoofing if all
             conditions are right
         '''
-        global dhcp_subnet
-        global dhcp_installation_status
-        global dhcp_server_binary
-        global dhcp_config_file
-        global dhcp_pid_file
+        self.dhcp_control = True
+
+        self.lease_count = 0
+        displayed_hostname.clear()
+        ghost_dhcp_server.lease_address = str()                                          # Holds next address to be leased
+        ghost_dhcp_server.leased_address = set()                                         # Holds list of all leased addresses
+        ghost_dhcp_server.hostname_leased = {}                                           # Holds hostname to leased address mapping {"SAVIOUR-PC":192.168.0.1}
+        ghost_dhcp_server.backup_from_addr = str()                                       # Backs-up conf["from"]
+        ghost_dhcp_server.local_address = str()
+
 
         start_ip = str(self.start_ip.text())
         stop_ip = str(self.stop_ip.text())
@@ -977,13 +985,7 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
         subnet_ip = str(self.subnet_ip.text())
         alternatedns_ip = str(self.alternatedns_ip.text())
 
-        lease_file = open("/var/lib/dhcp3/dhcpd.leases",'a+')
-        lease_file.close()
-        os.chmod("/var/lib/dhcp3/dhcpd.leases",0777)
-
-        if dhcp_installation_status == 'not installed':
-            self.dhcp_status.append('<font color=green>DHCP3 Server is not installed run:</font>\t<font color=red>"apt-get install dhcp3-server" to install</font>')
-        elif start_ip.count('.') != 3:                                   # Check if inputed data is valid
+        if start_ip.count('.') != 3:                                   # Check if inputed data is valid
             QtGui.QMessageBox.warning(self,"Invalid IP Address","Please input a valid IP address on the (From:) section")
         elif stop_ip.count('.') != 3:
             QtGui.QMessageBox.warning(self,"Invalid IP Address","Please input a valid IP address on the (To:) section")
@@ -1001,128 +1003,68 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
             ghost_settings.create_settings('self.subnet_ip',subnet_ip)
             ghost_settings.create_settings('self.alternatedns_ip',alternatedns_ip)
 
-            # update:
-            #   start dhcp server using a custom config file.
 
+            try:
 
+                self.create_route()
 
+                ghost_dhcp_server.conf["From"] = start_ip
+                ghost_dhcp_server.conf['To'] = stop_ip
+                ghost_dhcp_server.conf["Subnet Mask"] = subnet_ip
+                ghost_dhcp_server.conf["Default Gateway"] = gateway_ip
+                ghost_dhcp_server.conf["Pref DNS"] = fakedns_ip
+                ghost_dhcp_server.conf["Alt DNS"] = alternatedns_ip
 
-            # if 'dhcpd.conf_original' in os.listdir('/etc/dhcp3/'):      # Remove dhcpd.conf file if ghost_phiser had earlierly created it to avoid using old settings
-            #    if 'dhcpd.conf' in os.listdir('/etc/dhcp3'):
-            #        os.remove('/etc/dhcp3/dhcpd.conf')
-            # else:
-            #     os.rename('/etc/dhcp3/dhcpd.conf','/etc/dhcp3/dhcpd.conf_original')     # Backup your original dhcp settings if they exist
+                thread.start_new_thread(self.thread_server,())
 
-
-            if subnet_ip == '255.0.0.0':                                # Class A subnet and broadcast address
-                process = start_ip[0:start_ip.index('.')]
-                broadcast = process + '.255.255.255'
-                subnet = process + '.0.0.0'
-
-            elif subnet_ip == '255.255.0.0':                            # Class B subnet and broadcast address
-                process = start_ip[0:start_ip.rindex('.')-2]
-                broadcast = process + '.255.255'
-                subnet = process + '.0.0'
-            else:
-                process = start_ip[0:start_ip.rindex('.')]              # Class C  subnet and broadcast address
-                broadcast = process + '.255'
-                subnet = process + '.0'
-
-                                                                        # DHCP3 Server configuration file
-            dhcp_settings_string = '''
-            ddns-update-style none;
-
-            option domain-name-servers %s, %s;
-
-            default-lease-time 86400;
-            max-lease-time 604800;
-
-            authoritative;
-
-            subnet %s netmask %s {
-                    range %s %s;
-                    option subnet-mask %s;
-                    option broadcast-address %s;
-                    option routers %s;
-            }
-            '''
-
-            dhcp_settings_file = dhcp_settings_string % (fakedns_ip,alternatedns_ip,subnet,subnet_ip,\
-                                                         start_ip,stop_ip,subnet_ip,broadcast,gateway_ip)
-
-            if os.path.exists(dhcp_config_file):
-                os.remove(dhcp_config_file)
-
-            if os.path.exists(dhcp_pid_file):
-                os.remove(dhcp_pid_file)
-
-            dhcp_settings = open(dhcp_config_file,'a+')
-            dhcp_settings.write(dhcp_settings_file)
-            dhcp_settings.close()
-
-            os.system("chmod a+x %s"%(dhcp_config_file))
-            os.chmod(dhcp_config_file,0777) # Dump permission to file,so we do not get permission denies
-
-            cmd = "%s -cf %s -pf %s" % (dhcp_server_binary, dhcp_config_file, dhcp_pid_file)
-            dhcp_status = commands.getstatusoutput(cmd)
-
-            if dhcp_status[0] == 0:
                 self.dhcp_status.clear()
-                self.dhcp_status.append('<font color=green>%s at %s </font>'%(dhcp_status[1],time.ctime()))  # DHCP ran successfully
+                self.dhcp_status.append('<font color=green>Started Ghost DHCP Server at %s </font>'%(time.ctime()))  # DHCP ran successfully
                 self.dhcp_status.append(" ")
-                thread.start_new_thread(self.check_leases_changes,())                                       # Periodically check lease file for changes
+
                 self.dhcp_start.setEnabled(False)
                 self.dhcp_stop.setEnabled(True)
-            else:
-                self.dhcp_status.clear()
-                for dhcp_failure in dhcp_status[1].splitlines():
-                    self.dhcp_status.append('<font color=red>%s</font>'%(dhcp_failure))  # DHCP did not run successfully
+
+                thread.start_new_thread(self.thread_loop_lease,())
+
+            except Exception,dhcp_failure:
+                self.dhcp_status.append('<font color=red>%s</font>'%(dhcp_failure))  # DHCP did not run successfully
 
 
-    def check_leases_changes(self):
-        lease_length = int()
-        while not self.dhcp_start.isEnabled():
-            time.sleep(2)
-            lease_file = open('/var/lib/dhcp3/dhcpd.leases')
-            temp = lease_file.read()
-            if(int(temp.count("client-hostname")) != lease_length):
+    def thread_server(self):
+        while self.dhcp_control:
+            time.sleep(1)
+            try:
+                client_packet,address = dhcp_sock.recvfrom(8192)
+                response = ghost_dhcp_server.recv_packet(client_packet)
+                dhcp_sock.sendto(response,("255.255.255.255",68))
+            except Exception,dhcp_failure:
+                self.dhcp_control = False
+                self.dhcp_status.append('<font color=red>%s</font>'%(dhcp_failure))  # DHCP did not run successfully
+                self.dhcp_start.setEnabled(True)
+                self.dhcp_stop.setEnabled(False)
+
+
+    def thread_loop_lease(self):
+        self.loop_Lease()
+
+
+    def loop_Lease(self):
+        while(True):
+            if not self.dhcp_control:
+                break
+            lease_num = len(ghost_dhcp_server.hostname_leased.keys())
+            if(lease_num > self.lease_count):
                 self.emit(QtCore.SIGNAL("new dhcp connection"))
-                lease_length += 1
-            lease_file.close()
+                self.lease_count += 1
+            time.sleep(1)
 
 
     def display_leases_client(self):
-        lease_file = open('/var/lib/dhcp3/dhcpd.leases')
-        string = lease_file.read()
-        regex = re.compile("(\d+\.\d+\.\d+\.\d+)")              # IP Address regular expression
-        regex_host = re.compile('client-hostname ("\S*")')      # Host name regular expression
-
-        client_address = regex.findall(string)
-        unique_address = list(set(client_address))
-        for address in unique_address:
-            location = string.index(str(address))
-            string_process = string[location:-1]
-            for process in string_process.splitlines():
-                if regex_host.search(process):
-                    self.lease_process(regex_host.findall(process)[0],address)
-                    break
-
-        lease_file.close()
-
-
-    def lease_process(self,host_name,address):
-        if not self.dhcp_cache.has_key(host_name):
-            self.dhcp_cache[host_name] = address
-            self.dhcp_status.append('<font color=blue>' + host_name + ' has been leased ' + address + '</font>')
-        else:
-            if self.dhcp_cache[host_name] != address:
-                self.dhcp_cache[host_name] = address
-                self.dhcp_status.append('<font color=blue>' + host_name + " has been leased " + address + '</font>')
-
-
-
-
-
+        for hostname in ghost_dhcp_server.hostname_leased.keys():
+            if(hostname not in list(displayed_hostname)):
+                address = ghost_dhcp_server.hostname_leased[hostname]
+                self.dhcp_status.append('<font color=blue>' + hostname + ' has been leased ' + address + '</font>')
+            displayed_hostname.add(hostname)
 
 
 

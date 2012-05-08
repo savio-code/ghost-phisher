@@ -1340,7 +1340,7 @@ class Ui_ghost_phisher(object):
         self.dns_stop.setText(QtGui.QApplication.translate("ghost_phisher", "Stop", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.dns_tab), QtGui.QApplication.translate("ghost_phisher", "Fake DNS Server", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox_4.setTitle(QtGui.QApplication.translate("ghost_phisher", "DHCP Version Information", None, QtGui.QApplication.UnicodeUTF8))
-        self.label.setText(QtGui.QApplication.translate("ghost_phisher", "<font color=green>DHCP3 Server is installed and ready for leasing</font>", None, QtGui.QApplication.UnicodeUTF8))
+        self.label.setText(QtGui.QApplication.translate("ghost_phisher", "<font color=green></font>", None, QtGui.QApplication.UnicodeUTF8))
         self.label_2.setText(QtGui.QApplication.translate("ghost_phisher", "Default  Port:   67", None, QtGui.QApplication.UnicodeUTF8))
         self.label_3.setText(QtGui.QApplication.translate("ghost_phisher", "Protocol: UDP (User Datagram Protocol)", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox_5.setTitle(QtGui.QApplication.translate("ghost_phisher", "DHCP Settings", None, QtGui.QApplication.UnicodeUTF8))

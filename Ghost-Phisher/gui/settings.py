@@ -1,18 +1,25 @@
 import os
-import shelve
+import sqlite3
 
 
 class Ghost_settings(object):
     def __init__(self):
         self.cwd = os.getcwd()
         self._create_settings_directory()
-        self.settings_file = self.cwd + os.sep + "Settings" + os.sep + "ghost_settings"
-        self.settings_object = shelve.open(self.settings_file)
+        self.settings_file = self.cwd + os.sep + "Settings" + os.sep + "ghost_settings.db"
+        self.settings_object = sqlite3.connect(self.settings_file)
+        self.cursor_object = self.settings_object.cursor()
+        self.create_table()
 
 
     def _create_settings_directory(self):
         if not os.path.exists(self.cwd + os.sep + "Settings"):
             os.mkdir(self.cwd + os.sep + "Settings")
+
+
+    def create_table(self):
+        self.cursor_object.execute("create table if not exists settings (object text,value text)")
+        self.settings_object.commit()
 
 
     def create_settings(self,object_name,value):
@@ -21,18 +28,22 @@ class Ghost_settings(object):
             variable, it removes it and replaces it
             with the new
         '''
-        self.settings_object[object_name] = value
+        if self.setting_exists(object_name):
+            self.cursor_object.execute("update settings set value = '%s' where object = '%s'" % (value,object_name))
+        else:
+            self.cursor_object.execute("insert into settings values ('%s','%s')" % (object_name,value))
+        self.settings_object.commit()
 
 
     def setting_exists(self,object_name):
         '''This function checks to see if queried
             settings exists in shelve object
         '''
-        try:
-            self.settings_object[object_name]
+        self.cursor_object.execute("select value from settings where object = '%s'"%(object_name))
+        fetch_value = self.cursor_object.fetchall()
+        if(len(fetch_value) >= 1):
             return(True)
-        except(KeyError):
-            return(False)
+        return(False)
 
 
     def read_last_settings(self,object_name):
@@ -40,8 +51,9 @@ class Ghost_settings(object):
             variable assignments and then
             returns the corresponding value
         '''
-        settings_string = str(self.settings_object[object_name])
-        return(settings_string)
+        self.cursor_object.execute("select value from settings where object = '%s'"%(object_name))
+        fetch_value = self.cursor_object.fetchall()[0][0]
+        return(fetch_value)
 
 
 
@@ -49,7 +61,7 @@ class Ghost_settings(object):
         '''Function closes write/Read operations
             to settings file
         '''
-        self.settings_object.close()
+        self.cursor_object.close()
 
 
 

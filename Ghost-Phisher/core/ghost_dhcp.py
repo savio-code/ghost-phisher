@@ -218,9 +218,12 @@ class Ghost_DHCP_Server(object):
            {"SAVIOUR-PC":192.168.0.1}
         '''
         hex_hostname = binascii.unhexlify(self.message)
-        hostname = self.regex.findall(hex_hostname)[0][:-1]
-        if(hostname.endswith(".")):
-            hostname = hostname[:-1]
+        if(len(self.regex.findall(hex_hostname)) >= 1):
+            hostname = self.regex.findall(hex_hostname)[0][:-1]
+            if(hostname.endswith(".")):
+                hostname = hostname[:-1]
+        else:
+            hostname = str()
         self.hostname_leased[hostname] = address
 
 

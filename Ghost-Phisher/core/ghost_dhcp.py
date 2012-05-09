@@ -50,8 +50,8 @@ class Ghost_DHCP_Server(object):
         self.local_address = str()
 
         self.regex = re.compile("[\w._-]*<")                                # Match hostname in hex dump
-        self.seg_match = str()
-        self.unkown_index = 1
+        self.address_class = str()
+
 
 
     def _DHCP_Offer(self):
@@ -100,7 +100,20 @@ class Ghost_DHCP_Server(object):
         ack_packet += binascii.a2b_hex(self.message[8:16])	                # Transaction ID -> 0x92156a6721 : Random
         ack_packet += "\x00\x00\x00\x00"                                    # Seconds Elapse + Bootp Flags
         ack_packet += "\x00\x00\x00\x00"                                    # CLient IP Address -> 0.0.0.0
-        ack_packet += socket.inet_aton(self.lease_address)
+
+        requested_addr = binascii.a2b_hex(self.message[508:516])
+        refresh_request = binascii.a2b_hex(self.message[24:32])
+
+        host_id = binascii.a2b_hex(self.message[498:502])
+
+        if(host_id.startswith("\x32\x04")):
+            ack_packet += binascii.a2b_hex(self.message[502:510])
+        else:
+            if(refresh_request == "\x00\x00\x00\x00"):
+                ack_packet += requested_addr
+            else:
+                ack_packet += refresh_request
+
         ack_packet += "\x00\x00\x00\x00"                                    # Next Server IP Address
         ack_packet += "\x00\x00\x00\x00\x00"                                # Relay Agent IP Address
         ack_packet += binascii.a2b_hex(self.client_haddr)                   # Client IP Address -> 00:ca:29:03:36:ed
@@ -124,6 +137,13 @@ class Ghost_DHCP_Server(object):
         ack_packet += "\x00\x00\x00\x00\x00"                                # Padding
 
         return(ack_packet)
+
+
+    def is_Lease_segment(self,address):
+        regex = re.compile(self.address_class)
+        if(len(regex.findall(socket.inet_ntoa(address))) >= 1):
+            return(True)
+        return(False)
 
 
     def get_Local_Addr(self):
@@ -195,7 +215,7 @@ class Ghost_DHCP_Server(object):
             compile_string += r".\d+"
 
         _regex = re.compile(compile_string)
-        self.seg_match = compile_string
+        self.address_class = compile_string
 
         ip_address_str = _regex.findall(term_out)
 
@@ -211,14 +231,20 @@ class Ghost_DHCP_Server(object):
         '''Maps leased IP adresses with hostname
            {"SAVIOUR-PC":192.168.0.1}
         '''
+        hostname = str()
         hex_hostname = binascii.unhexlify(self.message)
         if(len(self.regex.findall(hex_hostname)) >= 1):
             hostname = self.regex.findall(hex_hostname)[0][:-1]
             if(hostname.endswith(".")):
                 hostname = hostname[:-1]
         else:
-            hostname = "Unknown" + str(self.unkown_index)
-            self.unkown_index += 1
+            match_id = binascii.a2b_hex(self.message[498:502])
+            if(match_id == "\x32\x04"):
+                length = ord(binascii.a2b_hex(self.message[512:514]))
+                hostname = binascii.a2b_hex(self.message[514:514 + (length * length)])
+            else:
+                hostname = str()
+
         self.hostname_leased[hostname] = address
 
 
@@ -359,15 +385,32 @@ class Ghost_DHCP_Server(object):
         packet = self._DHCP_Offer()                            # Send: DHCP Offer Packet
 
         if(self.dhcp_type == '350103'):			               # DHCP Type -> DHCP Request packet
+            addr_lease = str()
+
+            requested_addr = binascii.a2b_hex(self.message[508:516])
+            refresh_request = binascii.a2b_hex(self.message[24:32])
+
+            host_id = binascii.a2b_hex(self.message[498:502])
+
+            if(host_id.startswith("\x32\x04")):
+                addr_lease = binascii.a2b_hex(self.message[502:510])
+            else:
+                if(refresh_request == "\x00\x00\x00\x00"):
+                    addr_lease = requested_addr
+                else:
+                    addr_lease = refresh_request
+
+            if not self.is_Lease_segment(addr_lease):
+                return(packet)
 
             while(True):                                        # Reuse skipped address if possible
-                if(self.lease_address in list(self.leased_address) or self.leased_address == str()):
+                if(self.lease_address in list(self.leased_address)):
                     self.gen_next_address()
                 else:
                     break
 
             packet = self._DHCP_Ack()                           # Send: DHCP Ack packet
-            address = self.lease_address
+            address = socket.inet_ntoa(addr_lease)
             self.leased_address.add(address)                    # Used addresses
             self.map_Hostname_to_Addr(address)                  # Maps hostname with address
 

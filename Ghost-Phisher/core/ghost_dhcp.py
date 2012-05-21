@@ -255,7 +255,8 @@ class Ghost_DHCP_Server(object):
             self.unknown_lease += 1
             hostname = "unknown" + str(self.unknown_lease)
 
-        self.hostname_leased[hostname] = address
+        if(address not in self.hostname_leased.keys()):
+            self.hostname_leased[hostname] = address
 
 
 

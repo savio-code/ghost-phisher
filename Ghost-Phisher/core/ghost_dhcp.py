@@ -43,6 +43,7 @@ class Ghost_DHCP_Server(object):
         self.broadcast_addr = "255.255.255.255"                             # Broadcast Address
         self.address = (bind_address,67)                                    # socket.bind(0.0.0.0,67)
 
+        self.unknown_lease = 1
         self.lease_address = str()                                          # Holds next address to be leased
         self.leased_address = set()                                         # Holds list of all leased addresses
         self.hostname_leased = {}                                           # Holds hostname to leased address mapping {"SAVIOUR-PC":192.168.0.1}
@@ -65,7 +66,7 @@ class Ghost_DHCP_Server(object):
         offer_packet += "\x00\x00\x00\x00"                                  # CLient IP Address -> 0.0.0.0
         offer_packet += socket.inet_aton(self.lease_address)                # Lease Address ->  192.168.0.12
         offer_packet += socket.inet_aton(self.local_address)                # DHCP Address  -> 192.168.0.1
-        offer_packet += "\x00\x00\x00\x00\x00"                              # Relay Agent IP -> 0.0.0.0
+        offer_packet += "\x00\x00\x00\x00"                                  # Relay Agent IP -> 0.0.0.0
         offer_packet += binascii.a2b_hex(self.client_haddr)                 # Client IP Address -> 00:ca:29:03:36:ed
         offer_packet += "\x00" * 198				                        # time value = const 8 days 20 hours 37 minutes
         offer_packet += "\x00\x00\x00\x00"                	                # Space for DHCP Server Name and  Boot File Name
@@ -115,7 +116,7 @@ class Ghost_DHCP_Server(object):
                 ack_packet += refresh_request
 
         ack_packet += "\x00\x00\x00\x00"                                    # Next Server IP Address
-        ack_packet += "\x00\x00\x00\x00\x00"                                # Relay Agent IP Address
+        ack_packet += "\x00\x00\x00\x00"                                    # Relay Agent IP Address
         ack_packet += binascii.a2b_hex(self.client_haddr)                   # Client IP Address -> 00:ca:29:03:36:ed
         ack_packet += "\x00" * 202                                          # CLient Hardware Address Padding + Server Host Name + Boot File name
         ack_packet += "\x63\x82\x53\x63"                                    # Magic Cookie
@@ -240,10 +241,15 @@ class Ghost_DHCP_Server(object):
         else:
             match_id = binascii.a2b_hex(self.message[498:502])
             if(match_id == "\x32\x04"):
-                length = ord(binascii.a2b_hex(self.message[512:514]))
-                hostname = binascii.a2b_hex(self.message[514:514 + (length * length)])
+                try:
+                    length = ord(binascii.a2b_hex(self.message[512:514]))
+                    hostname = binascii.a2b_hex(self.message[514:514 + (length * length)])
+                except:
+                    self.unknown_lease += 1
+                    hostname = "unknown" + str(self.unknown_lease)
             else:
-                hostname = str()
+                self.unknown_lease += 1
+                hostname = "unknown" + str(self.unknown_lease)
 
         self.hostname_leased[hostname] = address
 
@@ -373,7 +379,7 @@ class Ghost_DHCP_Server(object):
         self.message = msg
         self.message = binascii.hexlify(self.message)
 
-        self.client_haddr = self.message[58:68]
+        self.client_haddr = self.message[56:68]
         self.dhcp_type = self.message[480:486]
 
         while(True):                                            # Reuse skipped address if possible

@@ -71,6 +71,8 @@ ghost_settings = Ghost_settings()                               # Ghost settings
 displayed_hostname = set()                                         # displays only newly leased clients
 dhcp_sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
 dhcp_sock.setsockopt(socket.SOL_SOCKET,socket.SO_BROADCAST,1)       # Enable UDP Socket Broadcast
+dhcp_sock.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR, 1)
+
 dhcp_sock.bind(("0.0.0.0",67))
 
 ghost_dhcp_server = ghost_dhcp.Ghost_DHCP_Server("0.0.0.0")

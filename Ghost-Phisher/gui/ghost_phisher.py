@@ -1351,6 +1351,10 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
                     form_login_variables.append(login_form)
 
             self.form_variables = form_login_variables       # Store to database, website form variables e.g ['email','pass']
+
+            if not self.form_variables:
+                self.form_variables = ["NULL","NULL"]
+
             ghost_settings.create_settings('self.lineEdit_2',str(self.lineEdit_2.text()))
             #
             # Check if html source has a valid Post action method
@@ -1364,6 +1368,7 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
 
 
         else:                                                              # Hosting Mode is enabled
+            self.form_variables = ["NULL","NULL"]
             self.status_textbrowser_http.append('<font color=green>Website Hosting activated</font>')
 
 

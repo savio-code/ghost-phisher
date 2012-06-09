@@ -132,21 +132,24 @@ class Ghost_DHCP_Server(object):
 
                     elif(message_type == 3):            # DHCP Request
 
-                        for name,value in raw_packet.lastlayer().options:
+                        client_hostname = "unknown host"
+                        payload_layer = []
+                        for layer in raw_packet.lastlayer().options:
+                            if(layer == 'pad'):
+                                break
+                            payload_layer.append(layer)
+
+                        for name,value in payload_layer:
                             if(name == "hostname"):
                                 client_hostname = value
                                 break
 
-                        for name,value in raw_packet.lastlayer().options:
+                        for name,value in payload_layer:
                             if(name == "requested_addr"):
                                 self.requested_addr = value
                                 break
 
                         if(self.is_Lease_segment(self.requested_addr)):
-
-                            while(self.lease_address in list(self.leased_address)):
-                                self.gen_next_address()
-
                             packet = self.DHCP_Ack()    # DHCP Ack
                             self.hostname_leased[client_hostname] = self.requested_addr
                             self.leased_address.add(self.requested_addr)

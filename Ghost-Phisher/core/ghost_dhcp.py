@@ -25,156 +25,148 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
 import re
-import sys
-import socket
-import binascii
+from scapy.all import *
+
+
+route_addr = "0.0.0.0"
+broadcast_addr = "255.255.255.255"
 
 
 class Ghost_DHCP_Server(object):
-    def __init__(self,bind_address):
-        self.conf = {}                                                      # {"From":192.168.0.12,"To":192.168.0.254,"Subnet Mask":255.255.255.0,"Default Gateway":192.168.0.1,"Pref DNS":192.168.0.13,"Alt DNS":192.168.0.23}
-        self.sock = object                                                  # Socket Objectm will be instantialized by server_bind()
-        self.message = str()                                                # (DHCP Discover) Packet Dump
-        self.dhcp_type = str()                                              # DHCP Type = "\x35\x01\x01" or "\x35\x01\x03"
-        self.client_haddr = str()                                           # Client Address -> 00:ca:29:03:36:ed
-        self.route_status = str()                                           # Is 255.255.255.255 routable?
-        self.broadcast_addr = "255.255.255.255"                             # Broadcast Address
-        self.address = (bind_address,67)                                    # socket.bind(0.0.0.0,67)
-
-        self.unknown_lease = 1
-        self.lease_address = str()                                          # Holds next address to be leased
-        self.leased_address = set()                                         # Holds list of all leased addresses
-        self.hostname_leased = {}                                           # Holds hostname to leased address mapping {"SAVIOUR-PC":192.168.0.1}
-        self.backup_from_addr = str()                                       # Backs-up conf["from"]
-        self.local_address = str()
-
-        self.regex = re.compile("[\w._-]*<")                                # Match hostname in hex dump
+    def __init__(self):
+        self.conf = dict()                  # {"From":192.168.0.12,"To":192.168.0.254,"Subnet Mask":255.255.255.0,"Default Gateway":192.168.0.1,"Pref DNS":192.168.0.13,"Alt DNS":192.168.0.23}
+        self.client_addr = str()            # Client Address -> 00:ca:29:03:36:ed
+        self.lease_address = str()          # Holds next address to be leased
         self.address_class = str()
+        self.leased_address = set()         # Holds list of all leased addresses
+        self.dhcp_control = True            # Used to STOP the DHCP Server
+        self.lease_mapping = dict()
+        self.hostname_leased = {}           # Holds hostname to leased address mapping {"SAVIOUR-PC":192.168.0.1}
+        self.transaction_id = long()
+        self.requested_addr = str()
+        conf.route.add(broadcast_addr,route_addr)
 
 
 
-    def _DHCP_Offer(self):
+    def DHCP_Offer(self):
         '''BootStrap Protocol (DHCP Offer Packet)
          http://www.ietf.org/rfc/rfc2131.txt
          '''
-        offer_packet = str()
-        offer_packet += "\x02\x01\x06\x00"                                  # Message Type + Hardware Type + Hardware Address Length + hops
-        offer_packet += binascii.a2b_hex(self.message[8:16])	            # Transaction ID -> 0x92156a6721 : Random
-        offer_packet += "\x00\x00\x00\x00"                                  # Seconds Elapse + Bootp Flags
-        offer_packet += "\x00\x00\x00\x00"                                  # CLient IP Address -> 0.0.0.0
-        offer_packet += socket.inet_aton(self.lease_address)                # Lease Address ->  192.168.0.12
-        offer_packet += socket.inet_aton(self.local_address)                # DHCP Address  -> 192.168.0.1
-        offer_packet += "\x00\x00\x00\x00"                                  # Relay Agent IP -> 0.0.0.0
-        offer_packet += binascii.a2b_hex(self.client_haddr)                 # Client IP Address -> 00:ca:29:03:36:ed
-        offer_packet += "\x00" * 198				                        # time value = const 8 days 20 hours 37 minutes
-        offer_packet += "\x00\x00\x00\x00"                	                # Space for DHCP Server Name and  Boot File Name
-        offer_packet += "\x63\x82\x53\x63"                                  # Magic Cookie
-        offer_packet += "\x35\x01\x02"                                      # Message Type: DHCP Offer
-        offer_packet += "\x01\x04"                                          # t = 0x01, l = 0x04
-        offer_packet += socket.inet_aton(self.conf["Subnet Mask"])          # Subnet mask -> 255.255.255.0
-        offer_packet += "\x3a\x04\x00\x06\xac\x98"                          # Renewal Time = const 5 days 1 hour 30 minutes
-        offer_packet += "\x3b\x04\x00\x0b\xae\x0a"                          # Rebindin
-        offer_packet += "\x33\x04\x00\x0d\x59\x30"
-        offer_packet += "\x36\x04" 				                            # Router + length
-        offer_packet += socket.inet_aton(self.local_address)                 # DHCP IDENTIFIER
-        offer_packet += "\x03\x04"
-        offer_packet += socket.inet_aton(self.conf["Default Gateway"])      # Router Address -> 192.168.0.67
-        offer_packet += "\x06"                                              # Domain Name Server , DNS
-        offer_packet += "\x08"                                              # Domain Name Server Length = 8/2 = 4/2 = 2 addreses
-        offer_packet += socket.inet_aton(self.conf["Pref DNS"])             # DNS IP Address 1
-        offer_packet += socket.inet_aton(self.conf["Alt DNS"])              # DNS IP Address 2
-        offer_packet += "\xff"                                              # Option Endding
-        offer_packet += "\x00\x00\x00\x00\x00"
-        offer_packet += "\x00\x00\x00\x00\x00"                              # Padding
-
+        Ethernet_header = Ether(dst = "ff:ff:ff:ff:ff:ff")
+        IP_header = IP(src = "0.0.0.0",dst = "255.255.255.255")
+        UDP_header = UDP(sport = 67,dport = 68)
+        BOOTP_header = BOOTP(xid = self.transaction_id,chaddr = self.client_addr,yiaddr = self.lease_address)
+        DHCPOptions = DHCP(options = [('message-type','offer'),
+        ('subnet_mask',self.conf["Subnet Mask"]),
+        ('renewal_time',437400),
+        ('rebinding_time',765450),
+        ('lease_time',874800),
+        ('server_id','0.0.0.0'),
+        ('router',self.conf["Default Gateway"]),
+        ('name_server',self.conf["Pref DNS"],self.conf["Alt DNS"]),
+        'end','pad', 'pad', 'pad', 'pad', 'pad', 'pad', 'pad', 'pad', 'pad', 'pad']
+        )
+        offer_packet = Ethernet_header/IP_header/UDP_header/BOOTP_header/DHCPOptions
         return(offer_packet)
 
 
-    def _DHCP_Ack(self):
+    def DHCP_Ack(self):
         ''' BootStrap Protocol (DHCP Ack Packet)
             http://www.ietf.org/rfc/rfc2131.txt
         '''
-        ack_packet = str()
-        ack_packet += "\x02\x01\x06\x00"                                    # Message Type + Hardware Type + Hardware Address Length + hops
-        ack_packet += binascii.a2b_hex(self.message[8:16])	                # Transaction ID -> 0x92156a6721 : Random
-        ack_packet += "\x00\x00\x00\x00"                                    # Seconds Elapse + Bootp Flags
-        ack_packet += "\x00\x00\x00\x00"                                    # CLient IP Address -> 0.0.0.0
-
-        requested_addr = binascii.a2b_hex(self.message[508:516])
-        refresh_request = binascii.a2b_hex(self.message[24:32])
-
-        host_id = binascii.a2b_hex(self.message[498:502])
-
-        if(host_id.startswith("\x32\x04")):
-            ack_packet += binascii.a2b_hex(self.message[502:510])
-        else:
-            if(refresh_request == "\x00\x00\x00\x00"):
-                ack_packet += requested_addr
-            else:
-                ack_packet += refresh_request
-
-        ack_packet += "\x00\x00\x00\x00"                                    # Next Server IP Address
-        ack_packet += "\x00\x00\x00\x00"                                    # Relay Agent IP Address
-        ack_packet += binascii.a2b_hex(self.client_haddr)                   # Client IP Address -> 00:ca:29:03:36:ed
-        ack_packet += "\x00" * 202                                          # CLient Hardware Address Padding + Server Host Name + Boot File name
-        ack_packet += "\x63\x82\x53\x63"                                    # Magic Cookie
-        ack_packet += "\x35\x01\x05"                                        # Message Type: DHCP Ack
-        ack_packet += "\x3a\x04\x00\x06\xac\x98"                            # Renewal Time = const 5 days 1 hour 30 minutes
-        ack_packet += "\x3b\x04\x00\x0b\xae\x0a"                            # Rebindin
-        ack_packet += "\x33\x04\x00\x0d\x59\x30"
-        ack_packet += "\x36\x04" 				                            # DHCP Server Identifier + length
-        ack_packet += socket.inet_aton(self.local_address)                  # DHCP IDENTIFIER
-        ack_packet += "\x01\x04"                                            # Subnet Mask + Length
-        ack_packet += socket.inet_aton(self.conf["Subnet Mask"])            # Subnet mask -> 255.255.255.0
-        ack_packet += "\x51\x03\x00\xff\xff"                                # CLient Fully Qualified Domain Name
-        ack_packet += "\x03\x04"                                            # Router + length
-        ack_packet += socket.inet_aton(self.conf["Default Gateway"])        # Router Address -> 192.168.0.67
-        ack_packet += "\x06\x08"                                            # Domain Name Server + length
-        ack_packet += socket.inet_aton(self.conf["Pref DNS"])               # DNS IP Address 1
-        ack_packet += socket.inet_aton(self.conf["Alt DNS"])                # DNS IP Address 2
-        ack_packet += "\xff"
-        ack_packet += "\x00\x00\x00\x00\x00"                                # Padding
-
+        Ethernet_header = Ether(dst = "ff:ff:ff:ff:ff:ff")
+        IP_header = IP(src = "0.0.0.0",dst = "255.255.255.255")
+        UDP_header = UDP(sport = 67,dport = 68)
+        BOOTP_header = BOOTP(xid = self.transaction_id,chaddr = self.client_addr,yiaddr = self.requested_addr)
+        DHCPOptions = DHCP(options = [('message-type','ack'),
+        ('renewal_time',437400),
+        ('rebinding_time',765450),
+        ('lease_time',874800),
+        ('server_id','0.0.0.0'),
+        ('subnet_mask',self.conf["Subnet Mask"]),
+        (81,'\x00\xff\xff'),
+        ('router',self.conf["Default Gateway"]),
+        ('name_server',self.conf["Pref DNS"],self.conf["Alt DNS"]),
+        'end', 'pad', 'pad', 'pad', 'pad', 'pad']
+        )
+        ack_packet = Ethernet_header/IP_header/UDP_header/BOOTP_header/DHCPOptions
         return(ack_packet)
+
 
 
     def is_Lease_segment(self,address):
         regex = re.compile(self.address_class)
-        if(len(regex.findall(socket.inet_ntoa(address))) >= 1):
+        if(len(regex.findall(address)) >= 1):
             return(True)
         return(False)
 
 
-    def get_Local_Addr(self):
+
+    def Start_DHCP_Server(self):
+        packet = str()
+        self.set_Address_Class()
+        self.gen_next_address()
+
+        while(True):
+            raw_packet = sniff(filter = "udp and port 68",count = 1)[0]
+
+            if not self.dhcp_control:
+                break
+
+            try:
+                if(raw_packet.dport == 67):
+
+                    self.client_addr = raw_packet.chaddr[0:6]
+                    self.transaction_id = raw_packet.xid
+
+                    client_hostname = raw_packet.lastlayer().options[4][1]
+
+                    message_type = int(raw_packet.lastlayer().options[0][1])
+
+                    if(message_type == 1):              # DHCP Discover
+                        while(self.lease_address in list(self.leased_address)):
+                            self.gen_next_address()     # generate next address
+
+                        packet = self.DHCP_Offer()      # DHCP Offer
+
+                    elif(message_type == 3):            # DHCP Request
+
+                        for name,value in raw_packet.lastlayer().options:
+                            if(name == "hostname"):
+                                client_hostname = value
+                                break
+
+                        for name,value in raw_packet.lastlayer().options:
+                            if(name == "requested_addr"):
+                                self.requested_addr = value
+                                break
+
+                        if(self.is_Lease_segment(self.requested_addr)):
+
+                            while(self.lease_address in list(self.leased_address)):
+                                self.gen_next_address()
+
+                            packet = self.DHCP_Ack()    # DHCP Ack
+                            self.hostname_leased[client_hostname] = self.requested_addr
+                            self.leased_address.add(self.requested_addr)
+                        else:
+                            packet = self.DHCP_Offer()
+
+                    sendp(packet)
+
+            except AttributeError:
+                continue
+
+
+
+    def set_Address_Class(self):
         '''Function will check for active local Address
         '''
-        import subprocess
-
-        linux_addr_0 = "ifconfig"
-        win_addr_0 = "ipconfig/all"
-
-        term_proc = object                                                   # subpreocess.Popen()
-        term_out = str()
-
-        if(sys.platform == "linux2"):
-            term_proc = subprocess.Popen(linux_addr_0,shell = True,stdout = subprocess.PIPE)
-
-        elif(sys.platform == "win32"):
-            term_proc = subprocess.Popen(win_addr_0,shell = True,stdout = subprocess.PIPE)
-
-        else:
-            return("0.0.0.0")
-
-        term_out = term_proc.stdout.read()
-
-        _regex = object                                                      # re.compile()
         compile_string = str()
 
         process_string = self.conf["From"]
         seg_1_handle = self.conf["From"].split('.')[0]
-        ip_address_str = str()
 
         if(int(seg_1_handle) in range(1,127)):
             count = 0
@@ -215,48 +207,7 @@ class Ghost_DHCP_Server(object):
 
             compile_string += r".\d+"
 
-        _regex = re.compile(compile_string)
         self.address_class = compile_string
-
-        ip_address_str = _regex.findall(term_out)
-
-        if(len(ip_address_str) < 1):
-            ip_address_str = "0.0.0.0"
-            return(ip_address_str)
-
-        return(ip_address_str[0])
-
-
-
-    def map_Hostname_to_Addr(self,address):
-        '''Maps leased IP adresses with hostname
-           {"SAVIOUR-PC":192.168.0.1}
-        '''
-        hostname = str()
-        hex_hostname = binascii.unhexlify(self.message)
-        if(len(self.regex.findall(hex_hostname)) >= 1):
-            hostname = self.regex.findall(hex_hostname)[0][:-1]
-            if(hostname.endswith(".")):
-                hostname = hostname[:-1]
-        else:
-            match_id = binascii.a2b_hex(self.message[498:502])
-            if(match_id == "\x32\x04"):
-                try:
-                    length = ord(binascii.a2b_hex(self.message[512:514]))
-                    hostname = binascii.a2b_hex(self.message[514:514 + (length * length)])
-                except:
-                    self.unknown_lease += 1
-                    hostname = "unknown" + str(self.unknown_lease)
-            else:
-                self.unknown_lease += 1
-                hostname = "unknown" + str(self.unknown_lease)
-
-        if(hostname == str()):
-            self.unknown_lease += 1
-            hostname = "unknown" + str(self.unknown_lease)
-
-        if(address not in self.hostname_leased.keys()):
-            self.hostname_leased[hostname] = address
 
 
 
@@ -367,70 +318,5 @@ class Ghost_DHCP_Server(object):
             max_addr_range = lease_address_format % ((seg_1_poc,seg_2_poc,seg_3_poc,255))
             if(self.lease_address == max_addr_range):
                 raise Exception(exception_proc_1)
-
-
-
-    def recv_packet(self,msg):
-        ''' Listens and broadcasts corresponding
-            UDP DHCP Packet
-        '''
-        self.backup_from_addr = self.lease_address
-        self.local_address = self.get_Local_Addr()
-
-        if(self.lease_address == str()):
-            self.gen_next_address()
-
-        packet = str()
-        self.message = msg
-        self.message = binascii.hexlify(self.message)
-
-        self.client_haddr = self.message[56:68]
-        self.dhcp_type = self.message[480:486]
-
-        while(True):                                            # Reuse skipped address if possible
-            if(self.lease_address in list(self.leased_address)):
-                self.gen_next_address()
-            else:
-                break
-
-        packet = self._DHCP_Offer()                            # Send: DHCP Offer Packet
-
-        if(self.dhcp_type == '350103'):			               # DHCP Type -> DHCP Request packet
-            addr_lease = str()
-
-            requested_addr = binascii.a2b_hex(self.message[508:516])
-            refresh_request = binascii.a2b_hex(self.message[24:32])
-
-            host_id = binascii.a2b_hex(self.message[498:502])
-
-            if(host_id.startswith("\x32\x04")):
-                addr_lease = binascii.a2b_hex(self.message[502:510])
-            else:
-                if(refresh_request == "\x00\x00\x00\x00"):
-                    addr_lease = requested_addr
-                else:
-                    addr_lease = refresh_request
-
-            if not self.is_Lease_segment(addr_lease):
-                return(packet)
-
-            while(True):                                        # Reuse skipped address if possible
-                if(self.lease_address in list(self.leased_address)):
-                    self.gen_next_address()
-                else:
-                    break
-
-            packet = self._DHCP_Ack()                           # Send: DHCP Ack packet
-            address = socket.inet_ntoa(addr_lease)
-            self.leased_address.add(address)                    # Used addresses
-            self.map_Hostname_to_Addr(address)                  # Maps hostname with address
-
-        return(packet)
-
-
-
-
-
-
 
 

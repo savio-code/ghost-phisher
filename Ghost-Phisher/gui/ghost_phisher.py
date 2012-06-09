@@ -16,7 +16,6 @@ from settings import *
 from ghost_ui import *
 from core.http_core import *
 from core import variables
-from core import ghost_dhcp
 from core import ghost_trap_core
 from core import metasploit_payload
 from core.update import update_class
@@ -67,14 +66,6 @@ captured_credential = 0                                         # Holds the numb
 
 ghost_settings = Ghost_settings()                               # Ghost settings file object
 
-# Ghost DHCP object
-displayed_hostname = set()                                         # displays only newly leased clients
-dhcp_sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
-dhcp_sock.setsockopt(socket.SOL_SOCKET,socket.SO_BROADCAST,1)       # Enable UDP Socket Broadcast
-
-dhcp_sock.bind(("0.0.0.0",67))
-
-ghost_dhcp_server = ghost_dhcp.Ghost_DHCP_Server("0.0.0.0")
 
 # Ghost Trap HTTP Object
 ghost_trap_http = ghost_trap_core.Ghost_Trap_http()             # Ghost Trap HTTP Class
@@ -98,7 +89,6 @@ class Ghost_phisher(QtGui.QMainWindow,Ui_ghost_phisher):            # Main class
         self.groupBox_16.setEnabled(False)
 
         self.lease_count = 0            # Used with the Ghost DHCP Server to display lease
-        self.dhcp_control = True
 
         self.check_root_priviledges()   # Check root priviledges
 
@@ -117,6 +107,9 @@ class Ghost_phisher(QtGui.QMainWindow,Ui_ghost_phisher):            # Main class
         self.custom_linux_exec_path = None
 
         self.dhcp_cache ={}
+        self.ghost_dhcp_server = object     # Ghost DHCP Server instance
+        self.displayed_hostname = set()     # Holds unique Hostnames that have been leased addresses
+        self.scapy_IsInstalled()            # Checks if the scapy library is installed
 
 
         self.metasploit_payload_choice()
@@ -923,6 +916,18 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
     #       FAKE DHCP SERVER DEFINITION ,FUNCTIONS AND SIGNALS              #
     #########################################################################
 
+    def scapy_IsInstalled(self):
+        try:
+            from core import ghost_dhcp
+            self.ghost_dhcp_server = ghost_dhcp.Ghost_DHCP_Server()
+        except ImportError:
+            self.dhcp_start.setEnabled(False)
+            self.dhcp_status.append('''<font color=green>Scapy Library is not installed, Please run </font>
+            <font color=red>"apt-get install scapy" </font><font color=green>on terminal to install</font>''')
+
+
+
+
     def determine_subnet(self):
         ''' Determines the subnet mask from the
             live ip address input of user
@@ -944,10 +949,9 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
     def stop_dhcp(self):
         ''' Stop the DHCP Server'''
         self.lease_count = 0
-        self.dhcp_control = False
+        self.ghost_dhcp_server.dhcp_control = False
 
-        # dhcp_sock.close()
-        ghost_dhcp_server.hostname_leased = {}
+        self.ghost_dhcp_server.hostname_leased = {}
 
 
         self.dhcp_start.setEnabled(True)
@@ -971,12 +975,10 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
         self.dhcp_control = True
 
         self.lease_count = 0
-        displayed_hostname.clear()
-        ghost_dhcp_server.lease_address = str()                                          # Holds next address to be leased
-        ghost_dhcp_server.leased_address = set()                                         # Holds list of all leased addresses
-        ghost_dhcp_server.hostname_leased = {}                                           # Holds hostname to leased address mapping {"SAVIOUR-PC":192.168.0.1}
-        ghost_dhcp_server.backup_from_addr = str()                                       # Backs-up conf["from"]
-        ghost_dhcp_server.local_address = str()
+        self.displayed_hostname.clear()
+        self.ghost_dhcp_server.lease_address = str()                                          # Holds next address to be leased
+        self.ghost_dhcp_server.leased_address = set()                                         # Holds list of all leased addresses
+        self.ghost_dhcp_server.hostname_leased = {}                                           # Holds hostname to leased address mapping {"SAVIOUR-PC":192.168.0.1}
 
 
         start_ip = str(self.start_ip.text())
@@ -1007,14 +1009,12 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
 
             try:
 
-                self.create_route()
-
-                ghost_dhcp_server.conf["From"] = start_ip
-                ghost_dhcp_server.conf['To'] = stop_ip
-                ghost_dhcp_server.conf["Subnet Mask"] = subnet_ip
-                ghost_dhcp_server.conf["Default Gateway"] = gateway_ip
-                ghost_dhcp_server.conf["Pref DNS"] = fakedns_ip
-                ghost_dhcp_server.conf["Alt DNS"] = alternatedns_ip
+                self.ghost_dhcp_server.conf["From"] = start_ip
+                self.ghost_dhcp_server.conf['To'] = stop_ip
+                self.ghost_dhcp_server.conf["Subnet Mask"] = subnet_ip
+                self.ghost_dhcp_server.conf["Default Gateway"] = gateway_ip
+                self.ghost_dhcp_server.conf["Pref DNS"] = fakedns_ip
+                self.ghost_dhcp_server.conf["Alt DNS"] = alternatedns_ip
 
                 thread.start_new_thread(self.thread_server,())
 
@@ -1032,17 +1032,8 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
 
 
     def thread_server(self):
-        while self.dhcp_control:
-            time.sleep(1)
-            try:
-                client_packet,address = dhcp_sock.recvfrom(8192)
-                response = ghost_dhcp_server.recv_packet(client_packet)
-                dhcp_sock.sendto(response,("255.255.255.255",68))
-            except Exception,dhcp_failure:
-                self.dhcp_control = False
-                self.dhcp_status.append('<font color=red>%s</font>'%(dhcp_failure))  # DHCP did not run successfully
-                self.dhcp_start.setEnabled(True)
-                self.dhcp_stop.setEnabled(False)
+        self.ghost_dhcp_server.dhcp_control = True
+        self.ghost_dhcp_server.Start_DHCP_Server()
 
 
     def thread_loop_lease(self):
@@ -1051,9 +1042,9 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
 
     def loop_Lease(self):
         while(True):
-            if not self.dhcp_control:
+            if not self.ghost_dhcp_server.dhcp_control:
                 break
-            lease_num = len(ghost_dhcp_server.hostname_leased.keys())
+            lease_num = len(self.ghost_dhcp_server.hostname_leased.keys())
             if(lease_num > self.lease_count):
                 self.emit(QtCore.SIGNAL("new dhcp connection"))
                 self.lease_count += 1
@@ -1061,11 +1052,11 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
 
 
     def display_leases_client(self):
-        for hostname in ghost_dhcp_server.hostname_leased.keys():
-            if(hostname not in list(displayed_hostname)):
-                address = ghost_dhcp_server.hostname_leased[hostname]
+        for hostname in self.ghost_dhcp_server.hostname_leased.keys():
+            if(hostname not in list(self.displayed_hostname)):
+                address = self.ghost_dhcp_server.hostname_leased[hostname]
                 self.dhcp_status.append('<font color=blue>' + hostname + ' has been leased ' + address + '</font>')
-            displayed_hostname.add(hostname)
+            self.displayed_hostname.add(hostname)
 
 
 

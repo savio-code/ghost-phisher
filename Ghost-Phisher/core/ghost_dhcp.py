@@ -135,7 +135,7 @@ class Ghost_DHCP_Server(object):
                         client_hostname = "unknown host"
                         payload_layer = []
                         for layer in raw_packet.lastlayer().options:
-                            if(layer == 'pad'):
+                            if(layer == 'end'):
                                 break
                             payload_layer.append(layer)
 

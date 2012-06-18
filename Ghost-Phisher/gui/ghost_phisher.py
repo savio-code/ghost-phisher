@@ -923,7 +923,7 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
         except ImportError:
             self.dhcp_start.setEnabled(False)
             self.dhcp_status.append('''<font color=green>Scapy Library is not installed, Please run </font>
-            <font color=red>"apt-get install scapy" </font><font color=green>on terminal to install</font>''')
+            <font color=red>"apt-get install python-scapy" </font><font color=green>on terminal to install</font>''')
 
 
 

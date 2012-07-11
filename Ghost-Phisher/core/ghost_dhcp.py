@@ -25,12 +25,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+
 import re
+import os
+
 from scapy.all import *
-
-
-route_addr = "0.0.0.0"
-broadcast_addr = "255.255.255.255"
 
 
 class Ghost_DHCP_Server(object):
@@ -45,7 +44,7 @@ class Ghost_DHCP_Server(object):
         self.hostname_leased = {}           # Holds hostname to leased address mapping {"SAVIOUR-PC":192.168.0.1}
         self.transaction_id = long()
         self.requested_addr = str()
-        conf.route.add(broadcast_addr,route_addr)
+        self.ethernet_interfaces = object   # will hold list object of interface cards e.g eth0,eth1
 
 
 
@@ -95,6 +94,12 @@ class Ghost_DHCP_Server(object):
 
 
 
+    def Ethernet_Cards(self):
+        sys_net = "/sys/class/net"
+        cards = sorted(os.listdir(sys_net))
+        return(cards)
+
+
     def is_Lease_segment(self,address):
         regex = re.compile(self.address_class)
         if(len(regex.findall(address)) >= 1):
@@ -102,11 +107,12 @@ class Ghost_DHCP_Server(object):
         return(False)
 
 
-
     def Start_DHCP_Server(self):
         packet = str()
         self.set_Address_Class()
         self.gen_next_address()
+
+        self.ethernet_interfaces = self.Ethernet_Cards()     # ["eth0","eth1"]
 
         while(True):
             raw_packet = sniff(filter = "udp and port 68",count = 1)[0]
@@ -156,7 +162,9 @@ class Ghost_DHCP_Server(object):
                         else:
                             packet = self.DHCP_Offer()
 
-                    sendp(packet)
+
+                    for card in self.ethernet_interfaces:
+                        sendp(packet,iface = card)              # foreach card in system, broadcast packet
 
             except AttributeError:
                 continue

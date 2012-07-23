@@ -28,6 +28,7 @@
 
 import re
 import os
+import thread
 
 from scapy.all import *
 
@@ -107,6 +108,57 @@ class Ghost_DHCP_Server(object):
         return(False)
 
 
+    def DHCP_Process(self,raw_packet):
+        try:
+            if(raw_packet.dport == 67):
+
+                self.client_addr = raw_packet.chaddr[0:6]
+                self.transaction_id = raw_packet.xid
+
+                client_hostname = raw_packet.lastlayer().options[4][1]
+
+                message_type = int(raw_packet.lastlayer().options[0][1])
+
+                if(message_type == 1):              # DHCP Discover
+                    while(self.lease_address in list(self.leased_address)):
+                        self.gen_next_address()     # generate next address
+
+                    packet = self.DHCP_Offer()      # DHCP Offer
+
+                elif(message_type == 3):            # DHCP Request
+
+                    client_hostname = "unknown host"
+                    payload_layer = []
+                    for layer in raw_packet.lastlayer().options:
+                        if(layer == 'end'):
+                            break
+                        payload_layer.append(layer)
+
+                    for name,value in payload_layer:
+                        if(name == "hostname"):
+                            client_hostname = value
+                            break
+
+                    for name,value in payload_layer:
+                        if(name == "requested_addr"):
+                            self.requested_addr = value
+                            break
+
+                    if(self.is_Lease_segment(self.requested_addr)):
+                        packet = self.DHCP_Ack()    # DHCP Ack
+                        self.hostname_leased[client_hostname] = self.requested_addr
+                        self.leased_address.add(self.requested_addr)
+                    else:
+                        packet = self.DHCP_Offer()
+
+
+                for card in self.ethernet_interfaces:
+                    sendp(packet,iface = card)              # foreach card in system, broadcast packet
+
+        except AttributeError:
+            pass
+
+
     def Start_DHCP_Server(self):
         packet = str()
         self.set_Address_Class()
@@ -120,54 +172,10 @@ class Ghost_DHCP_Server(object):
             if not self.dhcp_control:
                 break
 
-            try:
-                if(raw_packet.dport == 67):
-
-                    self.client_addr = raw_packet.chaddr[0:6]
-                    self.transaction_id = raw_packet.xid
-
-                    client_hostname = raw_packet.lastlayer().options[4][1]
-
-                    message_type = int(raw_packet.lastlayer().options[0][1])
-
-                    if(message_type == 1):              # DHCP Discover
-                        while(self.lease_address in list(self.leased_address)):
-                            self.gen_next_address()     # generate next address
-
-                        packet = self.DHCP_Offer()      # DHCP Offer
-
-                    elif(message_type == 3):            # DHCP Request
-
-                        client_hostname = "unknown host"
-                        payload_layer = []
-                        for layer in raw_packet.lastlayer().options:
-                            if(layer == 'end'):
-                                break
-                            payload_layer.append(layer)
-
-                        for name,value in payload_layer:
-                            if(name == "hostname"):
-                                client_hostname = value
-                                break
-
-                        for name,value in payload_layer:
-                            if(name == "requested_addr"):
-                                self.requested_addr = value
-                                break
-
-                        if(self.is_Lease_segment(self.requested_addr)):
-                            packet = self.DHCP_Ack()    # DHCP Ack
-                            self.hostname_leased[client_hostname] = self.requested_addr
-                            self.leased_address.add(self.requested_addr)
-                        else:
-                            packet = self.DHCP_Offer()
+            thread.start_new_thread(self.DHCP_Process,(raw_packet,))
 
 
-                    for card in self.ethernet_interfaces:
-                        sendp(packet,iface = card)              # foreach card in system, broadcast packet
 
-            except AttributeError:
-                continue
 
 
 

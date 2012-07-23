@@ -26,7 +26,7 @@ whats_new_html = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//E
 <body>
 <p class="Bigger"><strong>Whats New in Ghost Phisher %s</strong></p>
 
-<p class="smaller">* DHCP Bug Fixes</p>
+<p class="smaller">* Performance Enhancement</p>
 </body>
 </html>
 """

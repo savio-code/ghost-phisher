@@ -110,6 +110,7 @@ class Ghost_DHCP_Server(object):
 
     def DHCP_Process(self,raw_packet):
         try:
+            packet = object                 # raw ethernet packet
             if(raw_packet.dport == 67):
 
                 self.client_addr = raw_packet.chaddr[0:6]
@@ -122,7 +123,6 @@ class Ghost_DHCP_Server(object):
                 if(message_type == 1):              # DHCP Discover
                     while(self.lease_address in list(self.leased_address)):
                         self.gen_next_address()     # generate next address
-
                     packet = self.DHCP_Offer()      # DHCP Offer
 
                 elif(message_type == 3):            # DHCP Request
@@ -144,13 +144,25 @@ class Ghost_DHCP_Server(object):
                             self.requested_addr = value
                             break
 
-                    if(self.is_Lease_segment(self.requested_addr)):
+                    if(self.requested_addr in list(self.leased_address)):
+                        if(self.hostname_leased.has_key(client_hostname)):
+                            if(self.requested_addr == self.hostname_leased[client_hostname]):
+                                packet = self.DHCP_Ack()    # DHCP Ack
+                                self.hostname_leased[client_hostname] = self.requested_addr
+                                self.leased_address.add(self.requested_addr)
+                            else:
+                                packet = self.DHCP_Offer()
+                        else:
+                            packet = self.DHCP_Ack()
+
+                    elif(self.is_Lease_segment(self.requested_addr)):
                         packet = self.DHCP_Ack()    # DHCP Ack
                         self.hostname_leased[client_hostname] = self.requested_addr
                         self.leased_address.add(self.requested_addr)
-                    else:
-                        packet = self.DHCP_Offer()
+                        self.gen_next_address()
 
+                    else:
+                        return
 
                 for card in self.ethernet_interfaces:
                     sendp(packet,iface = card)              # foreach card in system, broadcast packet
@@ -165,17 +177,7 @@ class Ghost_DHCP_Server(object):
         self.gen_next_address()
 
         self.ethernet_interfaces = self.Ethernet_Cards()     # ["eth0","eth1"]
-
-        while(True):
-            raw_packet = sniff(filter = "udp and port 68",count = 1)[0]
-
-            if not self.dhcp_control:
-                break
-
-            thread.start_new_thread(self.DHCP_Process,(raw_packet,))
-
-
-
+        sniff(filter = "udp and port 68",prn = self.DHCP_Process)
 
 
 

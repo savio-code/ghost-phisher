@@ -14,17 +14,18 @@ try:
 except AttributeError:
     _fromUtf8 = lambda s: s
 
+
 class Ui_tip(object):
     def setupUi(self, tip):
         tip.setObjectName(_fromUtf8("tip"))
-        tip.resize(541, 134)
+        tip.resize(499, 131)
         self.horizontalLayout = QtGui.QHBoxLayout(tip)
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
         self.horizontalLayout_2 = QtGui.QHBoxLayout()
         self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
         self.label = QtGui.QLabel(tip)
         self.label.setText(_fromUtf8(""))
-        self.label.setPixmap(QtGui.QPixmap(_fromUtf8("%s/gui/images/tip.png"%(cwd))))
+        self.label.setPixmap(QtGui.QPixmap(_fromUtf8("%s/gui/images/tip.png"%(os.getcwd()))))
         self.label.setObjectName(_fromUtf8("label"))
         self.horizontalLayout_2.addWidget(self.label)
         self.verticalLayout_2 = QtGui.QVBoxLayout()
@@ -34,9 +35,6 @@ class Ui_tip(object):
         self.label_2 = QtGui.QLabel(tip)
         self.label_2.setObjectName(_fromUtf8("label_2"))
         self.verticalLayout.addWidget(self.label_2)
-        self.label_6 = QtGui.QLabel(tip)
-        self.label_6.setObjectName(_fromUtf8("label_6"))
-        self.verticalLayout.addWidget(self.label_6)
         self.label_3 = QtGui.QLabel(tip)
         self.label_3.setObjectName(_fromUtf8("label_3"))
         self.verticalLayout.addWidget(self.label_3)
@@ -63,13 +61,12 @@ class Ui_tip(object):
 
     def retranslateUi(self, tip):
         tip.setWindowTitle(QtGui.QApplication.translate("tip", "Ghost Phisher Tips", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_2.setText(QtGui.QApplication.translate("tip", "Press the F2 Key from the keyboard to get font settings,You can hide or display", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_6.setText(QtGui.QApplication.translate("tip", "the program settings using F3 button (This helps in adjusting the height of the program)", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_3.setText(QtGui.QApplication.translate("tip", "if you have problems with understanding how to use this application then visit ", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_2.setText(QtGui.QApplication.translate("tip", "Press the F2 Key from the keyboard to get font settings, if you have  problems with ", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_3.setText(QtGui.QApplication.translate("tip", "understanding how to use this application then visit:", None, QtGui.QApplication.UnicodeUTF8))
         self.label_4.setText(QtGui.QApplication.translate("tip", "http://code.google.com/p/ghost-phisher/ ", None, QtGui.QApplication.UnicodeUTF8))
         self.label_5.setText(QtGui.QApplication.translate("tip", "for a video tutorial on how to use the application.", None, QtGui.QApplication.UnicodeUTF8))
         self.checkBox.setText(QtGui.QApplication.translate("tip", "Dont show this message again", None, QtGui.QApplication.UnicodeUTF8))
-        self.setWindowTitle('Ghost Phisher Tips')
+
 
 
 class tip_settings(QtGui.QDialog,Ui_tip):
@@ -87,4 +84,3 @@ class tip_settings(QtGui.QDialog,Ui_tip):
             self.settings_object.create_settings('tip-settings',"0")
         else:
             self.settings_object.create_settings('tip-settings',"1")
-

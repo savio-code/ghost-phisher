@@ -1913,7 +1913,7 @@ class Ui_ghost_phisher(object):
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:7pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Redirect all traffic to Ghost with redirection to target address</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.route_traffic_combo.setText(QtGui.QApplication.translate("ghost_phisher", "Redirect Traffic to Target Address", None, QtGui.QApplication.UnicodeUTF8))
+        self.route_traffic_combo.setText(QtGui.QApplication.translate("ghost_phisher", "Redirect Traffic to Target Address (MITM Attack)", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox_21.setTitle(QtGui.QApplication.translate("ghost_phisher", "Status", None, QtGui.QApplication.UnicodeUTF8))
         self.label_40.setText(QtGui.QApplication.translate("ghost_phisher", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"

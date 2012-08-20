@@ -2504,9 +2504,6 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
                     continue
                 self.combo_interface_3.addItem(interface)
 
-        if(self.stop_arp_poison.isEnabled()):
-            self.stop_arp_poison_attack()
-
         if(sys_interface):
             self.start_arp_poison.setEnabled(True)
             self.stop_arp_poison.setEnabled(False)
@@ -2615,6 +2612,8 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
         self.start_arp_poison.setEnabled(True)
         self.stop_arp_poison.setEnabled(False)
         self.interface_selection_control = True
+        self.arp_poison_browser.append(str())
+        self.arp_poison_browser.append("<font color=red>Stopped ARP Cache Poisoning at " + str(time.ctime()) + "</font>")
 
 
 

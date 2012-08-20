@@ -1526,7 +1526,7 @@ class Ui_ghost_phisher(object):
         QtCore.QMetaObject.connectSlotsByName(ghost_phisher)
 
     def retranslateUi(self, ghost_phisher):
-        ghost_phisher.setWindowTitle(QtGui.QApplication.translate("ghost_phisher", "Ghost Phiser", None, QtGui.QApplication.UnicodeUTF8))
+        ghost_phisher.setWindowTitle(QtGui.QApplication.translate("ghost_phisher", "Ghost Phisher", None, QtGui.QApplication.UnicodeUTF8))
         self.ghost_phisher_version_label.setText(QtGui.QApplication.translate("ghost_phisher", "V1.46", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox_15.setTitle(QtGui.QApplication.translate("ghost_phisher", "Access Point Details", None, QtGui.QApplication.UnicodeUTF8))
         self.access_point_label.setText(QtGui.QApplication.translate("ghost_phisher", "Acess Point Name:", None, QtGui.QApplication.UnicodeUTF8))

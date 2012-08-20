@@ -297,6 +297,8 @@ class Ghost_phisher(QtGui.QMainWindow,Ui_ghost_phisher):    # Main class for all
 
         self.monitor_interface = str()              # wlan0, mon0 etc
 
+        self.interface_selection_control_session = True
+
         self.red_light = QtGui.QPixmap("%s/gui/images/red_led.png"%(os.getcwd()))
         self.green_light = QtGui.QPixmap("%s/gui/images/green_led.png"%(os.getcwd()))
 
@@ -1971,10 +1973,19 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
     def reset(self):
         selected_card = str(self.combo_interface_2.currentText())
         if(selected_card == "Select Interface Card"):
+            self.start_sniffing_button_3.setEnabled(False)
+            self.stop_sniffing_button_3.setEnabled(False)
             self.ethernet_mode_radio_2.setChecked(True)
             self.label.setText("Gateway IP Address / Router IP Address:")
             self.enable_control(False)
             return
+
+        if(self.interface_selection_control_session):
+            self.start_sniffing_button_3.setEnabled(True)
+            self.stop_sniffing_button_3.setEnabled(False)
+        else:
+            self.start_sniffing_button_3.setEnabled(False)
+            self.stop_sniffing_button_3.setEnabled(True)
 
         self.enable_control(True)
         if(self.interface_card_info.has_key(selected_card)):
@@ -1987,8 +1998,8 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
         self.groupBox_2.setEnabled(status)
         self.passive_mode_radio_2.setEnabled(status)
         self.ethernet_mode_radio_2.setEnabled(status)
-        self.start_sniffing_button_3.setEnabled(status)
-        self.stop_sniffing_button_3.setEnabled(status)
+##        self.start_sniffing_button_3.setEnabled(status)
+##        self.stop_sniffing_button_3.setEnabled(status)
 
 
     def set_attack_option(self,reset = False):
@@ -2031,6 +2042,8 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
         self.interface_card_info = {}
         self.combo_interface_2.clear()
         self.host_interface = str()
+        self.stop_sniffing_button_3.setEnabled(False)
+        self.start_sniffing_button_3.setEnabled(False)
         interfaces = commands.getoutput("iwconfig").splitlines()
 
         for card in os.listdir("/sys/class/net"):
@@ -2394,6 +2407,7 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
             self.display_error("Failed to create cookie database: " + str(message))
             return
 
+        self.interface_selection_control_session = False
         ghost_settings.create_settings("self.wep_key_edit_2",ip_wep_edit)
         thread.start_new_thread(self.prepare_Mozilla_Database,())       # Trucates and prepares database
 
@@ -2456,6 +2470,7 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
             self.kill_MITM_process()
 
         self.cookie_core.control = False
+        self.interface_selection_control_session = True
 
         self.wep_key_edit_2.setEnabled(True)                              # Release WEP/WPA Decryption LineEdit
         self.start_sniffing_button_3.setEnabled(True)

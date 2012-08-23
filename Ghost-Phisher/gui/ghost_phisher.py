@@ -2360,7 +2360,7 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
     # Attack starts here on button click()
     def start_Cookie_Attack(self):
         if(self.stop_arp_poison.isEnabled()):
-            QtGui.QMessageBox.warning(self,str(),"Please you cannot run the ARP Cache Poisoning and Session Hijacking attacks at the same time")
+            QtGui.QMessageBox.warning(self,"Routing Conflict","Please you cannot run the ARP Cache Poisoning and Session Hijacking attacks at the same time")
             return
 
         self.cookie_core = Cookie_Hijack_Core()                 # Cookie Capture and processing core
@@ -2553,7 +2553,7 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
         self.arp_poison_browser.clear()
 
         if(self.stop_sniffing_button_3.isEnabled()):
-            QtGui.QMessageBox.warning(self,str(),"Please you cannot run the Session Hijacking and ARP Cache Poisoning attacks at the same time")
+            QtGui.QMessageBox.warning(self,"Routing Conflict","Please you cannot run the Session Hijacking and ARP Cache Poisoning attacks at the same time")
             return
 
         if(not re.match("(\d+.){3}\d+",target_address)):

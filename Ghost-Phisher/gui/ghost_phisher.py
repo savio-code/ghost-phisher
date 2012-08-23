@@ -2008,7 +2008,7 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
             return
 
         if(self.ethernet_mode_radio_2.isChecked()):
-            self.monitor_interface_label.setText("Ethernet Mode")
+            self.monitor_interface_label_2.setText("Ethernet Mode")
             self.label_46.setText("Gateway IP Address / Router IP Address:")
         else:
             if(self.interface_card_info[selected_card] == "ETHERNET"):
@@ -2017,10 +2017,10 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
                 return
             if(self.interface_card_info[selected_card] == "WIFI"):
                 if(self.passive_mode_radio_2.isChecked()):
-                    self.monitor_interface_label.setText("Monitor Mode")
+                    self.monitor_interface_label_2.setText("Monitor Mode")
                     self.label_46.setText("WEP Decryption Key:")
                 else:
-                    self.monitor_interface_label.setText("Ethernet Mode")
+                    self.monitor_interface_label_2.setText("Ethernet Mode")
                     self.label_46.setText("Gateway IP Address / Router IP Address:")
 
 

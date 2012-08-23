@@ -313,7 +313,7 @@ class Ghost_phisher(QtGui.QMainWindow,Ui_ghost_phisher):    # Main class for all
         self.mozilla_cookie_engine = Mozilla_Cookie_Core()      # Mozilla fierfox cookie engine
 
 
-        self.connect(self.refresh_button,QtCore.SIGNAL("clicked()"),self.refresh_interface)
+        self.connect(self.refresh_button_3,QtCore.SIGNAL("clicked()"),self.refresh_interface)
         self.connect(self.start_sniffing_button_3,QtCore.SIGNAL("clicked()"),self.start_Cookie_Attack)
         self.connect(self.ethernet_mode_radio_2,QtCore.SIGNAL("clicked()"),self.set_attack_option)
         self.connect(self.passive_mode_radio_2,QtCore.SIGNAL("clicked()"),self.set_attack_option)

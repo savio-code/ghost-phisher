@@ -1976,7 +1976,7 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
             self.start_sniffing_button_3.setEnabled(False)
             self.stop_sniffing_button_3.setEnabled(False)
             self.ethernet_mode_radio_2.setChecked(True)
-            self.label.setText("Gateway IP Address / Router IP Address:")
+            self.label_46.setText("Gateway IP Address / Router IP Address:")
             self.enable_control(False)
             return
 
@@ -1991,15 +1991,13 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
         if(self.interface_card_info.has_key(selected_card)):
             if(self.interface_card_info[selected_card] != "WIFI"):
                 self.ethernet_mode_radio_2.setChecked(True)
-                self.label.setText("Gateway IP Address / Router IP Address:")
+                self.label_46.setText("Gateway IP Address / Router IP Address:")
 
 
     def enable_control(self,status):
         self.groupBox_2.setEnabled(status)
         self.passive_mode_radio_2.setEnabled(status)
         self.ethernet_mode_radio_2.setEnabled(status)
-##        self.start_sniffing_button_3.setEnabled(status)
-##        self.stop_sniffing_button_3.setEnabled(status)
 
 
     def set_attack_option(self,reset = False):
@@ -2011,7 +2009,7 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
 
         if(self.ethernet_mode_radio_2.isChecked()):
             self.monitor_interface_label.setText("Ethernet Mode")
-            self.label.setText("Gateway IP Address / Router IP Address:")
+            self.label_46.setText("Gateway IP Address / Router IP Address:")
         else:
             if(self.interface_card_info[selected_card] == "ETHERNET"):
                 QtGui.QMessageBox.warning(self,"Interface Option","The selected mode only works with WIFI enabled interface cards")
@@ -2020,10 +2018,10 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
             if(self.interface_card_info[selected_card] == "WIFI"):
                 if(self.passive_mode_radio_2.isChecked()):
                     self.monitor_interface_label.setText("Monitor Mode")
-                    self.label.setText("WEP Decryption Key:")
+                    self.label_46.setText("WEP Decryption Key:")
                 else:
                     self.monitor_interface_label.setText("Ethernet Mode")
-                    self.label.setText("Gateway IP Address / Router IP Address:")
+                    self.label_46.setText("Gateway IP Address / Router IP Address:")
 
 
     def display_error(self,message):

@@ -177,7 +177,7 @@ class Ghost_DHCP_Server(object):
         self.gen_next_address()
 
         self.ethernet_interfaces = self.Ethernet_Cards()     # ["eth0","eth1"]
-        sniff(filter = "udp and port 68",prn = self.DHCP_Process)
+        sniff(filter = "udp and port 68",prn = self.DHCP_Process,store = 0)
 
 
 

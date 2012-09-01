@@ -1995,7 +1995,6 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
 
 
     def enable_control(self,status):
-        self.groupBox_2.setEnabled(status)
         self.passive_mode_radio_2.setEnabled(status)
         self.ethernet_mode_radio_2.setEnabled(status)
 

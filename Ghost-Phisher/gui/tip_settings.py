@@ -63,7 +63,7 @@ class Ui_tip(object):
         tip.setWindowTitle(QtGui.QApplication.translate("tip", "Ghost Phisher Tips", None, QtGui.QApplication.UnicodeUTF8))
         self.label_2.setText(QtGui.QApplication.translate("tip", "Press the F2 Key from the keyboard to get font settings, if you have  problems with ", None, QtGui.QApplication.UnicodeUTF8))
         self.label_3.setText(QtGui.QApplication.translate("tip", "understanding how to use this application then visit:", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_4.setText(QtGui.QApplication.translate("tip", "http://code.google.com/p/ghost-phisher/ ", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_4.setText(QtGui.QApplication.translate("tip", "<a href=\"http://code.google.com/p/ghost-phisher/\">http://code.google.com/p/ghost-phisher</a> ", None, QtGui.QApplication.UnicodeUTF8))
         self.label_5.setText(QtGui.QApplication.translate("tip", "for a video tutorial on how to use the application.", None, QtGui.QApplication.UnicodeUTF8))
         self.checkBox.setText(QtGui.QApplication.translate("tip", "Dont show this message again", None, QtGui.QApplication.UnicodeUTF8))
 

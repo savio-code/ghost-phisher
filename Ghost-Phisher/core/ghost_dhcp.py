@@ -165,7 +165,9 @@ class Ghost_DHCP_Server(object):
                         return
 
                 for card in self.ethernet_interfaces:
-                    sendp(packet,iface = card)              # foreach card in system, broadcast packet
+                    try:
+                        sendp(packet,iface = card)              # foreach card in system, broadcast packet
+                    except:pass
 
         except AttributeError:
             pass

@@ -16,6 +16,7 @@ from settings import *
 from ghost_ui import *
 from core.http_core import *
 from core import variables
+from core.ghost_dns import *
 from core import ghost_trap_core
 from core import metasploit_payload
 from core.update import update_class
@@ -86,11 +87,11 @@ class Ghost_phisher(QtGui.QMainWindow,Ui_ghost_phisher):    # Main class for all
         self.domain_add_button.setEnabled(False)
         self.groupBox_16.setEnabled(False)
 
-        self.lease_count = 0            # Used with the Ghost DHCP Server to display lease
+        self.lease_count = 0                        # Used with the Ghost DHCP Server to display lease
 
-        self.check_root_priviledges()   # Check root priviledges
+        self.check_root_priviledges()               # Check root priviledges
 
-        self.dns_control = 1     # Notifies Ghost Trap of DNS Status
+        self.ghost_dns = Ghost_DNS_Server()        # Ghost DNS Server instance
 
         # Ghost Trap method constructor calls and variables
         self.encode_number_list()
@@ -366,9 +367,8 @@ class Ghost_phisher(QtGui.QMainWindow,Ui_ghost_phisher):    # Main class for all
         self.connect(self.monitor_button,QtCore.SIGNAL("clicked()"),self.set_monitor)
         self.connect(self,QtCore.SIGNAL("dns started"),self.dns_started)
         self.connect(self,QtCore.SIGNAL("dns failed"),self.dns_failed)
-        self.connect(self,QtCore.SIGNAL("system interrupt"),self.dns_system_interrupt)
         self.connect(self,QtCore.SIGNAL("dns stopped"),self.stop_dns)
-        self.connect(self,QtCore.SIGNAL("new client connection"),self.update_dns_connections)
+        self.connect(self.ghost_dns,QtCore.SIGNAL("new client connection"),self.update_dns_connections)
         self.connect(self,QtCore.SIGNAL("run tips"),self.run_tips)
         self.connect(self,QtCore.SIGNAL("run whats new"),self.run_what_new)
         self.connect(self,QtCore.SIGNAL("access point output"),self.update_access_output)
@@ -804,9 +804,9 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
 
 
     def update_dns_connections(self):
-        global dns_connections
-        dns_connections += 1
-        self.dns_connection_label.setText('Connections:<font color=green>\t %s</font>'%(dns_connections))
+        inform = self.ghost_dns.inform
+        self.announce_client(inform[0],inform[1])
+        self.dns_connection_label.setText('Connections:<font color=green>\t %s</font>'%(self.ghost_dns.connection))
 
 
     def announce_client(self,client_hostname,address):
@@ -814,115 +814,33 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
         if len(address) > 2:
             self.dns_textbrowser.append('<font color=blue>%s just got our Fake IP address for %s</font>'%(client_hostname,address))
         else:
-            if str(client_hostname) != str(selected_dns_ip_address):
-                self.dns_textbrowser.append('<font color=blue>%s just got our Fake IP address</font>'%(client_hostname))
-
-
-
-    def break_last_loop_thread(self):
-        global selected_dns_ip_address
-        dns_fake_ip = str(selected_dns_ip_address)
-        sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
-        sock.sendto('empty query',(dns_fake_ip,53))   # This ultimately breaks the last turn of the DNS loop to aviod restart exceptions
-        sock.close()
+            self.dns_textbrowser.append('<font color=blue>%s just got our Fake IP address</font>'%(client_hostname))
 
 
     def stop_dns(self):
-        global dns_connections
-        self.dns_control = 1
-        dns_connections = 0
         self.dns_start.setEnabled(True)
         self.dns_stop.setEnabled(False)
-        thread.start_new_thread(self.break_last_loop_thread,())     # This thread breaks the last DNS loop, we get segmentfaults if we run it here directly
+        self.ghost_dns.control_dns = False
+        self.ghost_dns.terminate()
+        self.ghost_dns = Ghost_DNS_Server()
+
         self.label_5.setText("<font color=green>Runtime:</font> Service not started")
         self.dns_textbrowser.append('<font color=red>DNS Service stopped at %s'%(time.ctime()))
         self.service_dns_run_label.setText("<font color=green>Service running on:</font> Service not started")
 
 
     def dns_failed(self):
-        self.dns_control = 1
         self.dns_start.setEnabled(True)
         self.dns_stop.setEnabled(False)
         self.label_5.setText("<font color=green>Runtime:</font> Service not started")
         self.dns_textbrowser.append('<font color=red>DNS Server failed to start: %s'%(exception))
         self.service_dns_run_label.setText("<font color=green>Service running on:</font> Service not started")
-        thread.start_new_thread(self.break_last_loop_thread,())
 
-    def dns_system_interrupt(self):
-
-        self.dns_control = 1
-        self.dns_start.setEnabled(True)
-        self.dns_stop.setEnabled(False)
-        self.label_5.setText("<font color=green>Runtime:</font> Service not started")
-        self.dns_textbrowser.append('<font color=red>Shit!, we got a system interrupt, Please restart service')
-        self.service_dns_run_label.setText("<font color=green>Service running on:</font> Service not started")
-
-
-    def dns_response(self,query,fake_ip):
-        ''' function crafts query packets to be sent
-            to client,packets are made in respect to
-            the IETF standard.
-            http://www.ietf.org/rfc/rfc1035.txt
-        '''
-        packet = ''
-        packet+=query[:2] + "\x81\x80"
-        packet+=query[4:6] + query[4:6] + '\x00\x00\x00\x00'                # Questions and Answers Counts
-        packet+=query[12:]                                                  # Original Domain Name Question
-        packet+='\xc0\x0c'                                                  # Pointer to domain name
-        packet+='\x00\x01\x00\x01\x00\x00\x00\x3c\x00\x04'                  # Response type, ttl and resource data length -> 4 bytes
-        packet+=str.join('',map(lambda x: chr(int(x)),fake_ip.split('.')))  # 4bytes of IP
-        return packet
-
-    #
-    # DNS Server Thread
-    #
-    def dns_server_thread(self,alternate,arg2):                                  # alternate variable tells the application that im running the program in a ip to wesite bases
-        ''' Thread open a Default UDP port 53
-            for servicing client queries.
-        '''
-        global exception
-        global dns_ip_and_websites
-        global selected_dns_ip_address
-
-        dns_fake_ip = str(self.dns_ip_address.text())
-        selected_dns_ip_address = str(self.ip_address_combo.currentText())
-        time.sleep(2)
-        try:
-            DNS_socket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
-            DNS_socket.bind((selected_dns_ip_address,53))
-            self.emit(QtCore.SIGNAL("dns started"))
-            while True:
-                if self.dns_control == 0:
-                    if alternate != None:
-                        DNS_query = DNS_socket.recvfrom(1024)
-                        for website in dns_ip_and_websites.keys():
-                            website_string = str(website)
-                            process = website_string[website_string.index('.')+1:-1]
-                            striped_webstring = process[0:process.index('.')]
-                            if striped_webstring in DNS_query[0]:
-                                corresponding_ip = dns_ip_and_websites[website]
-                                if DNS_query[1][0] not in ghost_trap_http.cookies:
-                                    DNS_socket.sendto(self.dns_response(DNS_query[0],corresponding_ip),DNS_query[1])
-                                    self.announce_client(DNS_query[1][0],website)
-                                    self.emit(QtCore.SIGNAL("new client connection"))
-                    else:
-                        DNS_query = DNS_socket.recvfrom(1024)
-                        if DNS_query[1][0] not in ghost_trap_http.cookies:
-                            DNS_socket.sendto(self.dns_response(DNS_query[0],dns_fake_ip),DNS_query[1])
-                            self.announce_client(DNS_query[1][0],'1')
-                            self.emit(QtCore.SIGNAL("new client connection"))
-                else:
-                    break
-        except socket.error,e:
-            exception = e[1]
-            self.emit(QtCore.SIGNAL("dns failed"))
-            DNS_socket.close()
 
     def ip_to_website(self):
         ''' maps fake ip address to corresponding
             websites in the global dictionary
         '''
-        global dns_ip_and_websites
         domain_ip_address = str(self.domain_ip.text())
         website_address = str(self.domain_label.text())
         if domain_ip_address.count('.') != 3:                                   # Check if inputed data is valid
@@ -930,39 +848,48 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
         elif len(website_address) < 3:
             QtGui.QMessageBox.warning(self,"Invalid Web Address","Please input a web address to map to IP address")
         else:
-            dns_ip_and_websites[website_address] = domain_ip_address
+            self.ghost_dns.mapping[website_address] = domain_ip_address
             self.dns_textbrowser.append('<font color=green>Added \'%s\' resolving as %s</font>'%(website_address,domain_ip_address))
             self.domain_ip.clear()
             self.domain_label.clear()
+
+
 
     def launch_dns(self):
         ''' Launches DNS attack pending on the
             option selected from the radio
             buttons
         '''
-        global dns_ip_and_websites
+        self.ghost_dns.interface = str(self.card_interface_combo.currentText())
+        self.connect(self.ghost_dns,QtCore.SIGNAL("new client connection"),self.update_dns_connections)
 
-        self.dns_control = 0
-        fake_dns_resolution_ip = ''                                             # holds the fake dns resolution ip address
         if self.resolveall_radio.isChecked():
             if str(self.dns_ip_address.text()).count('.') != 3:                 #Check if ip address area is empty
                 QtGui.QMessageBox.warning(self,'Invalid Resolution IP Address','Please input a valid Fake IP address of which you want the dns to resolve client queries')
             else:
-                fake_dns_resolution_ip += str(self.dns_ip_address.text())
+                fake_dns_resolution_ip = str(self.dns_ip_address.text())
+                self.ghost_dns.set_DNS_Mode("SINGLE")
+                self.ghost_dns.single = fake_dns_resolution_ip
+
                 ghost_settings.create_settings('self.dns_ip_address',fake_dns_resolution_ip)       # Write settings to last settings file
+
                 self.dns_textbrowser.clear()
                 self.dns_textbrowser.append('<font color=green>Starting Fake DNS Server....')
                 self.dns_start.setEnabled(False)
                 self.dns_stop.setEnabled(True)
-                thread.start_new_thread(self.dns_server_thread,(None,0))                  # DNS Server thread
+                self.ghost_dns.start()
+                self.emit(QtCore.SIGNAL("dns started"))
+
         else:
             try:
-                dns_ip_and_websites.keys()[0]
+                self.ghost_dns.mapping.keys()[0]
+                self.ghost_dns.set_DNS_Mode("MAPPING")
                 self.dns_textbrowser.clear()
                 self.dns_textbrowser.append('<font color=green>Starting Fake DNS Server....')
                 self.dns_start.setEnabled(False)
                 self.dns_stop.setEnabled(True)
-                thread.start_new_thread(self.dns_server_thread,(1,0))
+                self.ghost_dns.start()                  # DNS Server thread
+                self.emit(QtCore.SIGNAL("dns started"))
             except IndexError:
                 QtGui.QMessageBox.warning(self,"Empty IP to Website address mappings","Seems you forgot to add websites and IP addresses using the (Add) button")
                 self.domain_add_button.setFocus()
@@ -980,6 +907,7 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
             self.ghost_dhcp_server = ghost_dhcp.Ghost_DHCP_Server()
         except ImportError:
             self.dhcp_start.setEnabled(False)
+
             self.dhcp_status.append('''<font color=green>Scapy Library is not installed, Please run </font>
             <font color=red>"apt-get install python-scapy" </font><font color=green>on terminal to install</font>''')
 
@@ -1368,7 +1296,7 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
             #
             os.chmod('%s/Ghost-Phisher-Database'%(cwd),0777)
 
-        if self.dns_control == 0:
+        if self.ghost_dns.control_dns:
             if http_server_port == 80:
                 http_address = 'http://%s/'%(str(self.lineEdit_2.text()))  # If DNS is activated then give e.g http://www.foo-bar/ instead of http://192.168.0.23/
             else:
@@ -1658,7 +1586,7 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
     def display_initialization(self,status):
         self.ghost_spawn_browser.clear()
 
-        if self.dns_control:
+        if self.ghost_dns.control_dns:
             self.display_error_message("DNS Server is currently not started,\
             it is recommended that you use this attack with the DNS server for optimum client redirections")
 
@@ -2654,7 +2582,7 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
             if(os.environ.get("ghost_fake_http_control") == "start"):
                     self.stop_http()
 
-            if self.dns_control == 0:
+            if self.ghost_dns.control_dns:
                 self.stop_dns()
 
             try:

@@ -2332,7 +2332,8 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
             os.environ["gateway_ip_address"] = ip_wep_edit             # Gateway Address
 
             path = os.getcwd() + "/core/MITM_Core.py"
-            mitm_control = subprocess.Popen("python " + path,shell = True,stdout = subprocess.PIPE,stderr = subprocess.PIPE)
+            open_file = open(os.devnull,"w")
+            mitm_control = subprocess.Popen("python " + path,shell = True,stdout = open_file,stderr = open_file)
             self.mitm_pid = mitm_control.pid + 1
 
             self.mitm_activated_label.setEnabled(True)

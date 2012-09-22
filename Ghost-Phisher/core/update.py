@@ -16,7 +16,7 @@ class update_class(QtGui.QDialog,update_ui.Ui_Dialog):
         self.setupUi(self)
         self.retranslateUi(self)
 
-        self.current_version = 1.54
+        self.current_version = 1.55
 
         self.new_version = float()
         self.svn_failure_message = str()

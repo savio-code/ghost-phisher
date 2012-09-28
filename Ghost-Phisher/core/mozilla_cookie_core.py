@@ -36,8 +36,6 @@ class Mozilla_Cookie_Core(object):
         self.isdeleted = False
         self.cookie_database = str()             # /root/.mozilla/firefox/nq474mcm.default/cookies.sqlite (Use self.get_Cookie_Path() to file path)
 
-
-
     def _create_moz_cookies(self):
         sql_code = "CREATE TABLE moz_cookies (id INTEGER PRIMARY KEY, baseDomain TEXT, name TEXT, value TEXT, host TEXT, path TEXT, expiry INTEGER, lastAccessed INTEGER, creationTime INTEGER, isSecure INTEGER, isHttpOnly INTEGER)"
         mozilla_cookie_db = sqlite3.connect(self.cookie_database)
@@ -52,16 +50,7 @@ class Mozilla_Cookie_Core(object):
             self.kill_Process("firefox-bin")
             os.remove(self.cookie_database)
             self._create_moz_cookies()
-            self.isdeleted = False
-        try:
-            mozilla_cookie_db = sqlite3.connect(self.cookie_database)
-            mozilla_cursor = mozilla_cookie_db.cursor()
-            mozilla_cursor.execute("select * from moz_cookies limit 1")
-            mozilla_cookie_db.close()
-        except:
-            os.remove(self.cookie_database)
-            self._create_moz_cookies()
-
+            self.isdeleted = True
 
 
 
@@ -71,7 +60,16 @@ class Mozilla_Cookie_Core(object):
         self._check_database_compatibility()
         mozilla_cookie_db = sqlite3.connect(self.cookie_database)
         mozilla_cursor = mozilla_cookie_db.cursor()
-        mozilla_cursor.execute(sql_statement)
+        try:
+            mozilla_cursor.execute(sql_statement)
+        except Exception,e:
+            mozilla_cursor.close()
+            os.remove(self.cookie_database)
+            self._create_moz_cookies()
+            mozilla_cookie_db = sqlite3.connect(self.cookie_database)
+            mozilla_cursor = mozilla_cookie_db.cursor()
+            mozilla_cursor.execute(sql_statement)
+
         return_objects = mozilla_cursor.fetchall()
         if(return_objects):
             return(return_objects)

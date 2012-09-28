@@ -2409,8 +2409,7 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
     def kill_MITM_process(self):
         while(True):
             try:
-                os.kill(self.mitm_pid,signal.SIGINT)
-                os.kill(self.mitm_pid - 1,signal.SIGINT)
+                os.kill(self.mitm_pid,signal.SIGTERM)
             except OSError:
                 return
 

@@ -112,11 +112,10 @@ class Ghost_DNS_Server(QtCore.QThread):
 
 
     def _socket_responder(self):
-
         self.sock.bind(("",53))
         while(self.control_dns):
             self.sock.recvfrom(1024)
-        sock.close()
+        self.sock.close()
 
 
 

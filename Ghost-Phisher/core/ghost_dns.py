@@ -112,6 +112,7 @@ class Ghost_DNS_Server(QtCore.QThread):
 
 
     def _socket_responder(self):
+        self.sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)     # Socket response
         self.sock.bind(("",53))
         while(self.control_dns):
             self.sock.recvfrom(1024)
@@ -142,6 +143,9 @@ class Ghost_DNS_Server(QtCore.QThread):
 
     def stop_DNS(self):
         self.control_dns = False
+        sock_close = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+        sock_close.connect(("127.0.0.1",53))
+        sock_close.sendall("Shutdown Now")
         self.sock.close()
 
 

@@ -27,6 +27,7 @@
 
 import re
 import os
+import socket
 import thread
 
 from scapy.all import *
@@ -52,6 +53,8 @@ class Ghost_DNS_Server(QtCore.QThread):
 
         self.control_dns = False
         self.inform = []                    # ['192.168.0.3','www.google.com']
+
+        self.sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)     # Socket response
 
 
     def DNS_A_Record(self,target_address):
@@ -108,9 +111,18 @@ class Ghost_DNS_Server(QtCore.QThread):
                     sendp(packet,iface = self.interface)
 
 
+    def _socket_responder(self):
+
+        self.sock.bind(("",53))
+        while(self.control_dns):
+            self.sock.recvfrom(1024)
+        sock.close()
+
+
 
     def filter_packet(self):
-        sniff(filter = "DNS",iface = self.interface,prn = self.process_Query,count = 0)
+        thread.start_new_thread(self._socket_responder,())
+        sniff(iface = self.interface,prn = self.process_Query,count = 0)
 
 
 
@@ -131,6 +143,7 @@ class Ghost_DNS_Server(QtCore.QThread):
 
     def stop_DNS(self):
         self.control_dns = False
+        self.sock.close()
 
 
 

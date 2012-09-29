@@ -820,7 +820,7 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
     def stop_dns(self):
         self.dns_start.setEnabled(True)
         self.dns_stop.setEnabled(False)
-        self.ghost_dns.control_dns = False
+        self.ghost_dns.stop_DNS()
         self.ghost_dns.terminate()
         self.ghost_dns = Ghost_DNS_Server()
 

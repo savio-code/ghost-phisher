@@ -2312,7 +2312,7 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
             path = os.getcwd() + "/core/MITM_Core.py"
             open_file = open(os.devnull,"w")
             mitm_control = subprocess.Popen("python " + path,shell = True,stdout = open_file,stderr = open_file)
-            self.mitm_pid = mitm_control.pid + 1
+            self.mitm_pid = mitm_control.pid
 
             self.mitm_activated_label.setEnabled(True)
             self.mitm_activated_label.setText("<font color = green><b>Internal MITM Engine Activated</b></font>")
@@ -2407,11 +2407,7 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
 
 
     def kill_MITM_process(self):
-        while(True):
-            try:
-                os.kill(self.mitm_pid,signal.SIGTERM)
-            except OSError:
-                return
+        os.system("kill " + str(self.mitm_pid))
 
 
     def clear_items(self):

@@ -1586,7 +1586,7 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
     def display_initialization(self,status):
         self.ghost_spawn_browser.clear()
 
-        if self.ghost_dns.control_dns:
+        if not self.ghost_dns.control_dns:
             self.display_error_message("DNS Server is currently not started,\
             it is recommended that you use this attack with the DNS server for optimum client redirections")
 

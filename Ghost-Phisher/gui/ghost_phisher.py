@@ -408,7 +408,7 @@ class Ghost_phisher(QtGui.QMainWindow,Ui_ghost_phisher):    # Main class for all
 
     def display_hint_options(self):
         try:
-            self.setWindowFlags(QtCore.Qt.WindowMaximizeButtonHint)
+            self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowMaximizeButtonHint | QtCore.Qt.WindowCloseButtonHint | QtCore.Qt.WindowMinimizeButtonHint)
         except:pass
 
 

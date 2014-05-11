@@ -2,5 +2,5 @@
 # The download count for this file climbs simultaneously as different instances of the application #
 # Check periodically for changes in the version number #
 
-version = 1.62
+version = 1.63
 total_files = 57

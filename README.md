@@ -48,7 +48,7 @@ Installation on Debian Package supported systems:
 
 The <i>source code</i> for the program can be fetched using the following command on terminal
 <br><hr>
-<code>root@host:~# svn checkout http://ghost-phisher.googlecode.com/svn/Ghost-Phisher/</code>
+<code>root@host:~# svn checkout http://github.com/savio-code/ghost-phisher/trunk/Ghost-Phisher/</code>
 <hr>
 
 ###Upgrading and Updating

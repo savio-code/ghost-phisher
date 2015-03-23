@@ -79,10 +79,10 @@ class update_class(QtGui.QDialog,update_ui.Ui_Dialog):
 
         update_directory = '/tmp/Ghost-Phisher/'
 
-        svn_path = 'http://ghost-phisher.googlecode.com/svn/Ghost-Phisher'
+        svn_path = 'http://github.com/savio-code/ghost-phisher/trunk/Ghost-Phisher'
 
         try:
-            online_response_check = urllib2.urlopen('http://ghost-phisher.googlecode.com/svn/Ghost-Phisher/UPDATE')
+            online_response_check = urllib2.urlopen('https://raw.githubusercontent.com/savio-code/ghost-phisher/master/Ghost-Phisher/UPDATE')
             online_response = online_response_check.read()
 
             online_files = re.compile('total_files = \d+',re.IGNORECASE)

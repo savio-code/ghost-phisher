@@ -16,7 +16,7 @@ class update_class(QtGui.QDialog,update_ui.Ui_Dialog):
         self.setupUi(self)
         self.retranslateUi(self)
 
-        self.current_version = 1.63
+        self.current_version = 1.64
 
         self.new_version = float()
         self.svn_failure_message = str()
@@ -79,7 +79,7 @@ class update_class(QtGui.QDialog,update_ui.Ui_Dialog):
 
         update_directory = '/tmp/Ghost-Phisher/'
 
-        svn_path = 'http://github.com/savio-code/ghost-phisher/trunk/Ghost-Phisher'
+        svn_path = 'https://github.com/savio-code/ghost-phisher/trunk/Ghost-Phisher/'
 
         try:
             online_response_check = urllib2.urlopen('https://raw.githubusercontent.com/savio-code/ghost-phisher/master/Ghost-Phisher/UPDATE')
@@ -144,7 +144,7 @@ class update_class(QtGui.QDialog,update_ui.Ui_Dialog):
     def update_initializtion_check(self):
         while True:
             try:
-                online_response_thread = urllib2.urlopen('http://ghost-phisher.googlecode.com/svn/Ghost-Phisher/UPDATE')
+                online_response_thread = urllib2.urlopen('https://raw.githubusercontent.com/savio-code/ghost-phisher/master/Ghost-Phisher/UPDATE')
                 online_response = online_response_thread.read()
 
                 online_version = re.compile('version\s+=\s+(\d*?\.\d*)',re.IGNORECASE)

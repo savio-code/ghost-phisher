@@ -117,10 +117,13 @@ class update_class(QtGui.QDialog,update_ui.Ui_Dialog):
                             shutil.rmtree(os.getcwd() + os.sep + old_directory)
 
                     for update_file in os.listdir(update_directory):        # Copy New update files to working directory
+                    	filepath = os.getcwd() + os.sep + update_file
                         if os.path.isfile(update_directory + update_file):
-                            shutil.copyfile(update_directory + update_file,os.getcwd() + os.sep + update_file)
+                            shutil.copyfile(update_directory + update_file,filepath)
                         else:
-                            shutil.copytree(update_directory + update_file,os.getcwd() + os.sep + update_file)
+                            shutil.copytree(update_directory + update_file,filepath)
+
+                        os.chmod(filepath,0777)
 
                     time.sleep(5)
 

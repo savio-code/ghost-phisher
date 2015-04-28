@@ -9,6 +9,9 @@ The Software runs on any <i>Linux machine</i> with the programs <a href="#prereq
 <p>2. <a href="http://www.backtrack-linux.org/">BackTrack Linux</a></p>
 <p>3. <a href="http://www.backbox.org/">BackBox Linux</a></p>
 
+###Download
+<a href="https://github.com/savio-code/downloads/raw/master/Ghost-Phisher_1.6_all.deb">Click here</a> to download
+
 
 ###Prerequisites
 The Program requires the following to run properly:<br>

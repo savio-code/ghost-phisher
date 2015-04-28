@@ -5,7 +5,7 @@
 
 ###Downloads
 <hr/>
-<a href="https://github.com/savio-code/downloads/raw/master/Ghost-Phisher_1.6_all.deb">Click here</a> to download
+<a href="https://github.com/savio-code/downloads/raw/master/Ghost-Phisher_1.6_all.deb">Click here</a> to download the latest version
 
 <br>
 ###Operating System Supported

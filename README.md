@@ -9,6 +9,7 @@
 
 
 ###Operating System Supported
+<hr/>
 The Software runs on any <i>Linux machine</i> with the programs <a href="#prerequisites">prerequisites</a>, But the program has been tested on the following Linux based operating systems:
 <p>1. <a href="http://www.ubuntu.com/">Ubuntu KDE/GNOME</a></p>
 <p>2. <a href="http://www.backtrack-linux.org/">BackTrack Linux</a></p>

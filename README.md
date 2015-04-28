@@ -4,8 +4,9 @@
 <i><b>Ghost Phisher</b></i> is a Wireless and Ethernet security auditing and attack software program written using the <a href="http://www.python.org/">Python Programming Language</a> and the <a href="http://www.riverbankcomputing.co.uk/software/pyqt/intro">Python Qt GUI library</a>, the program is able to emulate access points and deploy various internal networking servers for networking, penetration testing and phishing attacks.
 
 ###Downloads
-<a href="https://github.com/savio-code/downloads/raw/master/Ghost-Phisher_1.6_all.deb">Click here</a> to download
 <hr/>
+<a href="https://github.com/savio-code/downloads/raw/master/Ghost-Phisher_1.6_all.deb">Click here</a> to download
+
 
 ###Operating System Supported
 The Software runs on any <i>Linux machine</i> with the programs <a href="#prerequisites">prerequisites</a>, But the program has been tested on the following Linux based operating systems:

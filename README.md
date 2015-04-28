@@ -7,7 +7,7 @@
 <hr/>
 <a href="https://github.com/savio-code/downloads/raw/master/Ghost-Phisher_1.6_all.deb">Click here</a> to download
 
-
+<br>
 ###Operating System Supported
 <hr/>
 The Software runs on any <i>Linux machine</i> with the programs <a href="#prerequisites">prerequisites</a>, But the program has been tested on the following Linux based operating systems:

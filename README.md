@@ -1,6 +1,10 @@
 <b>DISCLAIMER</b>: This program is created to be used in testing and discovering flaws in ones own network with the aim of fixing the flaws detected, <b>DO NOT</b> use the program on networks for which you dont have permission.
 <hr/> 
 
+
+<h4>Create portable static executables from dynamic executables that will run on every version of linux, <a target="_blank" href="http://www.elfex-pro.com">Click here</a> for more information<h4>
+<hr>
+
 <i><b>Ghost Phisher</b></i> is a Wireless and Ethernet security auditing and attack software program written using the <a href="http://www.python.org/">Python Programming Language</a> and the <a href="http://www.riverbankcomputing.co.uk/software/pyqt/intro">Python Qt GUI library</a>, the program is able to emulate access points and deploy various internal networking servers for networking, penetration testing and phishing attacks.
 
 ###Downloads

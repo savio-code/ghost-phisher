@@ -2,7 +2,7 @@
 <hr/> 
 
 
-<h4>Create portable static executables from dynamic executables that will run on every version of linux, <a target="_blank" href="http://www.elfex-pro.com">Click here</a> for more information<h4>
+<h4>Create portable static executables from dynamic executables that will run on every version of linux, <a target="_blank" href="http://www.elfex-pro.com">Click here</a> for more information</h4>
 <hr>
 
 <i><b>Ghost Phisher</b></i> is a Wireless and Ethernet security auditing and attack software program written using the <a href="http://www.python.org/">Python Programming Language</a> and the <a href="http://www.riverbankcomputing.co.uk/software/pyqt/intro">Python Qt GUI library</a>, the program is able to emulate access points and deploy various internal networking servers for networking, penetration testing and phishing attacks.

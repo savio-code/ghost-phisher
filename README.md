@@ -1,4 +1,4 @@
-<h3><i>Support Ghost Phisher Development</i></h3>
+<h3><i>Please support Ghost Phisher development</i></h3>
 <h3>Bitcoin: &nbsp;&nbsp;  1AoBfNLfwDrw4ofZXZVm9YfeaFCXtG9k9B</h3>
 
 <hr/>

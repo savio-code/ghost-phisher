@@ -1,6 +1,5 @@
-<hr>
-<h5>Create portable static executables from dynamic executables that will run on every distribution of linux without the need of recompiling, <a target="_blank" href="http://www.elfex-pro.com">Click here</a> for more information</h5>
-<hr>
+<h3><i>Support Ghost Phisher Development</i></h3>
+<h3>Bitcoin: &nbsp;&nbsp;  1AoBfNLfwDrw4ofZXZVm9YfeaFCXtG9k9B</h3>
 
 <b>DISCLAIMER</b>: Ghost Phisher is created to be used in testing and discovering flaws in ones own network with the aim of fixing the flaws detected, <b>DO NOT</b> use the program on networks for which you dont have permission, i am not responsible for whatever damage you cause by using this software.
 <hr/> 

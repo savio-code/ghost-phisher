@@ -54,33 +54,12 @@ The <i>source code</i> for the program can be fetched using the following comman
 <code>root@host:~# svn checkout http://ghost-phisher.googlecode.com/svn/Ghost-Phisher/</code>
 <hr>
 
-###Upgrading and Updating
-<hr>
-<img src="http://savio-project-images.googlecode.com/files/update2.PNG" align="middle">
-<br><br>
-The Program automatically checks for updates each time the program is ran, if the program finds an update, it notifies
-user with the message dialog box with an upgrade button, in other to update, all you simply have to do is click on the upgrade button
-When the button is clicked, allow to download update files until it displays the message <b><font color="red" size="2pt">Please Restart Application</font></b>.
-<hr>
-
-###Screenshots:</h3>
-<hr>
-<i><b>Penetration</b></i>
-<br>
-
-<img src="http://savio-project-images.googlecode.com/files/metasploit_binding.PNG">
-
-<br>
-<i><b>ARP Cache Poisoning</b></i>
-<br>
-
-<img src="http://savio-project-images.googlecode.com/files/arp_poisoning.PNG">
-
-<hr>
-
 
 ###Other Projects:
 
 https://github.com/savio-code/fern-wifi-cracker
 
 https://github.com/savio-code/hexorbase
+
+<h3><i>Please support Ghost Phisher development</i></h3>
+<h3>Bitcoin: &nbsp;&nbsp;  1AoBfNLfwDrw4ofZXZVm9YfeaFCXtG9k9B</h3>
